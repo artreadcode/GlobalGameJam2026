@@ -56,40 +56,30 @@ function setup() {
 
   console.log('Global Game Jam 2026 project');
 
-  faceMesh = ml5.faceMesh(options);
 
   createCanvas(windowWidth, windowHeight);
 
   // Set the Schoolbell font
   textFont(schoolbellFont);
+  
+  // Always build the Video object and start FaceMesh detection ONCE.
+  // This will trigger the inline popup to ask for permission from the camera.
+  video = createCapture(VIDEO);
+  video.size(windowWidth, windowHeight);
+  video.hide();
+  faceMesh = ml5.faceMesh(options, modelLoaded);
+  faceMesh.detectStart(video, gotFaces);
 
   // Create the game
   game = new Game();
-  
-  // Create the gameplay window
-  // createCanvas(windowWidth, windowHeight);
-  // Build the Video object, preparing for the transition screen(s).
-
-  // *** CAUTION: It will trigger the inline popup to ask for permission from the camera.
-  video = createCapture(VIDEO);
-  video.size(640, 480);
-  video.hide();
-
-  // c.f. If you want to start detecting faces from the webcam video
-  faceMesh.detectStart(video, gotFaces);
-  // If you don't 'draw' a video, it won't display the webcam video on the screen so FYI.
 }
 
 function draw() {
   game.show();
+}
 
-  // game.stage = 1;
-  // game.started = true;
-  // game.play = new Stage();
-
-
-
-
+function modelLoaded() {
+  console.log("FaceMesh Model is loaded and ready!");
 }
 
 // Handle window resizing event so our game won't be seen weird.
@@ -102,19 +92,22 @@ function windowResized() {
 function gotFaces(results) {
   // Save the output to the faces variable
   faces = results;
-  // And let's add something here...
+
+  console.log('callback function has been called.');
 }
 
-function detectsmile() {
+function detectSmile() {
 
-  if (faces.length > 0) {
+  console.log(faces.length);
+
+  if (faces.length != 0 && faces.length > 0 && gameMode === 0) {
     let face = faces[0];
 
     let leftCorner = face.keypoints[61];
     let rightCorner = face.keypoints[291];
     
-    let topLip = face.keypoints[13];
-    let bottomLip = face.keypoints[14];
+    // let topLip = face.keypoints[13];
+    // let bottomLip = face.keypoints[14];
 
     // 1. Calculate Mouth Width
     let mouthWidth = dist(leftCorner.x, leftCorner.y, rightCorner.x, rightCorner.y);
@@ -124,19 +117,31 @@ function detectsmile() {
     let leftCheek = face.keypoints[234];
     let rightCheek = face.keypoints[454];
     let faceWidth = dist(leftCheek.x, leftCheek.y, rightCheek.x, rightCheek.y);
+    console.log(faceWidth);
 
     if (mouthWidth / faceWidth > 0.45) { // Adjust based on testing
+      console.log('smile detected.');
       return true;
     }
     else {
+      console.log('smile X');
       return false;
-   
-  }  
+    }  
   }
+  
+  return false;
 }
 
 function mousePressed() {
   if (game && game.play instanceof startScreen) {
     game.play.modeChanging(mouseX, mouseY);
+  }
+}
+
+function keyPressed() {
+  if (game && game.play instanceof startScreen && gameMode === 1) {
+    if (key === 'e') {
+      game.stage = 5;
+    }
   }
 }

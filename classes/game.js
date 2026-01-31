@@ -50,6 +50,10 @@ class Game {
                     this.play.play();
                     this.play.show();
                     // console.log('?????');
+
+                    if (this.play.isFaceThere) {
+                        this.stage = 5; // Move onto the tutorial screen.
+                    }
                 }
                 if (this.next) {
                     this.after = this.after + 1; // The stage 1's next step is 2.
@@ -107,6 +111,10 @@ class Game {
                     this.camera.x = 0;
                 }
                 break;
+            }
+            case 5: { // Tutorial page
+                let tutorial = new Tutorial();
+                tutorial.show();
             }
         }
     }
