@@ -1,9 +1,12 @@
 // Hold the ml5.js FaceMesh model
 // We need to use FaceMesh > Facial Landmark Detection feature.
 let faceMesh;
+let handPose;
 let video; // The video to store the webcam video.
 let faces = []; // This one will store the markers across the faces.
-let options = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
+let hands = []; // This one will store the markers across the hands.
+let faceoptions = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
+let handOptions = { maxHands: 1, flipHorizontal: false };
 let playerSprite;
 let mirrorSprite;
 let blackScreenSprite;
@@ -16,13 +19,6 @@ let helpBtn;
 let aboutBtn;
 let paper;
 let barImg;
-
-// Stage 1 bedroom parallax layers
-let bedroomWall;
-let bedroomBack;
-let bedroomMid;
-let bedroomFloor;
-let bedroomFront;
 
 // movement
 
@@ -41,7 +37,9 @@ const pressedKeys = {a: false, d: false };
 
 function preload() {
   // Load the FaceMesh model
-  faceMesh = ml5.faceMesh(options);
+  faceMesh = ml5.faceMesh(faceoptions);
+  handPose = ml5.handPose(handOptions);
+  
 
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
@@ -62,13 +60,6 @@ function preload() {
 
   paper = loadImage('assets/paper.png');
   barImg = loadImage('assets/bar.png');
-
-  // Stage 1 bedroom parallax
-  bedroomWall = loadImage('assets/Stage_1 bedroom/wall_bedroom.png');
-  bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
-  bedroomMid = loadImage('assets/Stage_1 bedroom/mid_bedroom.png');
-  bedroomFloor = loadImage('assets/Stage_1 bedroom/floor_bedroom.png');
-  bedroomFront = loadImage('assets/Stage_1 bedroom/Front_bedroom.png');
 }
 
 function setup() {
@@ -89,6 +80,7 @@ function setup() {
   video.hide();
 
   faceMesh.detectStart(video, gotFaces);
+  handPose.detectStart(video, gotHands);
 
   // Create the game
   game = new Game();
@@ -97,6 +89,15 @@ function setup() {
 
 function draw() {
   game.show();
+
+  if(detectHide()){
+        fill(255, 0, 0); // Red background alert
+        rect(0, 0, width, 50);
+        
+        fill(255);
+        textSize(32);
+        text("MOUTH COVERED! 🫢", 50, 40);
+  };
 }
 
 function modelLoaded() {
@@ -106,16 +107,6 @@ function modelLoaded() {
   // game.started = true;
   // game.play = new Stage();
 
-
-
-  if (detectsmile()) {
-    //test function
-    fill(0, 255, 0);
-    textSize(48);
-    text("SMILING! 😁", 50, 100);
-    console.log("SMILING!");
-  }
-  
 }
 
 // Handle window resizing event so our game won't be seen weird.
@@ -127,7 +118,11 @@ function windowResized() {
 function gotFaces(results) {
   faces = results;
 
-  console.log('callback function has been called.');
+  //console.log('callback function has been called.');
+}
+
+function gotHands(results) {
+  hands = results;
 }
 
 
@@ -141,8 +136,8 @@ function detectSmile() {
     let leftCorner = face.keypoints[61];
     let rightCorner = face.keypoints[291];
     
-    // let topLip = face.keypoints[13];
-    // let bottomLip = face.keypoints[14];
+    let topLip = face.keypoints[13];
+    let bottomLip = face.keypoints[14];
 
     // 1. Calculate Mouth Width
     let mouthWidth = dist(leftCorner.x, leftCorner.y, rightCorner.x, rightCorner.y);
@@ -166,6 +161,46 @@ function detectSmile() {
   }
   
   return false;
+}
+}
+
+function detectHide(){
+  if (faces.length > 0) {
+    let face = faces[0];
+    
+    // Get Mouth Center (using upper lip #13 and lower lip #14 as reference)
+    let topLip = face.keypoints[13];
+    let bottomLip = face.keypoints[14];
+    let mouthX = (topLip.x + bottomLip.x) / 2;
+    let mouthY = (topLip.y + bottomLip.y) / 2;
+
+    // Draw a marker at the mouth for debugging
+    fill(0, 255, 255);
+    noStroke();
+    circle(mouthX, mouthY, 10);
+
+    // CHECK HANDS
+    if (hands.length > 0) {
+      let hand = hands[0];
+      
+      // Use the Index Finger Tip (Index 8) and Middle Finger Tip (Index 12)
+      // or the Palm Base (Index 0) to check for overlap.
+      // Index 9 (Middle Finger MCP) is often a good center point for the hand.
+      let handCenter = hand.keypoints[9]; 
+      
+      fill(255, 0, 255);
+      circle(handCenter.x, handCenter.y, 10);
+
+      // Check distance between Hand Center and Mouth Center
+      let d = dist(mouthX, mouthY, handCenter.x, handCenter.y);
+      
+      // Threshold: if hand is within 60 pixels of mouth
+      if (d < 80) { 
+        return true;
+      }
+      else { return false;
+    }
+}
 }
 }
 
