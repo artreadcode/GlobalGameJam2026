@@ -10,6 +10,7 @@ let schoolbellFont;
 let tooltip;
 let cameraMode;
 let keyboardMode;
+let gameMode = 0; // default (camera)
 
 // movement
 
@@ -28,7 +29,6 @@ const pressedKeys = {a: false, d: false };
 
 function preload() {
   // Load the FaceMesh model
-  faceMesh = ml5.faceMesh(options);
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
 
@@ -44,7 +44,11 @@ function preload() {
 }
 
 function setup() {
+
+
   console.log('Global Game Jam 2026 project');
+
+  faceMesh = ml5.faceMesh(options);
 
   createCanvas(windowWidth, windowHeight);
 
@@ -53,6 +57,15 @@ function setup() {
 
   // Create the game
   game = new Game();
+  
+  
+  
+  game.stage = 1;
+  game.started = true;
+  game.play = new Stage();
+
+
+
   // Create the gameplay window
   // createCanvas(windowWidth, windowHeight);
   // Build the Video object, preparing for the transition screen(s).
@@ -70,9 +83,9 @@ function setup() {
 function draw() {
   game.show();
 
-  game.stage = 1;
-  game.started = true;
-  game.play = new Stage();
+  // game.stage = 1;
+  // game.started = true;
+  // game.play = new Stage();
 
 
 
@@ -119,5 +132,11 @@ function detectsmile() {
       return false;
    
   }  
+  }
+}
+
+function mousePressed() {
+  if (game && game.play instanceof startScreen) {
+    game.play.modeChanging(mouseX, mouseY);
   }
 }
