@@ -6,8 +6,9 @@ let faces = []; // This one will store the markers across the faces.
 let options = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
 let playerSprite;
 let schoolbellFont;
+let tooltip;
 
-//movement
+// movement
 
 const pressedKeys = {a: false, d: false };
 
@@ -23,13 +24,14 @@ const pressedKeys = {a: false, d: false };
 
 
 function preload() {
-  // Load the FaceMesh model
-  faceMesh = ml5.faceMesh(options);
   playerSprite = loadImage('assets/placeholder.png');
 
   // Font is loaded via CSS in index.html
   // Set the font name for use with textFont()
   schoolbellFont = 'Schoolbell';
+
+  // Loading images
+  tooltip = loadImage('assets/tooltip.png');
 }
 
 function setup() {
@@ -39,6 +41,9 @@ function setup() {
 
   // Set the Schoolbell font
   textFont(schoolbellFont);
+
+  // Load the FaceMesh model
+  faceMesh = ml5.faceMesh(options);
 
   // Create the game
   game = new Game();
