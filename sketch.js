@@ -5,6 +5,7 @@ let video; // The video to store the webcam video.
 let faces = []; // This one will store the markers across the faces.
 let options = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
 let playerSprite;
+let mirrorSprite;
 let schoolbellFont;
 
 //movement
@@ -25,7 +26,8 @@ const pressedKeys = {a: false, d: false };
 function preload() {
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(options);
-  playerSprite = loadImage('assets/placeholder.png');
+  playerSprite = loadImage('assets/character.png');
+  mirrorSprite = loadImage('assets/mirror.png');
 
   // Font is loaded via CSS in index.html
   // Set the font name for use with textFont()
@@ -58,6 +60,16 @@ function setup() {
 
 function draw() {
   game.show();
+
+
+
+  game.stage = 1;
+  game.started = true;
+  game.play = new Stage();
+
+
+
+
 }
 
 // Handle window resizing event so our game won't be seen weird.

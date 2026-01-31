@@ -5,6 +5,9 @@ class Game {
 
         this.player = new Player(width/4);
         this.camera = new Camera();
+        this.obstacles = [ //X position, image size(x,y) ,name of sprite, actionId, actionType, refer to actions.JS
+            new Obstacle(2700,100,100, { sprite: mirrorSprite, actionId: '1', actionType: 'transition' }),
+        ];
         /*
         this.w = windowWidth;
         this.h = windowHeight;
@@ -52,13 +55,37 @@ class Game {
                 }
                 break;
 
-            case 1: // Stage 01
-                this.player.update();
-                this.player.draw();
-            // Same structure will happen here...
-            case 2: // Stage 02
-            case 3: // Stage 03
-            case 4: // Ending scene
+            case 1: {           //stage 1
+                this.player.update(this.play);
+                const cameraX = this.camera.update(this.play, this.player.x);
+                this.player.draw(cameraX);
+
+                for (const obstacle of this.obstacles) {
+                    obstacle.draw(cameraX);
+                    if (obstacle.hit(this.player)) {
+                        if (obstacle.actionType) {
+                            Actions.run(obstacle.actionType, obstacle.actionId, this, obstacle);
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            case 2: {           //stage 2
+                this.player.update(this.play);
+                const cameraX = this.camera.update(this.play, this.player.x);
+                this.player.draw(cameraX);
+                break;
+            }
+            case 3: {           //stage 3
+                this.player.update(this.play);
+                const cameraX = this.camera.update(this.play, this.player.x);
+                this.player.draw(cameraX);
+                break;
+            }
+            case 4: {           //mirror transition scene/stage, the "inbetween" of each level
+     
+            }
         }
     }
 }
