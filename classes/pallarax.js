@@ -1,223 +1,86 @@
-// Dark urban parallax - Little Nightmares style
-// Use as a class to integrate with existing game
+// Bedroom parallax layers for Stage 1
+// Layer order (back to front): wall -> mid -> player -> floor -> front
 
 class Parallax {
   constructor() {
-    this.layers = [
-      { name: "far_buildings", x: 0, speed: 0.2, color: [60, 75, 95] },
-      { name: "mid_buildings", x: 0, speed: 0.4, color: [50, 65, 85] },
-      { name: "clothesline_back", x: 0, speed: 0.6, color: [70, 85, 105] },
-      { name: "clothesline_mid", x: 0, speed: 0.8, color: [80, 95, 115] },
-      { name: "clothesline_front", x: 0, speed: 1.0, color: [40, 50, 65] },
-      { name: "foreground", x: 0, speed: 1.2, color: [35, 45, 55] },
+    // Layers drawn BEFORE player (background)
+    this.backLayers = [
+      { name: "wall", x: 0, speed: 0.1, img: null },    // 5: wall background, slowest
+      { name: "back", x: 0, speed: 0.3, img: null },    // 4: furniture (bed, lamp, bookshelf)
+      { name: "mid", x: 0, speed: 0.5, img: null },     // 3: decorations (window, papers)
+      { name: "floor", x: 0, speed: 0, img: null },     // 2: floor, stable
+    ];
+    // Layers drawn AFTER player (foreground)
+    this.frontLayers = [
+      { name: "front", x: 0, speed: 1.0, img: null },   // 1: front, topmost
     ];
   }
 
-  update(deltaX) {
-    for (let layer of this.layers) {
-      if (deltaX > 0) {
-        layer.x -= layer.speed;
-      } else if (deltaX < 0) {
-        layer.x += layer.speed;
-      }
+  // Call this after images are loaded
+  setImages() {
+    this.backLayers[0].img = bedroomWall;
+    this.backLayers[1].img = bedroomBack;
+    this.backLayers[2].img = bedroomMid;
+    this.backLayers[3].img = bedroomFloor;
+    this.frontLayers[0].img = bedroomFront;
 
-      // Wrap layers
-      if (layer.x < -width) layer.x = 0;
-      if (layer.x > 0) layer.x = -width;
+    // Debug: check if images loaded
+    console.log('Wall loaded:', !!bedroomWall);
+    console.log('Back loaded:', !!bedroomBack);
+    console.log('Mid loaded:', !!bedroomMid);
+    console.log('Floor loaded:', !!bedroomFloor);
+    console.log('Front loaded:', !!bedroomFront);
+  }
+
+  update(deltaX) {
+    for (let layer of this.backLayers) {
+      if (layer.speed > 0) {
+        layer.x -= deltaX * layer.speed;
+      }
+    }
+    for (let layer of this.frontLayers) {
+      if (layer.speed > 0) {
+        layer.x -= deltaX * layer.speed;
+      }
     }
   }
 
   draw() {
-    // Gradient sky background (foggy blue)
-    for (let y = 0; y < height; y++) {
-      let inter = map(y, 0, height, 0, 1);
-      let c = lerpColor(color(85, 105, 130), color(55, 70, 90), inter);
-      stroke(c);
-      line(0, y, width, y);
-    }
-    noStroke();
-
-    // Draw parallax layers
-    for (let layer of this.layers) {
-      this.drawLayer(layer, layer.x);
-      this.drawLayer(layer, layer.x + width);
+    // Set images if not already set
+    if (!this.backLayers[0].img) {
+      this.setImages();
     }
 
-    // Draw floor
-    fill(30, 38, 48);
-    rect(0, height - 26, width, 30);
+    // Black background behind everything
+    background(0);
 
-    // Floor details (debris)
-    fill(25, 32, 42);
-    rect(50, height - 24, 20, 5);
-    rect(150, height - 22, 15, 4);
-    rect(280, height - 23, 25, 5);
-    rect(350, height - 21, 18, 3);
-
-    // Fog overlay
-    this.drawFog();
+    // Draw back layers (wall -> mid) before player
+    for (let layer of this.backLayers) {
+      this.drawLayer(layer);
+    }
   }
 
-  drawLayer(layer, xOffset) {
-    push();
-    translate(xOffset, 0);
-
-    let groundY = height - 26;
-
-    switch (layer.name) {
-      case "far_buildings":
-        fill(layer.color);
-        // Tall distant buildings
-        rect(20, 20, 50, groundY - 20);
-        rect(80, 40, 40, groundY - 40);
-        rect(280, 10, 60, groundY - 10);
-        rect(350, 30, 45, groundY - 30);
-        // Windows (dim lights)
-        fill(90, 110, 130);
-        for (let i = 0; i < 5; i++) {
-          rect(30, 40 + i * 30, 8, 12);
-          rect(52, 50 + i * 30, 8, 12);
-          rect(295, 30 + i * 30, 8, 12);
-        }
-        break;
-
-      case "mid_buildings":
-        fill(layer.color);
-        rect(0, 50, 70, groundY - 50);
-        rect(150, 30, 80, groundY - 30);
-        rect(320, 60, 65, groundY - 60);
-        // Balconies
-        fill(40, 52, 68);
-        rect(150, 80, 80, 5);
-        rect(150, 130, 80, 5);
-        break;
-
-      case "clothesline_back":
-        // Rope
-        stroke(60, 70, 85);
-        strokeWeight(1);
-        line(0, 60, width, 70);
-        line(0, 100, width, 95);
-        noStroke();
-        // Hanging clothes (small, distant)
-        fill(layer.color);
-        this.drawClothes(50, 62, 0.6);
-        this.drawClothes(150, 65, 0.6);
-        this.drawClothes(250, 68, 0.6);
-        this.drawClothes(100, 97, 0.6);
-        this.drawClothes(200, 95, 0.6);
-        this.drawClothes(320, 96, 0.6);
-        break;
-
-      case "clothesline_mid":
-        // Rope
-        stroke(70, 85, 100);
-        strokeWeight(1);
-        line(0, 45, width, 55);
-        line(0, 120, width, 115);
-        noStroke();
-        // Hanging clothes (medium)
-        fill(55, 65, 80);
-        this.drawClothes(80, 48, 0.8);
-        this.drawClothes(180, 52, 0.8);
-        this.drawClothes(300, 54, 0.8);
-        fill(70, 80, 95);
-        this.drawClothes(40, 117, 0.8);
-        this.drawClothes(140, 115, 0.8);
-        this.drawClothes(260, 116, 0.8);
-        break;
-
-      case "clothesline_front":
-        // Rope
-        stroke(50, 60, 75);
-        strokeWeight(2);
-        line(0, 35, width, 40);
-        noStroke();
-        // Hanging clothes (larger, closer)
-        fill(35, 45, 60);
-        this.drawClothes(60, 38, 1.2);
-        this.drawClothes(160, 39, 1.2);
-        fill(45, 55, 70);
-        this.drawClothes(280, 40, 1.2);
-        this.drawClothes(350, 39, 1.2);
-        break;
-
-      case "foreground":
-        // Side walls/structures
-        fill(layer.color);
-        rect(-10, 100, 40, groundY - 80);
-        rect(360, 80, 40, groundY - 60);
-        // Railings
-        fill(45, 55, 70);
-        rect(30, groundY - 20, 60, 4);
-        rect(300, groundY - 15, 50, 4);
-        // Railing posts
-        rect(30, groundY - 20, 4, 20);
-        rect(86, groundY - 20, 4, 20);
-        rect(300, groundY - 15, 4, 18);
-        rect(346, groundY - 15, 4, 18);
-        break;
+  // Draw the front layers (call this after drawing the player)
+  drawFront() {
+    // Draw front layers (floor -> front) after player
+    for (let layer of this.frontLayers) {
+      this.drawLayer(layer);
     }
-    pop();
   }
 
-  drawClothes(x, y, s) {
-    push();
-    translate(x, y);
-    scale(s, s);
+  // Helper to draw a single layer
+  drawLayer(layer) {
+    if (!layer.img) return;
 
-    // Different clothing types based on position
-    let type = int(x * 0.1) % 4;
+    let imgRatio = layer.img.width / layer.img.height;
+    let drawH = height;
+    let drawW = drawH * imgRatio;
 
-    if (type === 0) {
-      // Shirt
-      rect(-8, 0, 16, 20);
-      rect(-12, 0, 4, 12);
-      rect(8, 0, 4, 12);
-    } else if (type === 1) {
-      // Pants
-      rect(-6, 0, 5, 25);
-      rect(1, 0, 5, 25);
-      rect(-6, 0, 12, 8);
-    } else if (type === 2) {
-      // Dress/coat
-      beginShape();
-      vertex(-5, 0);
-      vertex(5, 0);
-      vertex(10, 30);
-      vertex(-10, 30);
-      endShape(CLOSE);
-    } else {
-      // Towel/blanket
-      rect(-10, 0, 20, 18);
-    }
-    pop();
-  }
+    let xPos = layer.x % drawW;
+    if (xPos > 0) xPos -= drawW;
 
-  drawFog() {
-    noStroke();
-
-    // Light beam from center top
-    fill(100, 120, 145, 15);
-    beginShape();
-    vertex(150, 0);
-    vertex(250, 0);
-    vertex(300, height);
-    vertex(100, height);
-    endShape(CLOSE);
-
-    // Bottom fog
-    for (let i = 0; i < 3; i++) {
-      fill(70, 85, 105, 20 - i * 5);
-      rect(0, height - 56 + i * 15, width, 60);
-    }
-
-    // Side vignette
-    for (let i = 0; i < 50; i++) {
-      let alpha = map(i, 0, 50, 40, 0);
-      fill(30, 40, 55, alpha);
-      rect(0, 0, i * 2, height);
-      rect(width - i * 2, 0, i * 2, height);
+    for (let x = xPos; x < width; x += drawW) {
+      image(layer.img, x, 0, drawW, drawH);
     }
   }
 }

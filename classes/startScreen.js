@@ -1,13 +1,15 @@
 class startScreen extends Stage {
     constructor() {
         super();
-        this.lastMode = null;
+        // Set to -1 initially so it forces the logic to run on the very first frame
+        this.lastMode = -1; 
         this.bg = 255;
+        this.isFaceThere = false;
 
         this.infos = [
             "Smile to start the game.",
             "Press 'E' to start the game." 
-        ]
+        ];
 
         // Create jiggle text objects (black color)
         this.titleText = new JiggleText("non-Duchenne", windowWidth / 2, windowHeight / 2, min(windowWidth, windowHeight) * 0.05, {
@@ -35,33 +37,31 @@ class startScreen extends Stage {
         this.tooltipMSG = "This game uses webcam face detection without storing data. If you’re not comfortable with this, you can choose keyboard mode.";
         this.tooltipW = 32;
         this.tooltipH = 32;
-        this.tooltipOffset = min(windowWidth, windowHeight) * 0.01; // the blank between the subTitle and the tooltip '?'
+        this.tooltipOffset = min(windowWidth, windowHeight) * 0.01; 
     }
 
     modeChanging(mX, mY) {
-    let modeW = cameraMode.width * 0.3;
-    let modeH = cameraMode.height * 0.3;
-    let rectX = windowWidth - modeW * 4.5;
-    let rectY = modeH - modeH * 0.2;
-    let rectW = modeW * 2;
-    let rectH = modeH * 1.4;
+        let modeW = cameraMode.width * 0.3;
+        let modeH = cameraMode.height * 0.3;
+        let rectX = windowWidth - modeW * 4.5;
+        let rectY = modeH - modeH * 0.2;
+        let rectW = modeW * 2;
+        let rectH = modeH * 1.4;
 
-    // Check if mouse is inside the toggle background rectangle
-    if (mX > rectX && mX < rectX + rectW && mY > rectY && mY < rectY + rectH) {
-        // If clicked on left half, set to camera; right half, set to keyboard
-        if (gameMode === 0) {
-            gameMode = 1;
-        }
-        else if (gameMode === 1) {
-            gameMode = 0;
+        // Check if mouse is inside the toggle background rectangle
+        if (mX > rectX && mX < rectX + rectW && mY > rectY && mY < rectY + rectH) {
+            // Toggle global gameMode variable
+            if (gameMode === 0) {
+                gameMode = 1;
+            } else if (gameMode === 1) {
+                gameMode = 0;
+            }
         }
     }
-}
 
     show() {
         background(this.bg);
         textAlign(CENTER, CENTER);
-        // text(gameTitle, windowWidth / 2, windowHeight / 2 - min(windowWidth, windowHeight) * 0.06);
 
         // Update positions and sizes in case of window resize
         this.titleText.setPosition(windowWidth / 2, windowHeight / 2);
@@ -74,39 +74,44 @@ class startScreen extends Stage {
         this.titleText.show();
         this.subtitleText.show();
 
-        // Display tooltip
-        // Calculate subtitle width for precise tooltip PNG alignment
+        // --- TOOLTIP LOGIC ---
+        
+        // 1. Calculate positioning based on subtitle
+        // Use push/pop here to ensure textWidth doesn't mess up other things
+        push(); 
         textSize(this.subtitleText.size);
         let subtitleWidth = textWidth(this.subtitleText.text);
-        let isNarrow = windowWidth < 600; // threshold for mobile/tablet
+        pop();
+
+        let isNarrow = windowWidth < 600; 
         let tooltipX, tooltipY;
+        
         if (isNarrow) {
-            // Place tooltip PNG underneath subtitle, centered
             tooltipX = windowWidth / 2 - this.tooltipW / 2;
             tooltipY = windowHeight / 2 + 50 + this.subtitleText.size + 50;
         } else {
-            // Place tooltip PNG to the right of subtitle
             tooltipX = windowWidth / 2 + subtitleWidth / 2 + this.tooltipOffset;
             tooltipY = windowHeight / 2 + 55;
         }
+        
         image(tooltip, tooltipX, tooltipY, this.tooltipW, this.tooltipH);
 
-        push();
-
-        // Check mouse hovering event
+        // 2. Check Hover & Draw Box
+        // We use push() here to isolate the tooltip text settings
+        // This prevents the "jumping" bug
+        push(); 
         if (
             mouseX > tooltipX &&
             mouseX < tooltipX + this.tooltipW &&
             mouseY > tooltipY - this.tooltipH / 2 &&
             mouseY < tooltipY + this.tooltipH / 2
         ) {
-            // textSize(this.subtitleText.size * 0.4);
-            textSize(16);
+            textSize(16); // Hardcode tooltip text size
             textAlign(LEFT, TOP);
             let boxPadding = 12;
-            let maxBoxWidth = min(windowWidth * 0.5, 320); // max width for wrapping
+            let maxBoxWidth = min(windowWidth * 0.5, 320); 
 
-            // Word wrap and measure lines
+            // Word wrap logic
             let words = this.tooltipMSG.split(' ');
             let lines = [];
             let line = '';
@@ -121,7 +126,7 @@ class startScreen extends Stage {
             }
             lines.push(line.trim());
 
-            // Calculate dynamic box width (longest line)
+            // Calculate box width
             let boxWidth = boxPadding * 2;
             for (let l of lines) {
                 boxWidth = max(boxWidth, textWidth(l) + boxPadding * 2);
@@ -132,36 +137,39 @@ class startScreen extends Stage {
             let lineHeight = textAscent() + textDescent();
             let boxHeight = lines.length * lineHeight + boxPadding * 2;
 
-            // Draw message box underneath the PNG
             let boxX = tooltipX + this.tooltipW / 2 - boxWidth / 2;
             let boxY = tooltipY + this.tooltipH / 2 + 30;
+
+            // Draw Box
             fill(130, 130, 130);
             noStroke();
             rect(boxX, boxY, boxWidth, boxHeight);
 
-            // Draw triangle (speech box tail) on top center of the box
-            let triBase = 20; // width of the triangle base
-            let triHeight = 12; // height of the triangle
+            // Draw Triangle
+            let triBase = 20; 
+            let triHeight = 12; 
             let triX = boxX + boxWidth / 2;
             let triY = boxY;
 
             triangle(
-                triX - triBase / 2, triY,         // left point
-                triX + triBase / 2, triY,         // right point
-                tooltipX + this.tooltipW / 2, triY - triHeight // tip (points to PNG)
+                triX - triBase / 2, triY, 
+                triX + triBase / 2, triY, 
+                tooltipX + this.tooltipW / 2, triY - triHeight 
             );
 
+            // Draw Text
             fill(255, 240);
-            
             let textX = boxX + boxPadding;
             let textY = boxY + boxPadding;
             for (let i = 0; i < lines.length; i++) {
                 text(lines[i], textX, textY + i * lineHeight);
             }
         }
+        pop(); // Restore previous text settings
 
-        push();
-        // Display camera and keyboard mode selection on top.
+        
+        // --- MODE SELECTION & CAMERA LOGIC ---
+
         let modeW = cameraMode.width * 0.3;
         let modeH = cameraMode.height * 0.3;
         image(cameraMode, windowWidth - modeW * 6, modeH, modeW, modeH);
@@ -178,12 +186,13 @@ class startScreen extends Stage {
         let toggleY = rectY + rectH / 2;
         let toggleRadius = modeW * 0.85;
         let toggleX = (gameMode === 0) ? leftX : rightX;
+        
         rect(rectX, rectY, rectW, rectH, 300);
-
         fill(244);
         ellipseMode(CENTER);
         ellipse(toggleX, toggleY, toggleRadius, toggleRadius);
         
+        // Check if mode has changed (or if it is the very first frame)
         if (gameMode !== this.lastMode) {
             if (gameMode === 0) {
                 if (!video) {
@@ -239,7 +248,16 @@ class startScreen extends Stage {
             this.lastMode = gameMode;
         }
 
-        pop();
+        // Call the smile detection when the camera mode is on.
+        if (gameMode === 0) {
+            // detectSmile is a global function in sketch.js
+            let f = detectSmile();
+            if (f) {
+                this.isFaceThere = true;
+                // Optional: Transition to next stage here if smile is valid
+                // game.stage = ... 
+            }
+        }
 
         image(aboutBtn, 0 + aboutBtn.width * 0.3 / 2, 0 + aboutBtn.height * 0.3, aboutBtn.width * 0.5, aboutBtn.height * 0.5);
         image(helpBtn, 0 + aboutBtn.width * 0.3 / 2 + aboutBtn.width * 0.6, 0 + aboutBtn.height * 0.3, helpBtn.width * 0.5, helpBtn.height * 0.5);
