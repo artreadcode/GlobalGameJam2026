@@ -16,13 +16,22 @@ class startScreen extends Stage {
             color: 0
         });
 
-        // Initialize subtitle (will be updated in show() loop anyway)
-        this.subtitleText = new JiggleText(this.infos[0], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
-            color: 150,
-            jiggleX: 1,
-            jiggleY: 1,
-            jiggleRot: 0.03
-        });
+        // this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
+        //     color: 150,
+        //     jiggleX: 1,
+        //     jiggleY: 1,
+        //     jiggleRot: 0.03
+        // });
+
+        this.subtitleText = new TypewriterEffect(
+            this.infos[gameMode],
+            windowWidth / 2, windowHeight / 2 + 110, 
+            min(windowWidth, windowHeight) * 0.02,
+            { color:150,
+              speed:50,
+              align: CENTER
+            }
+        );
 
         // Properties
         this.tooltipMSG = "This game uses webcam face detection without storing data. If you’re not comfortable with this, you can choose keyboard mode.";
@@ -185,13 +194,57 @@ class startScreen extends Stage {
         
         // Check if mode has changed (or if it is the very first frame)
         if (gameMode !== this.lastMode) {
-            // Only update subtitle text on mode change
-            this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
-                color: 150,
-                jiggleX: 1,
-                jiggleY: 1,
-                jiggleRot: 0.03
-            });
+            if (gameMode === 0) {
+                if (!video) {
+                    video = createCapture(VIDEO);
+                    video.hide();
+                }
+
+                // this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
+                //     color: 150,
+                //     jiggleX: 1,
+                //     jiggleY: 1,
+                //     jiggleRot: 0.03
+                // });
+
+                this.subtitleText = new TypewriterEffect(
+                    this.infos[gameMode],
+                    windowWidth / 2,
+                    windowHeight / 2 + 110,
+                    min(windowWidth, windowHeight) * 0.02,
+                    {
+                        color: 150,
+                        speed: 50,
+                        align: CENTER
+                    }
+                );
+            }
+            else if (gameMode === 1) {
+                if (video) {
+                    video.stop();
+                    video.remove();
+                    video = null;
+                }
+
+                // this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
+                //     color: 150,
+                //     jiggleX: 1,
+                //     jiggleY: 1,
+                //     jiggleRot: 0.03
+                // });
+
+                this.subtitleText = new TypewriterEffect(
+                    this.infos[gameMode],
+                    windowWidth / 2,
+                    windowHeight / 2 + 110,
+                    min(windowWidth, windowHeight) * 0.02,
+                    {
+                        color: 150,
+                        speed: 50,
+                        align: CENTER
+                    }
+                );
+            }
             this.lastMode = gameMode;
         }
 
