@@ -3,12 +3,13 @@ class Game {
         this.started = false; // Did the player start playing? 
         this.ended = false; // Did the player reach to the ending?
 
+        this.parallax = new Parallax();
+        
         this.player = new Player(width/4);
         this.camera = new Camera();
-        this.obstacles = [ //X position, image size(x,y) ,name of sprite, actionId, actionType, refer to actions.JS
-           //new Obstacle(2700,100,100, { sprite: mirrorSprite, actionId: '1', actionType: 'transition' }),
-           new Obstacle(2700,100,100, { sprite: mirrorSprite, actionId: null, actionType: null }),
-        ];
+        this.worldX = 0;
+        this.mirrorObstacle = new Obstacle(0, 100, 100, { sprite: mirrorSprite, actionId: null, actionType: null });
+        this.obstacles = [this.mirrorObstacle];
         /*
         this.w = windowWidth;
         this.h = windowHeight;
@@ -59,14 +60,26 @@ class Game {
                 break;
 
             case 1: {           //stage 1
-                this.player.update(this.play);
-                const cameraX = this.camera.update(this.play, this.player.x);
-                
-                if (frameCount % 60 === 0) {
-                console.log('x=', this.player.x, 'xMax=', this.play?.xMax, 'cam=', cameraX);
-  }
+                if (!this.play) this.play = new Stage();
+
+                const moveRight = keyIsDown(68);
+                const moveLeft = keyIsDown(65);
+                const prevWorldX = this.worldX;
+                if (moveRight) this.worldX += this.player.speed;
+                if (moveLeft) this.worldX -= this.player.speed;
+
+                const maxWorldX = Math.max(this.play.xMin, this.play.xMax - width / 2);
+                this.worldX = constrain(this.worldX, this.play.xMin, maxWorldX);
+
+                const cameraX = this.worldX;
+                this.player.x = cameraX + width / 2;
+
+                const deltaX = this.worldX - prevWorldX;
+                this.parallax.update(deltaX);
+                this.parallax.draw();
                 this.player.draw(cameraX);
 
+                this.mirrorObstacle.x = this.play.xMax - 200;
                 for (const obstacle of this.obstacles) {
                     obstacle.draw(cameraX);
                     if (obstacle.hit(this.player)) {
@@ -76,17 +89,50 @@ class Game {
                         }
                     }
                 }
+            if (frameCount % 60 === 0) {
+            console.log('worldX', this.worldX, 'camera', cameraX);
+            }
                 break;
             }
             case 2: {           //stage 2
-                this.player.update(this.play);
-                const cameraX = this.camera.update(this.play, this.player.x);
+                if (!this.play) this.play = new Stage();
+
+                const moveRight = keyIsDown(68);
+                const moveLeft = keyIsDown(65);
+                const prevWorldX = this.worldX;
+                if (moveRight) this.worldX += this.player.speed;
+                if (moveLeft) this.worldX -= this.player.speed;
+
+                const maxWorldX = Math.max(this.play.xMin, this.play.xMax - width / 2);
+                this.worldX = constrain(this.worldX, this.play.xMin, maxWorldX);
+
+                const cameraX = this.worldX;
+                this.player.x = cameraX + width / 2;
+
+                const deltaX = this.worldX - prevWorldX;
+                this.parallax.update(deltaX);
+                this.parallax.draw();
                 this.player.draw(cameraX);
                 break;
             }
             case 3: {           //stage 3
-                this.player.update(this.play);
-                const cameraX = this.camera.update(this.play, this.player.x);
+                if (!this.play) this.play = new Stage();
+
+                const moveRight = keyIsDown(68);
+                const moveLeft = keyIsDown(65);
+                const prevWorldX = this.worldX;
+                if (moveRight) this.worldX += this.player.speed;
+                if (moveLeft) this.worldX -= this.player.speed;
+
+                const maxWorldX = Math.max(this.play.xMin, this.play.xMax - width / 2);
+                this.worldX = constrain(this.worldX, this.play.xMin, maxWorldX);
+
+                const cameraX = this.worldX;
+                this.player.x = cameraX + width / 2;
+
+                const deltaX = this.worldX - prevWorldX;
+                this.parallax.update(deltaX);
+                this.parallax.draw();
                 this.player.draw(cameraX);
                 break;
             }

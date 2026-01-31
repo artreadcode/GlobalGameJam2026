@@ -88,10 +88,6 @@ function draw() {
 
 
 
-  // game.stage = 1;
-  // game.started = true;
-  // game.play = new Stage();
-
 
 
 
