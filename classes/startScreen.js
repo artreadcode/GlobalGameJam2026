@@ -19,7 +19,7 @@ class startScreen extends Stage {
         this.tooltipMSG = "This game uses webcam face detection without storing data. If you’re not comfortable with this, you can choose keyboard mode.";
         this.tooltipW = 32;
         this.tooltipH = 32;
-        this.tooltipOffset = windowWidth * 0.1; // the blank between the subTitle and the tooltip '?'
+        this.tooltipOffset = min(windowWidth, windowHeight) * 0.01; // the blank between the subTitle and the tooltip '?'
     }
 
     show() {
@@ -39,9 +39,20 @@ class startScreen extends Stage {
         this.subtitleText.show();
 
         // Display tooltip
+        // Calculate subtitle width for precise tooltip PNG alignment
+        textSize(this.subtitleText.size);
         let subtitleWidth = textWidth(this.subtitleText.text);
-        let tooltipX = windowWidth / 2 + subtitleWidth + this.tooltipOffset;
-        let tooltipY = windowHeight / 2 + 55;
+        let isNarrow = windowWidth < 600; // threshold for mobile/tablet
+        let tooltipX, tooltipY;
+        if (isNarrow) {
+            // Place tooltip PNG underneath subtitle, centered
+            tooltipX = windowWidth / 2 - this.tooltipW / 2;
+            tooltipY = windowHeight / 2 + 50 + this.subtitleText.size + 50;
+        } else {
+            // Place tooltip PNG to the right of subtitle
+            tooltipX = windowWidth / 2 + subtitleWidth / 2 + this.tooltipOffset;
+            tooltipY = windowHeight / 2 + 55;
+        }
         image(tooltip, tooltipX, tooltipY, this.tooltipW, this.tooltipH);
 
         push();
@@ -53,7 +64,8 @@ class startScreen extends Stage {
             mouseY > tooltipY - this.tooltipH / 2 &&
             mouseY < tooltipY + this.tooltipH / 2
         ) {
-            textSize(this.subtitleText.size * 0.4);
+            // textSize(this.subtitleText.size * 0.4);
+            textSize(16);
             textAlign(LEFT, TOP);
             let boxPadding = 12;
             let maxBoxWidth = min(windowWidth * 0.5, 320); // max width for wrapping
