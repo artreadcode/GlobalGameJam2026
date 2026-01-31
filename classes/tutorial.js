@@ -8,13 +8,28 @@ class Tutorial extends Stage {
         background(this.bg);
 
         if (gameMode === 0 && video) {
-            for (let i = 0; i < faces.length; i++) {
-                let face = faces[i];
-                for (let j = 0; j < face.keypoints.length; j++) {
-                    let keypoint = face.keypoints[j];
-                    fill(100);
-                    noStroke();
-                    circle(keypoint.x, keypoint.y, 5);
+            // Use forced video size for reliability
+            let videoW = video.width;
+            let videoH = video.height;
+            // Scale to fit window while preserving aspect ratio
+            let scale = min(windowWidth / videoW, windowHeight / videoH);
+            let vidW = videoW * scale;
+            let vidH = videoH * scale;
+            // TRUE centering
+            let vidX = (windowWidth - vidW) * 0.5;
+            let vidY = (windowHeight - vidH) * 0.5;
+            // Draw video
+            // image(video, vidX, vidY, vidW, vidH);
+            // Overlay FaceMesh keypoints mapped to the video area
+            if (faces.length > 0) {
+                let kp = faces[0].keypoints;
+                noStroke();
+                fill(100);
+                for (let i = 0; i < kp.length; i++) {
+                    // For mirrored webcam, use: let mappedX = vidX + ((videoW - kp[i].x) / videoW) * vidW;
+                    let mappedX = vidX + ((videoW - kp[i].x) / videoW) * vidW;
+                    let mappedY = vidY + (kp[i].y / videoH) * vidH;
+                    ellipse(mappedX, mappedY, 4, 4);
                 }
             }
         }

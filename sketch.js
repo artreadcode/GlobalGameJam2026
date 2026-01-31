@@ -16,6 +16,7 @@ let helpBtn;
 let aboutBtn;
 let paper;
 let barImg;
+let returnBtn;
 
 // Stage 1 bedroom parallax layers
 let bedroomWall;
@@ -62,6 +63,8 @@ function preload() {
 
   paper = loadImage('assets/paper.png');
   barImg = loadImage('assets/bar.png');
+
+  returnBtn = loadImage('assets/returnButton.png');
 
   // Stage 1 bedroom parallax
   bedroomWall = loadImage('assets/Stage_1 bedroom/wall_bedroom.png');
