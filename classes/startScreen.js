@@ -1,6 +1,7 @@
 class startScreen extends Stage {
     constructor() {
         super();
+        this.lastMode = null;
         this.bg = 255;
 
         // Create jiggle text objects (black color)
@@ -21,6 +22,25 @@ class startScreen extends Stage {
         this.tooltipH = 32;
         this.tooltipOffset = min(windowWidth, windowHeight) * 0.01; // the blank between the subTitle and the tooltip '?'
     }
+
+    modeChanging(mX, mY) {
+    let modeW = cameraMode.width * 0.3;
+    let modeH = cameraMode.height * 0.3;
+    let rectX = windowWidth - modeW * 4.5;
+    let rectY = modeH - modeH * 0.2;
+    let rectW = modeW * 2;
+    let rectH = modeH * 1.4;
+
+    // Check if mouse is inside the toggle background rectangle
+    if (mX > rectX && mX < rectX + rectW && mY > rectY && mY < rectY + rectH) {
+        // If clicked on left half, set to camera; right half, set to keyboard
+        if (mX < rectX + rectW / 2) {
+            gameMode = 0; // Camera Mode
+        } else {
+            gameMode = 1; // Keyboard Mode
+        }
+    }
+}
 
     show() {
         background(this.bg);
@@ -124,11 +144,47 @@ class startScreen extends Stage {
             }
         }
 
-        pop();
-
+        push();
         // Display camera and keyboard mode selection on top.
         let modeW = cameraMode.width * 0.3;
         let modeH = cameraMode.height * 0.3;
-        image(cameraMode, windowWidth - modeW, modeH, modeW, modeH);
+        image(cameraMode, windowWidth - modeW * 6, modeH, modeW, modeH);
+        image(keyboardMode, windowWidth - modeW * 2, modeH, modeW, modeH);
+
+        fill(0); noStroke();
+
+        let rectX = windowWidth - modeW * 4.5;
+        let rectY = modeH - modeH * 0.2;
+        let rectW = modeW * 2;
+        let rectH = modeH * 1.4;
+        let leftX = rectX + modeW * 0.5;
+        let rightX = rectX + rectW - modeW * 0.5;
+        let toggleY = rectY + rectH / 2;
+        let toggleRadius = modeW * 0.85;
+        let toggleX = (gameMode === 0) ? leftX : rightX;
+        rect(rectX, rectY, rectW, rectH, 300);
+
+        fill(244);
+        ellipseMode(CENTER);
+        ellipse(toggleX, toggleY, toggleRadius, toggleRadius);
+        
+        if (gameMode !== this.lastMode) {
+            if (gameMode === 0) {
+                if (!video) {
+                    video = createCapture(VIDEO);
+                    video.hide();
+                }
+            }
+            else if (gameMode === 1) {
+                if (video) {
+                    video.stop();
+                    video.remove();
+                    video = null;
+                }
+            }
+            this.lastMode = gameMode;
+        }
+
+        pop();
     }
 }

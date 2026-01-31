@@ -29,8 +29,6 @@ class Game {
 
         this.loop = 1;
         this.bg = 0; // for now
-
-        
     }
 
     show() {
