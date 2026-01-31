@@ -151,6 +151,9 @@ class Game {
                 }
                 this.player.draw(cameraX);
 
+                // Draw front parallax layer (in front of player)
+                this.parallax.drawFront();
+
                 this.mirrorObstacle.x = this.play.xMax - 200;
                 for (const obstacle of this.obstacles) {
                     obstacle.draw(cameraX);
