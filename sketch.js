@@ -73,7 +73,6 @@ function setup() {
   video = createCapture(VIDEO);
   video.size(windowWidth, windowHeight);
   video.hide();
-  faceMesh = ml5.faceMesh(options, modelLoaded);
 
   faceMesh.detectStart(video, gotFaces);
 
@@ -97,10 +96,10 @@ function modelLoaded() {
 
   if (detectsmile()) {
     //test function
-    // fill(0, 255, 0);
-    // textSize(48);
-    // text("SMILING! 😁", 50, 100);
-    // console.log("SMILING!");
+    fill(0, 255, 0);
+    textSize(48);
+    text("SMILING! 😁", 50, 100);
+    console.log("SMILING!");
   }
   
 }
@@ -153,6 +152,7 @@ function detectSmile() {
   }
   
   return false;
+}
 }
 
 function mousePressed() {
