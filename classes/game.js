@@ -4,7 +4,6 @@ class Game {
         this.ended = false; // Did the player reach to the ending?
 
         this.player = new Player(width/4);
-        this.player = new Player(width/2);
         this.camera = new Camera();
         /*
         this.w = windowWidth;
@@ -46,7 +45,6 @@ class Game {
                     this.play.show();
                     // console.log('?????');
                 }
-                
                 if (this.next) {
                     this.after = this.after + 1; // The stage 1's next step is 2.
                     this.prev = this.prev + 1;
@@ -55,14 +53,8 @@ class Game {
                 break;
 
             case 1: // Stage 01
-                /*
                 this.player.update();
                 this.player.draw();
-                */
-
-                this.player.update(this.play);
-                const cameraX = this.camera.update(this.play, this.player.x);
-                this.player.draw(cameraX);
             // Same structure will happen here...
             case 2: // Stage 02
             case 3: // Stage 03
