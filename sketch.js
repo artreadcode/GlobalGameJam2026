@@ -24,6 +24,8 @@ let aboutBtn;
 let paper;
 let barImg;
 let returnBtn;
+let bgMusic;
+let walkSfx;
 
 // Stage 1 bedroom parallax layers
 let bedroomWall;
@@ -34,17 +36,26 @@ let bedroomFront;
 
 // movement
 
-const pressedKeys = {a: false, d: false };
+const pressedKeys = { a: false, d: false };
 
-  function keyPressed() {
-    const k = key.toLowerCase();
-    if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = true;
+function keyPressed() {
+  const k = key.toLowerCase();
+  if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = true;
+
+  // Unlock audio on first user interaction (required by browsers)
+  if (typeof userStartAudio === "function") {
+    userStartAudio();
   }
 
-  function keyReleased() {
-    const k = key.toLowerCase();
-    if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = false;
+  if (game && game.play instanceof startScreen && gameMode === 1 && k === "e") {
+    game.stage = 1;
   }
+}
+
+function keyReleased() {
+  const k = key.toLowerCase();
+  if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = false;
+}
 
 
 function preload() {
@@ -81,6 +92,10 @@ function preload() {
   bedroomMid = loadImage('assets/Stage_1 bedroom/mid_bedroom.png');
   bedroomFloor = loadImage('assets/Stage_1 bedroom/floor_bedroom.png');
   bedroomFront = loadImage('assets/Stage_1 bedroom/Front_bedroom.png');
+
+  // Audio
+  bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
+  walkSfx = loadSound('assets/music/walk.mp3');
 }
 
 function setup() {
@@ -229,6 +244,11 @@ function detectHide(){
 }
 
 function mousePressed() {
+  // Unlock audio on first user interaction (required by browsers)
+  if (typeof userStartAudio === "function") {
+    userStartAudio();
+  }
+
   if (typeof game === 'undefined') {
 
   }
@@ -241,14 +261,6 @@ function mousePressed() {
     if (det) {
       game.stage = 0;
       game.started = false;
-    }
-  }
-}
-
-function keyPressed() {
-  if (game && game.play instanceof startScreen && gameMode === 1) {
-    if (key === 'e') {
-      game.stage = 1;
     }
   }
 }

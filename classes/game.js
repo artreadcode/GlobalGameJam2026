@@ -103,6 +103,18 @@ class Game {
     show() {
         background(this.bg);
 
+        // Play background music for start screen and stage 1 only
+        if (this.stage === 0 || this.stage === 1) {
+            if (bgMusic && !bgMusic.isPlaying() && getAudioContext().state === "running") {
+                bgMusic.setLoop(true);
+                bgMusic.play();
+            }
+        } else if (bgMusic && bgMusic.isPlaying()) {
+            bgMusic.stop();
+        }
+
+        let walkingActive = false;
+
         switch (this.stage) {
             case 0: // Start screen
                 if (!this.started) {
@@ -126,6 +138,8 @@ class Game {
 
                 const moveRight = keyIsDown(68);
                 const moveLeft = keyIsDown(65);
+                walkingActive = moveRight || moveLeft;
+
                 const prevWorldX = this.worldX;
                 if (moveRight) this.worldX += this.player.speed;
                 if (moveLeft) this.worldX -= this.player.speed;
@@ -169,12 +183,14 @@ class Game {
                 break;
             }
             case 2: {           //stage 2
+                walkingActive = keyIsDown(68) || keyIsDown(65);
                 this.player.update(this.play);
                 const cameraX = this.camera.update(this.play, this.player.x);
                 this.player.draw(cameraX);
                 break;
             }
             case 3: {           //stage 3
+                walkingActive = keyIsDown(68) || keyIsDown(65);
                 this.player.update(this.play);
                 const cameraX = this.camera.update(this.play, this.player.x);
                 this.player.draw(cameraX);
@@ -189,6 +205,7 @@ class Game {
 
                 const moveRight = keyIsDown(68);
                 const moveLeft = keyIsDown(65);
+                walkingActive = moveRight || moveLeft;
                 if (moveRight) this.player.x += this.player.speed;
                 if (moveLeft) this.player.x -= this.player.speed;
                 this.player.x = constrain(this.player.x, this.play.xMin, this.play.xMax);
@@ -209,6 +226,18 @@ class Game {
                 this.play = new Tutorial();
                 this.play.show();
                 break;
+            }
+        }
+
+        // Footstep loop on any walking stage
+        if (walkSfx) {
+            if (walkingActive && getAudioContext().state === "running") {
+                if (!walkSfx.isPlaying()) {
+                    walkSfx.setLoop(true);
+                    walkSfx.play();
+                }
+            } else if (!walkingActive && walkSfx.isPlaying()) {
+                walkSfx.stop();
             }
         }
     }
