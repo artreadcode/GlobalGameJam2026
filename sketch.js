@@ -108,12 +108,12 @@ function draw() {
   game.show();
 
   if(detectHide()){
-        fill(255, 0, 0); // Red background alert
-        rect(0, 0, width, 50);
+        // fill(255, 0, 0); // Red background alert
+        // rect(0, 0, width, 50);
         
-        fill(255);
-        textSize(32);
-        text("MOUTH COVERED! 🫢", 50, 40);
+        // fill(255);
+        // textSize(32);
+        // text("MOUTH COVERED! 🫢", 50, 40);
   };
 }
 
@@ -140,12 +140,13 @@ function gotFaces(results) {
 
 function gotHands(results) {
   hands = results;
+  // console.log('callback function has been called.');
 }
 
 
 function detectSmile() {
 
-  console.log(faces.length);
+  // console.log(faces.length);
 
   if (faces.length != 0 && faces.length > 0 && gameMode === 0) {
     let face = faces[0];
@@ -164,15 +165,15 @@ function detectSmile() {
     let leftCheek = face.keypoints[234];
     let rightCheek = face.keypoints[454];
     let faceWidth = dist(leftCheek.x, leftCheek.y, rightCheek.x, rightCheek.y);
-    console.log(faceWidth);
+    // console.log(faceWidth);
 
     if (mouthWidth / faceWidth > 0.45) { // Adjust based on testing
-      console.log('smile detected.');
+      // console.log('smile detected.');
     if (mouthWidth / faceWidth > 0.45) { // Lowered threshold for easier detection
       return true;
     }
     else {
-      console.log('smile X');
+      // console.log('smile X');
       return false;
     }  
   }
@@ -205,8 +206,8 @@ function detectHide(){
       // Index 9 (Middle Finger MCP) is often a good center point for the hand.
       let handCenter = hand.keypoints[9]; 
       
-      fill(255, 0, 255);
-      circle(handCenter.x, handCenter.y, 10);
+      // fill(255, 0, 255);
+      // circle(handCenter.x, handCenter.y, 10);
 
       // Check distance between Hand Center and Mouth Center
       let d = dist(mouthX, mouthY, handCenter.x, handCenter.y);

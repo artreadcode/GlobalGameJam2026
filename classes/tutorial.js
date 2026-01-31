@@ -7,6 +7,8 @@ class Tutorial extends Stage {
     show() {
         background(this.bg);
 
+        // image()
+
         if (gameMode === 0 && video) {
             // Use forced video size for reliability
             let videoW = video.width;
