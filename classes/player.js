@@ -1,14 +1,15 @@
 
 class Player {
-  constructor(x, y) {
+  constructor(x) {
     this.x = x;
-    this.y = y;
     
     this.speed = 4;
+    this.spriteW = 64;
+    this.spriteH = 64;
   }
   
   update() {
-    let mvmt = createVector(0, 0);
+    let mvmt = createVector(0);
     
     if(pressedKeys.a) {
       mvmt.x -= 1;
@@ -16,21 +17,15 @@ class Player {
     if(pressedKeys.d) {
       mvmt.x += 1;
     }
-    if(pressedKeys.w) {
-      mvmt.y -= 1;
-    }
-    if(pressedKeys.s) {
-      mvmt.y += 1;
-    }
+
     
     mvmt.setMag(this.speed);
     
     this.x += mvmt.x;
-    this.y += mvmt.y;
   }
   
   draw() {
-    fill(255, 0, 0);
-    circle(this.x, this.y, 30);
+    const y = height - this.spriteH;
+    image(playerSprite, this.x, y, this.spriteW, this.spriteH);
   }
 }
