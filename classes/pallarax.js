@@ -13,13 +13,11 @@ class Parallax {
     ];
   }
 
-  update(pressedKeys) {
+  update(deltaX) {
     for (let layer of this.layers) {
-      // Move layers based on player movement
-      if (pressedKeys.d) {
+      if (deltaX > 0) {
         layer.x -= layer.speed;
-      }
-      if (pressedKeys.a) {
+      } else if (deltaX < 0) {
         layer.x += layer.speed;
       }
 

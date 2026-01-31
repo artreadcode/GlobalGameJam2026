@@ -3,7 +3,7 @@ class Stage {
         this.bg = 0;
         // this.background = Background() => For now, I left it in comment.
         this.xMin = 0;
-        this.xMax = 3000;
+        this.xMax = Math.max(3000, width * 3);
         this.whichStage = 0 // default
         // 0: start screen
         // 1: stage 1

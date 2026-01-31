@@ -6,6 +6,7 @@ let faces = []; // This one will store the markers across the faces.
 let options = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
 let playerSprite;
 let mirrorSprite;
+let blackScreenSprite;
 let schoolbellFont;
 let tooltip;
 let cameraMode;
@@ -14,6 +15,7 @@ let gameMode = 0; // default (camera)
 let helpBtn;
 let aboutBtn;
 let paper;
+let barImg;
 
 // movement
 
@@ -34,6 +36,7 @@ function preload() {
   // Load the FaceMesh model
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
+  blackScreenSprite = loadImage('assets/blackScreen.png');
 
 
   // Font is loaded via CSS in index.html
@@ -49,6 +52,7 @@ function preload() {
   helpBtn = loadImage('assets/helpButton.png');
 
   paper = loadImage('assets/paper.png');
+  barImg = loadImage('assets/bar.png');
 }
 
 function setup() {
