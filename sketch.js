@@ -19,6 +19,14 @@ let helpBtn;
 let aboutBtn;
 let paper;
 let barImg;
+let returnBtn;
+
+// Stage 1 bedroom parallax layers
+let bedroomWall;
+let bedroomBack;
+let bedroomMid;
+let bedroomFloor;
+let bedroomFront;
 
 // movement
 
@@ -60,6 +68,15 @@ function preload() {
 
   paper = loadImage('assets/paper.png');
   barImg = loadImage('assets/bar.png');
+
+  returnBtn = loadImage('assets/returnButton.png');
+
+  // Stage 1 bedroom parallax
+  bedroomWall = loadImage('assets/Stage_1 bedroom/wall_bedroom.png');
+  bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
+  bedroomMid = loadImage('assets/Stage_1 bedroom/mid_bedroom.png');
+  bedroomFloor = loadImage('assets/Stage_1 bedroom/floor_bedroom.png');
+  bedroomFront = loadImage('assets/Stage_1 bedroom/Front_bedroom.png');
 }
 
 function setup() {
