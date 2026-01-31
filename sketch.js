@@ -193,9 +193,11 @@ function detectHide(){
     let mouthY = (topLip.y + bottomLip.y) / 2;
 
     // Draw a marker at the mouth for debugging
+    /*
     fill(0, 255, 255);
     noStroke();
     circle(mouthX, mouthY, 10);
+    */
 
     // CHECK HANDS
     if (hands.length > 0) {
