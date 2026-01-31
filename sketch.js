@@ -15,6 +15,7 @@ let gameMode = 0; // default (camera)
 let helpBtn;
 let aboutBtn;
 let paper;
+let barImg;
 
 // movement
 
@@ -53,6 +54,7 @@ function preload() {
   helpBtn = loadImage('assets/helpButton.png');
 
   paper = loadImage('assets/paper.png');
+  barImg = loadImage('assets/bar.png');
 }
 
 function setup() {
@@ -65,25 +67,27 @@ function setup() {
 
   // Set the Schoolbell font
   textFont(schoolbellFont);
+  
+  // Always build the Video object and start FaceMesh detection ONCE.
+  // This will trigger the inline popup to ask for permission from the camera.
+  video = createCapture(VIDEO);
+  video.size(windowWidth, windowHeight);
+  video.hide();
+  faceMesh = ml5.faceMesh(options, modelLoaded);
+
+  faceMesh.detectStart(video, gotFaces);
 
   // Create the game
   game = new Game();
-  
-  // Create the gameplay window
-  // createCanvas(windowWidth, windowHeight);
-  // Build the Video object, preparing for the transition screen(s).
-
-  // *** CAUTION: It will trigger the inline popup to ask for permission from the camera.
-  video = createCapture(VIDEO);
-  video.size(640, 480);
-  video.hide();
-
-  faceMesh.detectStart(video, gotFaces);
 
 }
 
 function draw() {
   game.show();
+}
+
+function modelLoaded() {
+  console.log("FaceMesh Model is loaded and ready!");
 
   // game.stage = 1;
   // game.started = true;
@@ -109,19 +113,23 @@ function windowResized() {
 
 function gotFaces(results) {
   faces = results;
+
+  console.log('callback function has been called.');
 }
 
 
-function detectsmile() {
+function detectSmile() {
 
-  if (faces.length > 0) {
+  console.log(faces.length);
+
+  if (faces.length != 0 && faces.length > 0 && gameMode === 0) {
     let face = faces[0];
 
     let leftCorner = face.keypoints[61];
     let rightCorner = face.keypoints[291];
     
-    let topLip = face.keypoints[13];
-    let bottomLip = face.keypoints[14];
+    // let topLip = face.keypoints[13];
+    // let bottomLip = face.keypoints[14];
 
     // 1. Calculate Mouth Width
     let mouthWidth = dist(leftCorner.x, leftCorner.y, rightCorner.x, rightCorner.y);
@@ -131,19 +139,32 @@ function detectsmile() {
     let leftCheek = face.keypoints[234];
     let rightCheek = face.keypoints[454];
     let faceWidth = dist(leftCheek.x, leftCheek.y, rightCheek.x, rightCheek.y);
+    console.log(faceWidth);
 
+    if (mouthWidth / faceWidth > 0.45) { // Adjust based on testing
+      console.log('smile detected.');
     if (mouthWidth / faceWidth > 0.45) { // Lowered threshold for easier detection
       return true;
     }
     else {
+      console.log('smile X');
       return false;
-   
-  }  
+    }  
   }
+  
+  return false;
 }
 
 function mousePressed() {
   if (game && game.play instanceof startScreen) {
     game.play.modeChanging(mouseX, mouseY);
+  }
+}
+
+function keyPressed() {
+  if (game && game.play instanceof startScreen && gameMode === 1) {
+    if (key === 'e') {
+      game.stage = 5;
+    }
   }
 }
