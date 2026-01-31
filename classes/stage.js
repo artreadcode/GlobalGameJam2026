@@ -2,7 +2,8 @@ class Stage {
     constructor() {
         this.background = 100;
         // this.background = Background() => For now, I left it in comment.
-
+        this.xMin = 0;
+        this.xMax = 2000;
         this.whichStage = 0 // default
         // 0: start screen
         // 1: stage 1

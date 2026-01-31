@@ -8,7 +8,7 @@ class Player {
     this.spriteH = 64;
   }
   
-  update() {
+  update(stage) {
     let mvmt = createVector(0);
     
     if(pressedKeys.a) {
@@ -18,14 +18,17 @@ class Player {
       mvmt.x += 1;
     }
 
-    
-    mvmt.setMag(this.speed);
-    
+    if (mvmt.magSq() > 0) mvmt.setMag(this.speed);
+
     this.x += mvmt.x;
+
+    if (stage) {
+      this.x = constrain(this.x, stage.xMin, stage.xMax);
+    }
   }
   
-  draw() {
+  draw(cameraX = 0) {
     const y = height - this.spriteH;
-    image(playerSprite, this.x, y, this.spriteW, this.spriteH);
+    image(playerSprite, this.x - cameraX, y, this.spriteW, this.spriteH);
   }
 }
