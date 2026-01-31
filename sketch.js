@@ -85,9 +85,9 @@ function setup() {
 function draw() {
   game.show();
 
-  game.stage = 1;
-  game.started = true;
-  game.play = new Stage();
+  //game.stage = 1;
+  //game.started = true;
+  //game.play = new Stage();
 
 
 

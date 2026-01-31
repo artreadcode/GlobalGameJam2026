@@ -14,12 +14,22 @@ class startScreen extends Stage {
             color: 0
         });
 
-        this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
-            color: 150,
-            jiggleX: 1,
-            jiggleY: 1,
-            jiggleRot: 0.03
-        });
+        // this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
+        //     color: 150,
+        //     jiggleX: 1,
+        //     jiggleY: 1,
+        //     jiggleRot: 0.03
+        // });
+
+        this.subtitleText = new TypewriterEffect(
+            this.infos[gameMode],
+            windowWidth / 2, windowHeight / 2 + 110, 
+            min(windowWidth, windowHeight) * 0.02,
+            { color:150,
+              speed:50,
+              align: CENTER
+            }
+        );
 
         // Properties
         this.tooltipMSG = "This game uses webcam face detection without storing data. If you’re not comfortable with this, you can choose keyboard mode.";
@@ -181,12 +191,24 @@ class startScreen extends Stage {
                     video.hide();
                 }
 
-                this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
-                    color: 150,
-                    jiggleX: 1,
-                    jiggleY: 1,
-                    jiggleRot: 0.03
-                });
+                // this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
+                //     color: 150,
+                //     jiggleX: 1,
+                //     jiggleY: 1,
+                //     jiggleRot: 0.03
+                // });
+
+                this.subtitleText = new TypewriterEffect(
+                    this.infos[gameMode],
+                    windowWidth / 2,
+                    windowHeight / 2 + 110,
+                    min(windowWidth, windowHeight) * 0.02,
+                    {
+                        color: 150,
+                        speed: 50,
+                        align: CENTER
+                    }
+                );
             }
             else if (gameMode === 1) {
                 if (video) {
@@ -195,12 +217,24 @@ class startScreen extends Stage {
                     video = null;
                 }
 
-                this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
-                    color: 150,
-                    jiggleX: 1,
-                    jiggleY: 1,
-                    jiggleRot: 0.03
-                });
+                // this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
+                //     color: 150,
+                //     jiggleX: 1,
+                //     jiggleY: 1,
+                //     jiggleRot: 0.03
+                // });
+
+                this.subtitleText = new TypewriterEffect(
+                    this.infos[gameMode],
+                    windowWidth / 2,
+                    windowHeight / 2 + 110,
+                    min(windowWidth, windowHeight) * 0.02,
+                    {
+                        color: 150,
+                        speed: 50,
+                        align: CENTER
+                    }
+                );
             }
             this.lastMode = gameMode;
         }
