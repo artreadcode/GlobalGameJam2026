@@ -4,6 +4,8 @@ class Game {
         this.ended = false; // Did the player reach to the ending?
 
         this.player = new Player(width/4);
+        this.player = new Player(width/2);
+        this.camera = new Camera();
         /*
         this.w = windowWidth;
         this.h = windowHeight;
@@ -13,7 +15,7 @@ class Game {
         this.stage = 0;
 
         // To store what was the previous stage
-        this.prev = -1;
+        this.youprev = -1;
         this.after = 1; // The next stage of a starting screen is 1.
 
         // Shall we move on? (Triggered from each scene)
@@ -44,7 +46,9 @@ class Game {
                     this.play.show();
                     // console.log('?????');
                 }
-
+                this.player.update(this.play);
+                const cameraX = this.camera.update(this.play, this.player.x);
+                this.player.draw(cameraX);
                 if (this.next) {
                     this.after = this.after + 1; // The stage 1's next step is 2.
                     this.prev = this.prev + 1;
