@@ -29,7 +29,7 @@ function preload() {
   faceMesh = ml5.faceMesh(options);
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
-  playerSprite = loadImage('assets/placeholder.png');
+
 
   // Font is loaded via CSS in index.html
   // Set the font name for use with textFont()
