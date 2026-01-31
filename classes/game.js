@@ -1,7 +1,7 @@
 class Game {
     constructor() {
-        this.started = false;
-        this.ended = false;
+        this.started = false; // Did the player start playing? 
+        this.ended = false; // Did the player reach to the ending?
 
         /*
         this.w = windowWidth;
@@ -30,7 +30,7 @@ class Game {
             case 0: // Start screen
                 if (!this.started) {
                     this.started = true;
-                    
+                    this.play = new Stage();
                 }
                 else {
                     this.play.show();
@@ -38,7 +38,7 @@ class Game {
 
                 if (this.next) {
                     this.scene = 1; // Move onto the next stage.
-                    this.ended = true;
+                    
                 }
                 break;
 

@@ -22,9 +22,9 @@ function setup() {
   // Build the Video object, preparing for the transition screen(s).
 
   // *** CAUTION: It will trigger the inline popup to ask for permission from the camera.
-  video = createCapture(VIDEO);
+  // video = createCapture(VIDEO);
   // Set up the video size with video.size(sth, sth)
-  video.hide(); // Because we won't show this video right away.
+  // video.hide(); // Because we won't show this video right away.
 
   // c.f. If you want to start detecting faces from the webcam video
   // faceMesh.detectStart(video, gotFaces);
