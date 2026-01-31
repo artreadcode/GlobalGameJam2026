@@ -4,10 +4,27 @@ let faceMesh;
 let video; // The video to store the webcam video.
 let faces = []; // This one will store the markers across the faces.
 let options = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
+let playerSprite;
+
+//movement
+
+const pressedKeys = {a: false, d: false };
+
+  function keyPressed() {
+    const k = key.toLowerCase();
+    if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = true;
+  }
+
+  function keyReleased() {
+    const k = key.toLowerCase();
+    if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = false;
+  }
+
 
 function preload() {
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(options);
+  playerSprite = loadImage('assets/placeholder.png');
 }
 
 function setup() {

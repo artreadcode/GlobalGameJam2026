@@ -2,7 +2,7 @@ class Game {
     constructor() {
         this.started = false; // Did the player start playing? 
         this.ended = false; // Did the player reach to the ending?
-
+        this.player = new Player(width/2);
         /*
         this.w = windowWidth;
         this.h = windowHeight;
@@ -28,8 +28,8 @@ class Game {
 
     show() {
         background(this.background);
-        // console.log('Game is on loop. - Playing');
-
+        this.player.update();
+        this.player.draw();
         switch (this.stage) {
             case 0: // Start screen
                 if (!this.started) {
