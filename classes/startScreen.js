@@ -1,7 +1,9 @@
 class startScreen extends Stage {
+
     constructor() {
+        super();
+        // this.message = 'Start screen is displayed.'
         // this.background = new Background();
-        this.background = (100, 150, 200);
     }
 
     show() {

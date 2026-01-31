@@ -12,7 +12,8 @@ class Game {
         this.stage = 0;
 
         // To store what was the previous stage
-        this.prev = 0;
+        this.prev = -1;
+        this.after = 1; // The next stage of a starting screen is 1.
 
         // Shall we move on? (Triggered from each scene)
         this.next = false;
@@ -20,25 +21,32 @@ class Game {
         // For each play
         this.play;
 
-        this.background = 0;
+        this.background = 0; // for now
+
+        this.loop = 1;
     }
 
     show() {
-
         background(this.background);
-        switch (this.scene) {
+        // console.log('Game is on loop. - Playing');
+
+        switch (this.stage) {
             case 0: // Start screen
                 if (!this.started) {
+                    console.log('Hello world');
                     this.started = true;
-                    this.play = new Stage();
+                    this.play = new startScreen();
                 }
                 else {
+                    this.play.play();
                     this.play.show();
+                    // console.log('?????');
                 }
 
                 if (this.next) {
-                    this.scene = 1; // Move onto the next stage.
-                    
+                    this.after = this.after + 1; // The stage 1's next step is 2.
+                    this.prev = this.prev + 1;
+                    this.stage = 1; // Move onto the next stage.
                 }
                 break;
 

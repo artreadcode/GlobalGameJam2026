@@ -32,9 +32,7 @@ function setup() {
 }
 
 function draw() {
-  
   game.show();
-  // background(0); // Just set up the thing as black
 }
 
 // Handle window resizing event so our game won't be seen weird.

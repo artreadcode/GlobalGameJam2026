@@ -12,9 +12,28 @@ class Stage {
 
         this.started = true; // It starts from the start screen.
         this.ended = false;
-    }
+
+        this.moved = false;
+
+        this.indicator = 1; // for debugging, console.log()
+        this.alarm = [
+            "Now you're in the starting screen.",
+            "Now you're in the stage 1.",
+            "Now you're in the stage 2.",
+            "Now you're in the stage 3.",
+            "What will the ending be?"
+        ];
+    } 
 
     play() {
+        if (this.indicator) {
+            console.log(this.alarm[this.whichStage]);
+            this.indicator = 0;
+        }
+
+        if (this.moved) {
+            this.whichStage++;
+        }
         // image(this.background, 0, 0);
         background(this.background); // for now
     }
