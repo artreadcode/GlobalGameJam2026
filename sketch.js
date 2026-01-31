@@ -51,9 +51,6 @@ function setup() {
   // Set the Schoolbell font
   textFont(schoolbellFont);
 
-  // Load the FaceMesh model
-  faceMesh = ml5.faceMesh(options);
-
   // Create the game
   game = new Game();
   // Create the gameplay window
@@ -61,19 +58,17 @@ function setup() {
   // Build the Video object, preparing for the transition screen(s).
 
   // *** CAUTION: It will trigger the inline popup to ask for permission from the camera.
-  // video = createCapture(VIDEO);
-  // Set up the video size with video.size(sth, sth)
-  // video.hide(); // Because we won't show this video right away.
+  video = createCapture(VIDEO);
+  video.size(640, 480);
+  video.hide();
 
   // c.f. If you want to start detecting faces from the webcam video
-  // faceMesh.detectStart(video, gotFaces);
+  faceMesh.detectStart(video, gotFaces);
   // If you don't 'draw' a video, it won't display the webcam video on the screen so FYI.
 }
 
 function draw() {
   game.show();
-
-
 
   game.stage = 1;
   game.started = true;
@@ -95,4 +90,34 @@ function gotFaces(results) {
   // Save the output to the faces variable
   faces = results;
   // And let's add something here...
+}
+
+function detectsmile() {
+
+  if (faces.length > 0) {
+    let face = faces[0];
+
+    let leftCorner = face.keypoints[61];
+    let rightCorner = face.keypoints[291];
+    
+    let topLip = face.keypoints[13];
+    let bottomLip = face.keypoints[14];
+
+    // 1. Calculate Mouth Width
+    let mouthWidth = dist(leftCorner.x, leftCorner.y, rightCorner.x, rightCorner.y);
+    
+    // 2. Calculate Face Width (to normalize across distances)
+  
+    let leftCheek = face.keypoints[234];
+    let rightCheek = face.keypoints[454];
+    let faceWidth = dist(leftCheek.x, leftCheek.y, rightCheek.x, rightCheek.y);
+
+    if (mouthWidth / faceWidth > 0.45) { // Adjust based on testing
+      return true;
+    }
+    else {
+      return false;
+   
+  }  
+  }
 }
