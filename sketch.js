@@ -33,6 +33,8 @@ const pressedKeys = {a: false, d: false };
 
 function preload() {
   // Load the FaceMesh model
+  faceMesh = ml5.faceMesh(options);
+
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
@@ -58,7 +60,6 @@ function setup() {
 
   console.log('Global Game Jam 2026 project');
 
-  faceMesh = ml5.faceMesh(options);
 
   createCanvas(windowWidth, windowHeight);
 
@@ -77,21 +78,27 @@ function setup() {
   video.size(640, 480);
   video.hide();
 
-  // c.f. If you want to start detecting faces from the webcam video
   faceMesh.detectStart(video, gotFaces);
-  // If you don't 'draw' a video, it won't display the webcam video on the screen so FYI.
+
 }
 
 function draw() {
   game.show();
 
-  game.stage = 1;
-  game.started = true;
-  game.play = new Stage();
+  // game.stage = 1;
+  // game.started = true;
+  // game.play = new Stage();
 
 
 
-
+  if (detectsmile()) {
+    //test function
+    // fill(0, 255, 0);
+    // textSize(48);
+    // text("SMILING! 😁", 50, 100);
+    // console.log("SMILING!");
+  }
+  
 }
 
 // Handle window resizing event so our game won't be seen weird.
@@ -100,12 +107,10 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-// Callback function for when faceMesh outputs data
 function gotFaces(results) {
-  // Save the output to the faces variable
   faces = results;
-  // And let's add something here...
 }
+
 
 function detectsmile() {
 
@@ -127,7 +132,7 @@ function detectsmile() {
     let rightCheek = face.keypoints[454];
     let faceWidth = dist(leftCheek.x, leftCheek.y, rightCheek.x, rightCheek.y);
 
-    if (mouthWidth / faceWidth > 0.45) { // Adjust based on testing
+    if (mouthWidth / faceWidth > 0.45) { // Lowered threshold for easier detection
       return true;
     }
     else {
