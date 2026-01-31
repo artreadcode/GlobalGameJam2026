@@ -22,13 +22,15 @@ class Game {
         // For each play
         this.play;
 
-        // this.background = 0; // for now
 
         this.loop = 1;
+        this.bg = 0; // for now
+
+        
     }
 
     show() {
-        background(this.background);
+        background(this.bg);
 
         switch (this.stage) {
             case 0: // Start screen

@@ -1,6 +1,6 @@
 class Stage {
     constructor() {
-        this.background = 255;
+        this.bg = 0;
         // this.background = Background() => For now, I left it in comment.
 
         this.whichStage = 0 // default
@@ -35,6 +35,6 @@ class Stage {
             this.whichStage++;
         }
         // image(this.background, 0, 0);
-        background(this.background); // for now
+        // background(this.background); // for now
     }
 }
