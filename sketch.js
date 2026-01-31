@@ -12,6 +12,9 @@ function preload() {
 
 function setup() {
   console.log('Global Game Jam 2026 project');
+
+  createCanvas(windowWidth, windowHeight);
+
   // Create the game
   game = new Game();
   // Create the gameplay window
@@ -29,6 +32,7 @@ function setup() {
 }
 
 function draw() {
+  
   game.show();
   // background(0); // Just set up the thing as black
 }

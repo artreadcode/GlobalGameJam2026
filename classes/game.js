@@ -3,8 +3,10 @@ class Game {
         this.started = false;
         this.ended = false;
 
+        /*
         this.w = windowWidth;
         this.h = windowHeight;
+        */
 
         // For the current stage; Where are you?
         this.stage = 0;
@@ -22,7 +24,7 @@ class Game {
     }
 
     show() {
-        createCanvas(this.w, this.h);
+
         background(this.background);
         switch (this.scene) {
             case 0: // Start screen
@@ -47,4 +49,10 @@ class Game {
             case 4: // Ending scene
         }
     }
+}
+
+// Handle window resizing event so our game won't be seen weird.
+// Ref: https://p5js.org/reference/p5/windowResized/
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
