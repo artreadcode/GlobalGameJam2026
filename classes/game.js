@@ -223,9 +223,11 @@ class Game {
                 break;
             }
             case 5: { // Tutorial page
-                this.play = new Tutorial();
+                if (!(this.play instanceof Tutorial)) {
+                    this.play = new Tutorial();
+                }
                 this.play.show();
-                this.drawBars();
+                // this.drawBars();
                 break;
             }
         }

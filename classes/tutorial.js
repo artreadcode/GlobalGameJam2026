@@ -4,7 +4,7 @@ class Tutorial extends Stage {
         this.bg = 255;
         this.counter = 3; // 3 -> 2 -> 1 -> GO
         this.smileStartTime = null;
-        this.mode = 0; // smile (1 will be the covering)
+        this.tutorialMode = 0; // smile (1 will be the covering)
     }
 
     goingBack(mX, mY) {
@@ -60,29 +60,27 @@ class Tutorial extends Stage {
             fill(0);
             textSize(min(windowWidth, windowHeight) * 0.03);
 
-            if (this.mode === 0) {
+            if (this.tutorialMode === 0) {
                 if (detectSmile()) {
+                    console.log('smile is detected');
                     if (this.smileStartTime === null) {
-                        this.smileStartTime = millis();
+                        this.smileStartTime = millis(); // store the thing
                     }
                     text('keep smiling', windowWidth / 2, windowHeight / 2);
-                    if (millis() - this.smileStartTime > 500 && this.counter > 0) {
-                        this.counter--;
-                        console.log('Counter decremented:', this.counter);
-                        this.smileStartTime = millis();
+                    if (millis() - this.smileStartTime > 0 && millis() - this.smileStartTime < 1500) {
+                        // this.counter--;
+                        console.log('keep smile.');
+                        // this.smileStartTime = millis();
                     }
-                } else {
-                    if (this.counter === 0) {
-                        this.mode = 1;
-                        console.log('Mode changed to 1');
-                        this.counter = 3;
-                    } else {
-                        this.counter = 3;
-                    }
-                    this.smileStartTime = null;
+                    else {
+                        console.log('mode should be changed.');
+                        this.smileStartTime = null; // reset
+                        this.tutorialMode = 1;
+                        
+                    } 
                 }
             }
-            else if (this.mode === 1) {
+            else if (this.tutorialMode === 1) {
                 text('cover your mouth to hide', windowWidth / 2, windowHeight / 2);
             }
 
