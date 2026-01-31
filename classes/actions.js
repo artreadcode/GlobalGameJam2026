@@ -19,8 +19,12 @@ class Actions {
         switch (actionId) {
           case '1':
             // Example: advance to stage 2 when the mirror is touched.
+            game.returnStage = game.stage;
+            game.returnX = obstacle ? obstacle.x : null;
             game.stage = 4;
-            game.play = new Stage();
+            game.play = new MirrorScreen();
+            game.player.x = width / 2;
+            game.camera.x = 0;
             break;
           default:
             break;

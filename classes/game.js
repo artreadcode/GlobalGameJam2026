@@ -6,7 +6,8 @@ class Game {
         this.player = new Player(width/4);
         this.camera = new Camera();
         this.obstacles = [ //X position, image size(x,y) ,name of sprite, actionId, actionType, refer to actions.JS
-            new Obstacle(2700,100,100, { sprite: mirrorSprite, actionId: '1', actionType: 'transition' }),
+           //new Obstacle(2700,100,100, { sprite: mirrorSprite, actionId: '1', actionType: 'transition' }),
+           new Obstacle(2700,100,100, { sprite: mirrorSprite, actionId: null, actionType: null }),
         ];
         /*
         this.w = windowWidth;
@@ -29,6 +30,8 @@ class Game {
 
         this.loop = 1;
         this.bg = 0; // for now
+        this.returnStage = null;
+        this.returnX = null;
 
         
     }
@@ -58,6 +61,10 @@ class Game {
             case 1: {           //stage 1
                 this.player.update(this.play);
                 const cameraX = this.camera.update(this.play, this.player.x);
+                
+                if (frameCount % 60 === 0) {
+                console.log('x=', this.player.x, 'xMax=', this.play?.xMax, 'cam=', cameraX);
+  }
                 this.player.draw(cameraX);
 
                 for (const obstacle of this.obstacles) {
@@ -84,7 +91,22 @@ class Game {
                 break;
             }
             case 4: {           //mirror transition scene/stage, the "inbetween" of each level
-     
+                if (!(this.play instanceof MirrorScreen)) {
+                    this.play = new MirrorScreen();
+                }
+                this.player.update(this.play);
+                this.play.show();
+                this.player.draw(0);
+
+                if (this.play.shouldExit(this.player)) {
+                    const targetStage = this.returnStage ?? 1;
+                    const targetX = this.returnX ?? width / 2;
+                    this.stage = targetStage;
+                    this.play = new Stage();
+                    this.player.x = targetX;
+                    this.camera.x = 0;
+                }
+                break;
             }
         }
     }
