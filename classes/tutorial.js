@@ -66,21 +66,19 @@ class Tutorial extends Stage {
                         this.smileStartTime = millis();
                     }
                     text('keep smiling', windowWidth / 2, windowHeight / 2);
-
-                    if (millis() - this.smileStartTime > 500) {
-                        if (this.counter > 0) {
-                            this.counter--;
-                            this.smileStartTime = millis();
-                        }
-                        if (this.counter === 0) {
-                            this.mode = 1;
-                            this.counter = 3;
-                            this.smileStartTime = null;
-                        }
+                    if (millis() - this.smileStartTime > 500 && this.counter > 0) {
+                        this.counter--;
+                        console.log('Counter decremented:', this.counter);
+                        this.smileStartTime = millis();
                     }
                 } else {
-                    // Smile broken → reset counter and timer
-                    this.counter = 3;
+                    if (this.counter === 0) {
+                        this.mode = 1;
+                        console.log('Mode changed to 1');
+                        this.counter = 3;
+                    } else {
+                        this.counter = 3;
+                    }
                     this.smileStartTime = null;
                 }
             }
