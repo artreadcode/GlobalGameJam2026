@@ -4,12 +4,17 @@ class startScreen extends Stage {
         this.lastMode = null;
         this.bg = 255;
 
+        this.infos = [
+            "Smile to start the game.",
+            "Press 'E' to start the game." 
+        ]
+
         // Create jiggle text objects (black color)
         this.titleText = new JiggleText("non-Duchenne", windowWidth / 2, windowHeight / 2, min(windowWidth, windowHeight) * 0.05, {
             color: 0
         });
 
-        this.subtitleText = new JiggleText("Smile to start the game.", windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
+        this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
             color: 150,
             jiggleX: 1,
             jiggleY: 1,
@@ -34,10 +39,11 @@ class startScreen extends Stage {
     // Check if mouse is inside the toggle background rectangle
     if (mX > rectX && mX < rectX + rectW && mY > rectY && mY < rectY + rectH) {
         // If clicked on left half, set to camera; right half, set to keyboard
-        if (mX < rectX + rectW / 2) {
-            gameMode = 0; // Camera Mode
-        } else {
-            gameMode = 1; // Keyboard Mode
+        if (gameMode === 0) {
+            gameMode = 1;
+        }
+        else if (gameMode === 1) {
+            gameMode = 0;
         }
     }
 }
@@ -174,6 +180,13 @@ class startScreen extends Stage {
                     video = createCapture(VIDEO);
                     video.hide();
                 }
+
+                this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
+                    color: 150,
+                    jiggleX: 1,
+                    jiggleY: 1,
+                    jiggleRot: 0.03
+                });
             }
             else if (gameMode === 1) {
                 if (video) {
@@ -181,10 +194,20 @@ class startScreen extends Stage {
                     video.remove();
                     video = null;
                 }
+
+                this.subtitleText = new JiggleText(this.infos[gameMode], windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
+                    color: 150,
+                    jiggleX: 1,
+                    jiggleY: 1,
+                    jiggleRot: 0.03
+                });
             }
             this.lastMode = gameMode;
         }
 
         pop();
+
+        image(aboutBtn, 0 + aboutBtn.width * 0.3 / 2, 0 + aboutBtn.height * 0.3, aboutBtn.width * 0.5, aboutBtn.height * 0.5);
+        image(helpBtn, 0 + aboutBtn.width * 0.3 / 2 + aboutBtn.width * 0.6, 0 + aboutBtn.height * 0.3, helpBtn.width * 0.5, helpBtn.height * 0.5);
     }
 }

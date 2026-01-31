@@ -11,6 +11,8 @@ let tooltip;
 let cameraMode;
 let keyboardMode;
 let gameMode = 0; // default (camera)
+let helpBtn;
+let aboutBtn;
 
 // movement
 
@@ -41,6 +43,9 @@ function preload() {
   tooltip = loadImage('assets/tooltip.png');
   cameraMode = loadImage('assets/camera.png');
   keyboardMode = loadImage('assets/keyboard.png');
+
+  aboutBtn = loadImage('assets/aboutButton.png');
+  helpBtn = loadImage('assets/helpButton.png');
 }
 
 function setup() {
