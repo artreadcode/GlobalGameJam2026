@@ -1,5 +1,4 @@
 class startScreen extends Stage {
-
     constructor() {
         super();
         this.bg = 255;
@@ -10,11 +9,17 @@ class startScreen extends Stage {
         });
 
         this.subtitleText = new JiggleText("Smile to start the game.", windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
-            color: 0,
+            color: 150,
             jiggleX: 1,
             jiggleY: 1,
             jiggleRot: 0.03
         });
+
+        // Properties
+        this.tooltipMSG = "This game uses webcam face detection without storing data. If you’re not comfortable with this, you can choose keyboard mode.";
+        this.tooltipW = 32;
+        this.tooltipH = 32;
+        this.tooltipOffset = min(windowWidth, windowHeight) * 0.01; // the blank between the subTitle and the tooltip '?'
     }
 
     show() {
@@ -24,13 +29,101 @@ class startScreen extends Stage {
 
         // Update positions and sizes in case of window resize
         this.titleText.setPosition(windowWidth / 2, windowHeight / 2);
-        this.titleText.size = min(windowWidth, windowHeight) * 0.05;
+        this.titleText.size = min(windowWidth, windowHeight) * 0.1;
 
-        this.subtitleText.setPosition(windowWidth / 2, windowHeight / 2 + 50);
-        this.subtitleText.size = min(windowWidth, windowHeight) * 0.02;
+        this.subtitleText.setPosition(windowWidth / 2, windowHeight / 2 + windowHeight * 0.08);
+        this.subtitleText.size = min(windowWidth, windowHeight) * 0.045;
 
         // Show jiggle texts
         this.titleText.show();
         this.subtitleText.show();
+
+        // Display tooltip
+        // Calculate subtitle width for precise tooltip PNG alignment
+        textSize(this.subtitleText.size);
+        let subtitleWidth = textWidth(this.subtitleText.text);
+        let isNarrow = windowWidth < 600; // threshold for mobile/tablet
+        let tooltipX, tooltipY;
+        if (isNarrow) {
+            // Place tooltip PNG underneath subtitle, centered
+            tooltipX = windowWidth / 2 - this.tooltipW / 2;
+            tooltipY = windowHeight / 2 + 50 + this.subtitleText.size + 50;
+        } else {
+            // Place tooltip PNG to the right of subtitle
+            tooltipX = windowWidth / 2 + subtitleWidth / 2 + this.tooltipOffset;
+            tooltipY = windowHeight / 2 + 55;
+        }
+        image(tooltip, tooltipX, tooltipY, this.tooltipW, this.tooltipH);
+
+        push();
+
+        // Check mouse hovering event
+        if (
+            mouseX > tooltipX &&
+            mouseX < tooltipX + this.tooltipW &&
+            mouseY > tooltipY - this.tooltipH / 2 &&
+            mouseY < tooltipY + this.tooltipH / 2
+        ) {
+            // textSize(this.subtitleText.size * 0.4);
+            textSize(16);
+            textAlign(LEFT, TOP);
+            let boxPadding = 12;
+            let maxBoxWidth = min(windowWidth * 0.5, 320); // max width for wrapping
+
+            // Word wrap and measure lines
+            let words = this.tooltipMSG.split(' ');
+            let lines = [];
+            let line = '';
+            for (let w of words) {
+                let testLine = line + w + ' ';
+                if (textWidth(testLine) > maxBoxWidth - boxPadding * 2 && line.length > 0) {
+                    lines.push(line.trim());
+                    line = w + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line.trim());
+
+            // Calculate dynamic box width (longest line)
+            let boxWidth = boxPadding * 2;
+            for (let l of lines) {
+                boxWidth = max(boxWidth, textWidth(l) + boxPadding * 2);
+            }
+            boxWidth = min(boxWidth, maxBoxWidth);
+
+            // Calculate box height
+            let lineHeight = textAscent() + textDescent();
+            let boxHeight = lines.length * lineHeight + boxPadding * 2;
+
+            // Draw message box underneath the PNG
+            let boxX = tooltipX + this.tooltipW / 2 - boxWidth / 2;
+            let boxY = tooltipY + this.tooltipH / 2 + 30;
+            fill(130, 130, 130);
+            noStroke();
+            rect(boxX, boxY, boxWidth, boxHeight);
+
+            // Draw triangle (speech box tail) on top center of the box
+            let triBase = 20; // width of the triangle base
+            let triHeight = 12; // height of the triangle
+            let triX = boxX + boxWidth / 2;
+            let triY = boxY;
+
+            triangle(
+                triX - triBase / 2, triY,         // left point
+                triX + triBase / 2, triY,         // right point
+                tooltipX + this.tooltipW / 2, triY - triHeight // tip (points to PNG)
+            );
+
+            fill(255, 240);
+            
+            let textX = boxX + boxPadding;
+            let textY = boxY + boxPadding;
+            for (let i = 0; i < lines.length; i++) {
+                text(lines[i], textX, textY + i * lineHeight);
+            }
+        }
+
+        pop();
     }
 }
