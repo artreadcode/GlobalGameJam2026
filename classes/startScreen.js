@@ -3,20 +3,31 @@ class startScreen extends Stage {
     constructor() {
         super();
         this.bg = 255;
-        
-        // this.backgroundPATH = {filePATH};
-        // this.background = 
+
+        // Create jiggle text objects (black color)
+        this.titleText = new JiggleText("non-Duchenne", width / 4, height / 2, min(width, height) * 0.05, {
+            color: 0
+        });
+        this.subtitleText = new JiggleText("Smile to start the game.", width / 4, height / 2 + 110, min(width, height) * 0.02, {
+            color: 0,
+            jiggleX: 1,
+            jiggleY: 1,
+            jiggleRot: 0.03
+        });
     }
 
     show() {
-        let gameTitle = 'non-Duchenne';
-        let gamesubTitle = 'Smile to start the game.';
-
         background(this.bg);
 
-        textSize(min(windowWidth, windowHeight) * 0.05 );
-        text(gameTitle, windowWidth / 4, windowHeight / 2);
-        textSize(min(windowWidth, windowHeight) * 0.02);
-        text(gamesubTitle, windowWidth / 4, windowHeight / 2 + 110);
+        // Update positions and sizes in case of window resize
+        this.titleText.setPosition(width / 4, height / 2);
+        this.titleText.size = min(width, height) * 0.05;
+
+        this.subtitleText.setPosition(width / 4, height / 2 + 110);
+        this.subtitleText.size = min(width, height) * 0.02;
+
+        // Show jiggle texts
+        this.titleText.show();
+        this.subtitleText.show();
     }
 }

@@ -5,6 +5,7 @@ let video; // The video to store the webcam video.
 let faces = []; // This one will store the markers across the faces.
 let options = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
 let playerSprite;
+let schoolbellFont;
 
 //movement
 
@@ -25,12 +26,19 @@ function preload() {
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(options);
   playerSprite = loadImage('assets/placeholder.png');
+
+  // Font is loaded via CSS in index.html
+  // Set the font name for use with textFont()
+  schoolbellFont = 'Schoolbell';
 }
 
 function setup() {
   console.log('Global Game Jam 2026 project');
 
   createCanvas(windowWidth, windowHeight);
+
+  // Set the Schoolbell font
+  textFont(schoolbellFont);
 
   // Create the game
   game = new Game();
