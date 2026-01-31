@@ -12,11 +12,14 @@ class Tutorial extends Stage {
                 let face = faces[i];
                 for (let j = 0; j < face.keypoints.length; j++) {
                     let keypoint = face.keypoints[j];
-                    fill(0, 255, 0);
+                    fill(100);
                     noStroke();
                     circle(keypoint.x, keypoint.y, 5);
                 }
             }
+        }
+        if (gameMode === 1) {
+            console.log('Keyboard tutorial is activated.');
         }
     }
 }
