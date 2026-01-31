@@ -5,10 +5,11 @@ class startScreen extends Stage {
         this.bg = 255;
 
         // Create jiggle text objects (black color)
-        this.titleText = new JiggleText("non-Duchenne", width / 4, height / 2, min(width, height) * 0.05, {
+        this.titleText = new JiggleText("non-Duchenne", windowWidth / 2, windowHeight / 2, min(windowWidth, windowHeight) * 0.05, {
             color: 0
         });
-        this.subtitleText = new JiggleText("Smile to start the game.", width / 4, height / 2 + 110, min(width, height) * 0.02, {
+
+        this.subtitleText = new JiggleText("Smile to start the game.", windowWidth / 2, windowHeight / 2 + 110, min(windowWidth, windowHeight) * 0.02, {
             color: 0,
             jiggleX: 1,
             jiggleY: 1,
@@ -18,15 +19,15 @@ class startScreen extends Stage {
 
     show() {
         background(this.bg);
-        // textAlign(CENTER, CENTER);
+        textAlign(CENTER, CENTER);
         // text(gameTitle, windowWidth / 2, windowHeight / 2 - min(windowWidth, windowHeight) * 0.06);
 
         // Update positions and sizes in case of window resize
-        this.titleText.setPosition(width / 4, height / 2);
-        this.titleText.size = min(width, height) * 0.05;
+        this.titleText.setPosition(windowWidth / 2, windowHeight / 2);
+        this.titleText.size = min(windowWidth, windowHeight) * 0.05;
 
-        this.subtitleText.setPosition(width / 4, height / 2 + 110);
-        this.subtitleText.size = min(width, height) * 0.02;
+        this.subtitleText.setPosition(windowWidth / 2, windowHeight / 2 + 50);
+        this.subtitleText.size = min(windowWidth, windowHeight) * 0.02;
 
         // Show jiggle texts
         this.titleText.show();
