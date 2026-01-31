@@ -7,10 +7,14 @@ let faces = []; // This one will store the markers across the faces.
 let hands = []; // This one will store the markers across the hands.
 let faceoptions = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
 let handOptions = { maxHands: 1, flipHorizontal: false };
+
 let playerSprite;
 let mirrorSprite;
 let blackScreenSprite;
+
 let schoolbellFont;
+
+// Tutorial images
 let tooltip;
 let cameraMode;
 let keyboardMode;
@@ -225,8 +229,19 @@ function detectHide(){
 }
 
 function mousePressed() {
-  if (game && game.play instanceof startScreen) {
+  if (typeof game === 'undefined') {
+
+  }
+  else if (game && game.play instanceof startScreen) {
     game.play.modeChanging(mouseX, mouseY);
+  }
+  else if (game && game.play instanceof Tutorial) {
+    let det = game.play.goingBack(mouseX, mouseY);
+    console.log(det);
+    if (det) {
+      game.stage = 0;
+      game.started = false;
+    }
   }
 }
 

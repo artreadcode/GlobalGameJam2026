@@ -4,6 +4,22 @@ class Tutorial extends Stage {
         this.bg = 255;
     }
 
+    goingBack(mX, mY) {
+        // Calculate returnBtn bounds as drawn in show()
+        let btnW = returnBtn.width * 0.5;
+        let btnH = returnBtn.height * 0.5;
+        let btnX = 0 + returnBtn.width * 0.1 / 2;
+        let btnY = 0 + returnBtn.height * 0.3;
+
+        if (
+            mX >= btnX && mX <= btnX + btnW &&
+            mY >= btnY && mY <= btnY + btnH
+        ) {
+            console.log('going back, right?');
+            return true;
+        }
+    }
+
     show() {
         background(this.bg);
 
@@ -34,8 +50,12 @@ class Tutorial extends Stage {
                     ellipse(mappedX, mappedY, 4, 4);
                 }
             }
+
+            image(returnBtn, 0 + returnBtn.width * 0.1 / 2, 0 + returnBtn.height * 0.3, returnBtn.width * 0.5, returnBtn.height * 0.5);
+            
+
         }
-        if (gameMode === 1) {
+        else if (gameMode === 1) {
             console.log('Keyboard tutorial is activated.');
         }
     }

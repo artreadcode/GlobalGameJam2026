@@ -55,11 +55,6 @@ class Game {
                         this.stage = 5; // Move onto the tutorial screen.
                     }
                 }
-                if (this.next) {
-                    this.after = this.after + 1; // The stage 1's next step is 2.
-                    this.prev = this.prev + 1;
-                    this.stage = 1; // Move onto the next stage.
-                }
                 break;
 
             case 1: {           //stage 1
@@ -113,8 +108,9 @@ class Game {
                 break;
             }
             case 5: { // Tutorial page
-                let tutorial = new Tutorial();
-                tutorial.show();
+                this.play = new Tutorial();
+                this.play.show();
+                break;
             }
         }
     }
