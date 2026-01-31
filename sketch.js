@@ -7,6 +7,8 @@ let options = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
 let playerSprite;
 let schoolbellFont;
 let tooltip;
+let cameraMode;
+let keyboardMode;
 
 // movement
 
@@ -32,6 +34,8 @@ function preload() {
 
   // Loading images
   tooltip = loadImage('assets/tooltip.png');
+  cameraMode = loadImage('assets/camera.png');
+  keyboardMode = loadImage('assets/keyboard.png');
 }
 
 function setup() {

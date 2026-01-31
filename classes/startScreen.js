@@ -125,5 +125,10 @@ class startScreen extends Stage {
         }
 
         pop();
+
+        // Display camera and keyboard mode selection on top.
+        let modeW = cameraMode.width * 0.3;
+        let modeH = cameraMode.height * 0.3;
+        image(cameraMode, windowWidth - modeW, modeH, modeW, modeH);
     }
 }
