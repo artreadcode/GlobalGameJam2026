@@ -2,11 +2,16 @@ class startScreen extends Stage {
 
     constructor() {
         super();
-        // this.message = 'Start screen is displayed.'
-        // this.background = new Background();
+        
+        // this.backgroundPATH = {filePATH};
+        // this.background = 
     }
 
     show() {
-        
+        gameTitle = 'non-Duchenne';
+        gamesubTitle = 'Smile to start the game.'
+
+        textSize(200);
+        text(gameTitle, windowWidth / 2, windowHeight / 2);
     }
 }
