@@ -8,10 +8,12 @@ class Obstacle {
     this.actionId = options.actionId ?? null;
     this.triggerOnce = options.triggerOnce ?? true;
     this.triggered = false;
+    this.visible = options.visible ?? true;
     this.color = options.color ?? [200, 200, 200];
   }
 
   draw(cameraX = 0) {
+    if (!this.visible) return;
     const y = height - this.h;
     if (this.sprite) {
       image(this.sprite, this.x - cameraX, y, this.w, this.h);
