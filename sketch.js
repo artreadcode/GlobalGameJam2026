@@ -15,6 +15,7 @@ let gameMode = 0; // default (camera)
 let helpBtn;
 let aboutBtn;
 let paper;
+let barImg;
 
 // movement
 
@@ -51,6 +52,7 @@ function preload() {
   helpBtn = loadImage('assets/helpButton.png');
 
   paper = loadImage('assets/paper.png');
+  barImg = loadImage('assets/bar.png');
 }
 
 function setup() {

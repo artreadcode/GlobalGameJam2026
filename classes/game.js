@@ -34,7 +34,69 @@ class Game {
         this.returnStage = null;
         this.returnX = null;
 
-        
+        // Progress bars (0-100)
+        this.bar1Value = 50;
+        this.bar2Value = 30;
+    }
+
+    // Draw compact UI panel with about/help buttons, face, and progress bars
+    drawBars() {
+        let panelX = 20;
+        let panelY = 20;
+
+        push();
+
+        // Draw about and help buttons at top
+        let btnScale = 0.3;
+        let btnY = panelY + 15;
+        image(aboutBtn, panelX + 20, btnY, aboutBtn.width * btnScale, aboutBtn.height * btnScale);
+        image(helpBtn, panelX + 20 + aboutBtn.width * btnScale + 10, btnY, helpBtn.width * btnScale, helpBtn.height * btnScale);
+
+        // Draw face area (video will be replaced by face mesh)
+        let faceX = panelX + 15;
+        let faceY = panelY + 55;
+        let faceSize = 70;
+
+        if (video) {
+            // TODO: Replace with face mesh visualization
+            image(video, faceX, faceY, faceSize, faceSize);
+        } else {
+            stroke(100);
+            strokeWeight(1);
+            noFill();
+            ellipse(faceX + faceSize/2, faceY + faceSize/2, faceSize, faceSize);
+        }
+
+        // Progress bars - compact version
+        let barX = faceX + faceSize + 15;
+        let barY = faceY + 15;
+        let barW = 150;
+        let barH = 18;
+        let spacing = 30;
+        let padding = 3;
+
+        textFont(schoolbellFont);
+        textAlign(LEFT, CENTER);
+        textSize(14);
+        fill(0);
+        noStroke();
+
+        // First bar
+        text("label", barX, barY);
+        image(barImg, barX + 40, barY - barH / 2, barW, barH);
+        fill(0);
+        let fill1Width = (this.bar1Value / 100) * (barW - padding * 2);
+        rect(barX + 40 + padding, barY - barH / 2 + padding, fill1Width, barH - padding * 2);
+
+        // Second bar
+        fill(0);
+        text("label", barX, barY + spacing);
+        image(barImg, barX + 40, barY + spacing - barH / 2, barW, barH);
+        fill(0);
+        let fill2Width = (this.bar2Value / 100) * (barW - padding * 2);
+        rect(barX + 40 + padding, barY + spacing - barH / 2 + padding, fill2Width, barH - padding * 2);
+
+        pop();
     }
 
     show() {
@@ -95,9 +157,13 @@ class Game {
                         }
                     }
                 }
-            if (frameCount % 60 === 0) {
-            console.log('worldX', this.worldX, 'camera', cameraX);
-            }
+
+                // Draw compact UI panel
+                this.drawBars();
+
+                if (frameCount % 60 === 0) {
+                    console.log('worldX', this.worldX, 'camera', cameraX);
+                }
                 break;
             }
             case 2: {           //stage 2
