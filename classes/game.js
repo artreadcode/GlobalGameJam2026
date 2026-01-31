@@ -77,6 +77,12 @@ class Game {
                 const deltaX = this.worldX - prevWorldX;
                 this.parallax.update(deltaX);
                 this.parallax.draw();
+                if (blackScreenSprite) {
+                    const wallW = width;
+                    const wallH = height;
+                    const wallX = this.play.xMax;
+                    image(blackScreenSprite, wallX - cameraX, 0, wallW, wallH);
+                }
                 this.player.draw(cameraX);
 
                 this.mirrorObstacle.x = this.play.xMax - 200;
