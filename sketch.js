@@ -10,6 +10,7 @@ let schoolbellFont;
 let tooltip;
 let cameraMode;
 let keyboardMode;
+let gameMode = 0; // default (camera)
 
 // movement
 
@@ -28,7 +29,6 @@ const pressedKeys = {a: false, d: false };
 
 function preload() {
   // Load the FaceMesh model
-  faceMesh = ml5.faceMesh(options);
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
 
@@ -47,6 +47,8 @@ function setup() {
 
 
   console.log('Global Game Jam 2026 project');
+
+  faceMesh = ml5.faceMesh(options);
 
   createCanvas(windowWidth, windowHeight);
 
@@ -106,4 +108,10 @@ function gotFaces(results) {
   // Save the output to the faces variable
   faces = results;
   // And let's add something here...
+}
+
+function mousePressed() {
+  if (game && game.play instanceof startScreen) {
+    game.play.modeChanging(mouseX, mouseY);
+  }
 }
