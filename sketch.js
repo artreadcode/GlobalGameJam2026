@@ -59,6 +59,10 @@ function keyReleased() {
 
 
 function preload() {
+  // Audio
+  bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
+  walkSfx = loadSound('assets/music/walk.mp3');
+
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(faceoptions);
   handPose = ml5.handPose(handOptions);
@@ -92,10 +96,6 @@ function preload() {
   bedroomMid = loadImage('assets/Stage_1 bedroom/mid_bedroom.png');
   bedroomFloor = loadImage('assets/Stage_1 bedroom/floor_bedroom.png');
   bedroomFront = loadImage('assets/Stage_1 bedroom/Front_bedroom.png');
-
-  // Audio
-  bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
-  walkSfx = loadSound('assets/music/walk.mp3');
 }
 
 function setup() {

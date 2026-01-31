@@ -2,6 +2,9 @@ class Tutorial extends Stage {
     constructor() {
         super();
         this.bg = 255;
+        this.counter = 3; // 3 -> 2 -> 1 -> GO
+        this.smileStartTime = null;
+        this.mode = 0; // smile (1 will be the covering)
     }
 
     goingBack(mX, mY) {
@@ -51,12 +54,47 @@ class Tutorial extends Stage {
                 }
             }
 
-            image(returnBtn, 0 + returnBtn.width * 0.1 / 2, 0 + returnBtn.height * 0.3, returnBtn.width * 0.5, returnBtn.height * 0.5);
-            
+            push();
 
+            textAlign(CENTER);
+            fill(0);
+            textSize(min(windowWidth, windowHeight) * 0.03);
+
+            if (this.mode === 0) {
+                if (detectSmile()) {
+                    if (this.smileStartTime === null) {
+                        this.smileStartTime = millis();
+                    }
+                    text('keep smiling', windowWidth / 2, windowHeight / 2);
+
+                    if (millis() - this.smileStartTime > 500) {
+                        if (this.counter > 0) {
+                            this.counter--;
+                            this.smileStartTime = millis();
+                        }
+                        if (this.counter === 0) {
+                            this.mode = 1;
+                            this.counter = 3;
+                            this.smileStartTime = null;
+                        }
+                    }
+                } else {
+                    // Smile broken → reset counter and timer
+                    this.counter = 3;
+                    this.smileStartTime = null;
+                }
+            }
+            else if (this.mode === 1) {
+                text('cover your mouth to hide', windowWidth / 2, windowHeight / 2);
+            }
+
+
+            pop();
         }
         else if (gameMode === 1) {
             console.log('Keyboard tutorial is activated.');
+
+            image(returnBtn, 0 + returnBtn.width * 0.1 / 2, 0 + returnBtn.height * 0.3, returnBtn.width * 0.5, returnBtn.height * 0.5);
         }
     }
 }

@@ -225,6 +225,7 @@ class Game {
             case 5: { // Tutorial page
                 this.play = new Tutorial();
                 this.play.show();
+                this.drawBars();
                 break;
             }
         }
