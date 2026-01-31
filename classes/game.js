@@ -2,7 +2,8 @@ class Game {
     constructor() {
         this.started = false; // Did the player start playing? 
         this.ended = false; // Did the player reach to the ending?
-        this.player = new Player(width/2);
+
+        this.player = new Player(width/4);
         /*
         this.w = windowWidth;
         this.h = windowHeight;
@@ -21,15 +22,14 @@ class Game {
         // For each play
         this.play;
 
-        this.background = 0; // for now
+        // this.background = 0; // for now
 
         this.loop = 1;
     }
 
     show() {
         background(this.background);
-        this.player.update();
-        this.player.draw();
+
         switch (this.stage) {
             case 0: // Start screen
                 if (!this.started) {
@@ -51,6 +51,8 @@ class Game {
                 break;
 
             case 1: // Stage 01
+                this.player.update();
+                this.player.draw();
             // Same structure will happen here...
             case 2: // Stage 02
             case 3: // Stage 03

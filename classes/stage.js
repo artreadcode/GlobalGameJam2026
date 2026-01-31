@@ -1,6 +1,6 @@
 class Stage {
     constructor() {
-        this.background = 100;
+        this.background = 255;
         // this.background = Background() => For now, I left it in comment.
 
         this.whichStage = 0 // default
