@@ -46,6 +46,18 @@ class Actions {
             break;
         }
         break;
+      case 'minigame':
+        switch (actionKey) {
+          case '1':
+            if (game.minigame && !game.minigameActive) {
+              game.minigameActive = true;
+              game.minigame.start();
+            }
+            break;
+          default:
+            break;
+        }
+        break;
       case 'return':
         switch (actionKey) {
           case '1': {

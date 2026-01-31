@@ -1,0 +1,1 @@
+//sketch.js detect smile, copy code from astryd  
