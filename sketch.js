@@ -63,14 +63,6 @@ function setup() {
   // Create the game
   game = new Game();
   
-  
-  
-  game.stage = 1;
-  game.started = true;
-  game.play = new Stage();
-
-
-
   // Create the gameplay window
   // createCanvas(windowWidth, windowHeight);
   // Build the Video object, preparing for the transition screen(s).
