@@ -18,6 +18,8 @@ class startScreen extends Stage {
 
     show() {
         background(this.bg);
+        // textAlign(CENTER, CENTER);
+        // text(gameTitle, windowWidth / 2, windowHeight / 2 - min(windowWidth, windowHeight) * 0.06);
 
         // Update positions and sizes in case of window resize
         this.titleText.setPosition(width / 4, height / 2);
