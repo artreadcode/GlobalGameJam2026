@@ -13,6 +13,7 @@ let keyboardMode;
 let gameMode = 0; // default (camera)
 let helpBtn;
 let aboutBtn;
+let paper;
 
 // movement
 
@@ -46,6 +47,8 @@ function preload() {
 
   aboutBtn = loadImage('assets/aboutButton.png');
   helpBtn = loadImage('assets/helpButton.png');
+
+  paper = loadImage('assets/paper.png');
 }
 
 function setup() {
