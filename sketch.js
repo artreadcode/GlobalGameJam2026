@@ -233,7 +233,7 @@ function mousePressed() {
 function keyPressed() {
   if (game && game.play instanceof startScreen && gameMode === 1) {
     if (key === 'e') {
-      game.stage = 5;
+      game.stage = 1;
     }
   }
 }
