@@ -375,6 +375,10 @@ class Game {
                         this.stage1CameraOffset = 0;
                         this.stage1Centering = false;
                         this.sceneCooldownFrames = 60;
+                        // Reset dialogue state when leaving Living Room
+                        this.dialogue = null;
+                        this.dialogueState = null;
+                        this.dialogueShown = false;
                         console.log('Living Room -> Bedroom');
                     } else if (this.worldX >= maxWorldX - 5) {
                         // Living Room -> High School (go right)
@@ -383,6 +387,10 @@ class Game {
                         this.worldX = 0;
                         this.sceneCooldownFrames = 60;
                         this.player.setCharacterType('teen');
+                        // Reset dialogue state when leaving Living Room
+                        this.dialogue = null;
+                        this.dialogueState = null;
+                        this.dialogueShown = false;
                         console.log('Living Room -> High School');
                     }
                 }
