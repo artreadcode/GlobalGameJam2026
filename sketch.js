@@ -70,6 +70,8 @@ let closeBtn;
 let question;
 let bgMusic;
 let teenMusic;
+let adultMusic;
+let teenPressureSound;
 let walkSfx;
 let heartbeatSound;
 let cameraSfx;
@@ -176,6 +178,8 @@ function preload() {
   // Audio
   bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
   teenMusic = loadSound('assets/music/teen.mp3');
+  adultMusic = loadSound('assets/music/adult.mp3');
+  teenPressureSound = loadSound('assets/music/teenpressure.mp3');
   walkSfx = loadSound('assets/music/walk.mp3');
   heartbeatSound = loadSound('assets/music/heartbeat.mp3');
   cameraSfx = loadSound('assets/music/camera.mp3');
