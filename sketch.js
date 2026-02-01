@@ -10,7 +10,14 @@ let handOptions = { maxHands: 1, flipHorizontal: false };
 
 let playerSprite;
 let mirrorSprite;
+let doorSprite;
 let blackScreenSprite;
+let placeholderSprite;
+
+// Player animation sprites
+let playerStand;
+let playerWalkLeft = [];
+let playerWalkRight = [];
 
 let schoolbellFont;
 
@@ -29,11 +36,17 @@ let bgMusic;
 let walkSfx;
 
 // Stage 1 bedroom parallax layers
-let bedroomWall;
 let bedroomBack;
 let bedroomMid;
 let bedroomFloor;
 let bedroomFront;
+let bedroomDoor;
+
+// Stage 2 living room parallax layers
+let livingroomWall;
+let livingroomFloor;
+let livingroomMid;
+let livingroomFront;
 
 // movement
 
@@ -51,6 +64,11 @@ function keyPressed() {
   if (game && game.play instanceof startScreen && gameMode === 1 && k === "e") {
     game.stage = 1;
   }
+
+  // Test transition effect with 'T' key
+  if (game && k === "t") {
+    game.testTransition();
+  }
 }
 
 function keyReleased() {
@@ -60,6 +78,10 @@ function keyReleased() {
 
 
 function preload() {
+  // Audio
+  bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
+  walkSfx = loadSound('assets/music/walk.mp3');
+
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(faceoptions);
   handPose = ml5.handPose(handOptions);
@@ -67,7 +89,18 @@ function preload() {
 
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
+  doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
+  placeholderSprite = loadImage('assets/placeholder.png');
+
+  // Player animation sprites
+  playerStand = loadImage('assets/characters/Stand_toddler.png');
+  playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
+  playerWalkLeft[1] = loadImage('assets/characters/WLeft2_toddler.png');
+  playerWalkLeft[2] = loadImage('assets/characters/WLeft_toddler.png');
+  playerWalkRight[0] = loadImage('assets/characters/Wright_toddler.png');
+  playerWalkRight[1] = loadImage('assets/characters/Wright2_toddler.png');
+  playerWalkRight[2] = loadImage('assets/characters/Wright_toddler.png');
 
 
   // Font is loaded via CSS in index.html
@@ -89,15 +122,17 @@ function preload() {
   returnBtn = loadImage('assets/returnButton.png');
 
   // Stage 1 bedroom parallax
-  bedroomWall = loadImage('assets/Stage_1 bedroom/wall_bedroom.png');
   bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
   bedroomMid = loadImage('assets/Stage_1 bedroom/mid_bedroom.png');
   bedroomFloor = loadImage('assets/Stage_1 bedroom/floor_bedroom.png');
   bedroomFront = loadImage('assets/Stage_1 bedroom/Front_bedroom.png');
+  bedroomDoor = loadImage('assets/Stage_1 bedroom/door.png');
 
-  // Audio
-  bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
-  walkSfx = loadSound('assets/music/walk.mp3');
+  // Stage 2 living room parallax
+  livingroomWall = loadImage('assets/Stage_2 living room/wall_LR.png');
+  livingroomFloor = loadImage('assets/Stage_2 living room/Floor_LR.png');
+  livingroomMid = loadImage('assets/Stage_2 living room/mid_LR.png');
+  livingroomFront = loadImage('assets/Stage_2 living room/front_LR.png');
 }
 
 function setup() {
@@ -126,6 +161,8 @@ function setup() {
   // Create the game
   game = new Game();
 
+  
+
 }
 
 function draw() {
@@ -135,7 +172,7 @@ function draw() {
   if(detectHide()){
         // fill(255, 0, 0); // Red background alert
         // rect(0, 0, width, 50);
-        
+
         // fill(255);
         // textSize(32);
         // text("MOUTH COVERED! 🫢", 50, 40);
@@ -145,9 +182,9 @@ function draw() {
 function modelLoaded() {
   console.log("FaceMesh Model is loaded and ready!");
 
-  // game.stage = 1;
-  // game.started = true;
-  // game.play = new Stage();
+   //game.stage = 1;
+  //  game.started = true;
+  //  game.play = new Stage();
 
 }
 

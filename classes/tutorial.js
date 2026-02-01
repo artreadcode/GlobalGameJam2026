@@ -2,6 +2,11 @@ class Tutorial extends Stage {
     constructor() {
         super();
         this.bg = 255;
+        // this.counter = 3; // 3 -> 2 -> 1 -> GO
+        this.smileStartTime = null;
+        this.tutorialMode = 0; // smile (1 will be the covering)
+        this.willMove = false; // will it move onto the next stage?
+        
     }
 
     goingBack(mX, mY) {
@@ -23,7 +28,11 @@ class Tutorial extends Stage {
     show() {
         background(this.bg);
 
-        // image()
+        let btnW = returnBtn.width * 0.5;
+        let btnH = returnBtn.height * 0.5;
+        let btnX = 0 + returnBtn.width * 0.1 / 2;
+        let btnY = 0 + returnBtn.height * 0.3;
+        image(returnBtn, btnX, btnY, btnW, btnH);
 
         if (gameMode === 0 && video) {
             // Use forced video size for reliability
@@ -51,12 +60,60 @@ class Tutorial extends Stage {
                 }
             }
 
-            image(returnBtn, 0 + returnBtn.width * 0.1 / 2, 0 + returnBtn.height * 0.3, returnBtn.width * 0.5, returnBtn.height * 0.5);
-            
+            push();
 
+            textAlign(CENTER);
+            fill(0);
+            textSize(min(windowWidth, windowHeight) * 0.03);
+
+            if (this.tutorialMode === 0) {
+                if (detectSmile()) {
+                    console.log('smile is detected');
+                    if (this.smileStartTime === null) {
+                        this.smileStartTime = millis(); // store the thing
+                    }
+                    text('keep smiling', windowWidth / 2, windowHeight / 2);
+                    if (millis() - this.smileStartTime > 0 && millis() - this.smileStartTime < 1500) {
+                        // this.counter--;
+                        console.log('keep smile.');
+                        // this.smileStartTime = millis();
+                    }
+                    else {
+                        console.log('mode should be changed.');
+                        this.smileStartTime = null; // reset
+                        this.tutorialMode = 1;
+                    } 
+                }
+            }
+            else if (this.tutorialMode === 1) {
+                text('cover your mouth to hide', windowWidth / 2, windowHeight / 2);
+
+                if (detectHide()) {
+                    console.log('your face is hidden');
+                    // I'll just reuse smileStartTime because I'm about to go insane
+                    if (this.smileStartTime === null) {
+                        this.smileStartTime = millis();
+                    }
+                    
+                    if (millis() - this.smileStartTime > 0 && millis() - this.smileSartTime < 1500) {
+                        console.log('countdown...');
+                    }
+                    else {
+                        console.log('the game starts.')
+                        this.smileStartTime = null; // reset
+                        this.tutorialMode = 2; 
+                        this.willMove = true;
+                    }
+                }
+            }
+
+
+            pop();
         }
         else if (gameMode === 1) {
             console.log('Keyboard tutorial is activated.');
+
+            image(returnBtn, 0 + returnBtn.width * 0.1 / 2, 0 + returnBtn.height * 0.3, returnBtn.width * 0.5, returnBtn.height * 0.5);
         }
     }
 }
