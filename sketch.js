@@ -31,6 +31,7 @@ let aboutBtn;
 let paper;
 let barImg;
 let returnBtn;
+let closeBtn;
 let bgMusic;
 let walkSfx;
 
@@ -113,6 +114,7 @@ function preload() {
 
   aboutBtn = loadImage('assets/aboutButton.png');
   helpBtn = loadImage('assets/helpButton.png');
+  closeBtn = loadImage('assets/closeButton.png');
 
   paper = loadImage('assets/paper.png');
   barImg = loadImage('assets/bar.png');
@@ -153,6 +155,9 @@ function setup() {
   faceMesh.detectStart(video, gotFaces);
   handPose.detectStart(video, gotHands);
 
+  //create top bar
+  header = new Header();
+
   // Create the game
   game = new Game();
 
@@ -162,6 +167,7 @@ function setup() {
 
 function draw() {
   game.show();
+  console.log(game.stage)
 
   if(detectHide()){
         // fill(255, 0, 0); // Red background alert
@@ -282,22 +288,29 @@ function detectHide(){
 
 function mousePressed() {
   // Unlock audio on first user interaction (required by browsers)
-  if (typeof userStartAudio === "function") {
+if (typeof userStartAudio === "function") {
     userStartAudio();
   }
 
-  if (typeof game === 'undefined') {
-
-  }
-  else if (game && game.play instanceof startScreen) {
-    game.play.modeChanging(mouseX, mouseY);
-  }
-  else if (game && game.play instanceof Tutorial) {
-    let det = game.play.goingBack(mouseX, mouseY);
-    console.log(det);
-    if (det) {
-      game.stage = 0;
-      game.started = false;
+ // 1. Check Header UI first
+  // Ensure 'game.stage' is actually a number
+  let uiClick = header.clicked(mouseX, mouseY, game.stage);
+  
+  // 2. Only check game interactions if the UI wasn't clicked
+  if (!uiClick) {
+    if (game && game.play) {
+      // Stage 0
+      if (game.play instanceof startScreen) { 
+        game.play.modeChanging(mouseX, mouseY); 
+      }
+      // Stage 5
+      else if (game.play instanceof Tutorial) {
+        let det = game.play.goingBack(mouseX, mouseY);
+        if (det) { 
+          game.stage = 0; 
+          game.started = false;
+      }
+    }
     }
   }
 }

@@ -23,11 +23,32 @@ class Actions {
             game.stage = 2;
             game.play = new Stage();
             game.parallax.setStage(2);
-            game.worldX = 0;
-            game.player.x = width / 4;
+            game.worldX = 100; // Start a bit away from left edge
+            game.player.x = game.worldX + width / 2;
+            game.camera.x = 0;
+            game.backDoorCooldownFrames = 60; // Prevent immediate back door trigger
+            if (game.mirrorObstacle) {
+              game.mirrorObstacle.triggered = false;
+            }
+            if (game.backDoorObstacle) {
+              game.backDoorObstacle.triggered = false;
+            }
+            break;
+          case '2':
+            // Transition from living room (stage 2) back to bedroom (stage 1)
+            game.stage = 1;
+            game.play = new Stage();
+            game.parallax.setStage(1);
+            // Start near the door (right side of bedroom)
+            const sceneWidth = game.parallax.getSceneWidth();
+            game.worldX = Math.max(0, sceneWidth - width);
+            game.player.x = game.worldX + width / 2;
             game.camera.x = 0;
             if (game.mirrorObstacle) {
               game.mirrorObstacle.triggered = false;
+            }
+            if (game.backDoorObstacle) {
+              game.backDoorObstacle.triggered = false;
             }
             break;
           default:

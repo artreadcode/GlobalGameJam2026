@@ -3,7 +3,7 @@ class Player {
   constructor(x) {
     this.x = x;
 
-    this.speed = 4;
+    this.speed = 8;
     this.spriteW = 120;
     this.spriteH = 120;
 
