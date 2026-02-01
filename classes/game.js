@@ -34,6 +34,7 @@ class Game {
         // Stage 2: Living Room
         // Stage 3: High School
         // Stage 4: Toilet
+        // Stage 5: Office
         // Stage 8: Mirror transition
         // Stage 9: Tutorial
         this.stage = 0;
@@ -79,7 +80,9 @@ class Game {
         this.hid = 0; // 0: false, 1: neutral, 2: true
 
         this.hideQuestionText = new JiggleText("?", 0, 0, 20, {color: 0});
+
     }
+
 
     // Draw compact UI panel with about/help buttons, face, and progress bars
     drawBars() {
@@ -199,8 +202,8 @@ class Game {
                 bgMusic.setLoop(true);
                 bgMusic.play();
             }
-        } else if (this.stage === 3 || this.stage === 4) {
-            // Stage 3-4 (High School, Toilet): Play teen music
+        } else if (this.stage === 3 || this.stage === 4 || this.stage === 5) {
+            // Stage 3-5 (High School, Toilet, Office): Play teen music
             if (bgMusic && bgMusic.isPlaying()) bgMusic.stop();
             if (teenMusic && !teenMusic.isPlaying() && getAudioContext().state === "running") {
                 teenMusic.setLoop(true);
@@ -298,7 +301,7 @@ class Game {
                 this.parallax.update(deltaX);
                 this.parallax.draw(cameraX);
 
-                // Draw mum and dad - behind front layer
+                // Draw mum and dad in living room - behind front layer
                 if (this.minigameTriggerMum) {
                     const centerX = Math.max(sceneWidth * 0.5, width * 0.5);
                     this.minigameTriggerMum.x = centerX - 2100;
@@ -448,30 +451,69 @@ class Game {
                 this.player.draw(cameraX);
                 this.parallax.drawFront();
 
-                // Transition: Toilet -> High School (go right at door position)
-                if (this.sceneCooldownFrames <= 0 && this.worldX >= 1390 && moveRight) {
-                    this.stage = 3;
-                    this.parallax.setStage(2, 0);
-                    const newSceneWidth = this.parallax.getSceneWidth();
-                    this.worldX = Math.max(0, newSceneWidth - width / 2);
+                // Transitions
+                if (this.sceneCooldownFrames <= 0) {
+                    if (this.worldX >= 1390 && moveRight) {
+                        // Toilet -> High School (go right at door position)
+                        this.stage = 3;
+                        this.parallax.setStage(2, 0);
+                        const newSceneWidth = this.parallax.getSceneWidth();
+                        this.worldX = Math.max(0, newSceneWidth - width / 2);
+                        this.sceneCooldownFrames = 60;
+                        console.log('Toilet -> High School');
+                    } else if (this.worldX <= -190 && moveLeft) {
+                        // Toilet -> Office (go left)
+                        this.stage = 5;
+                        this.parallax.setStage(3, 0);
+                        const newSceneWidth = this.parallax.getSceneWidth();
+                        // Spawn player at the rightmost position
+                        this.worldX = Math.max(0, newSceneWidth - width / 2);
+                        this.sceneCooldownFrames = 60;
+                        this.player.setCharacterType('adult');
+                        console.log('Toilet -> Office');
+                    }
+                }
+                break;
+            }
+
+            case 5: {           // Stage 5: Office
+                if (!(this.play instanceof Stage)) this.play = new Stage();
+
+                const moveRight = keyIsDown(68);
+                const moveLeft = keyIsDown(65);
+                walkingActive = moveRight || moveLeft;
+
+                const prevWorldX = this.worldX;
+                if (moveRight) this.worldX += this.player.speed;
+                if (moveLeft) this.worldX -= this.player.speed;
+
+                const sceneWidth = this.parallax.getSceneWidth();
+                const maxWorldX = Math.max(0, sceneWidth - width / 2);
+                this.worldX = constrain(this.worldX, 0, maxWorldX);
+
+                const cameraX = this.worldX;
+                this.player.x = cameraX + width / 2;
+
+                const deltaX = this.worldX - prevWorldX;
+                this.parallax.update(deltaX);
+                this.parallax.draw(cameraX);
+
+                this.player.updateAnimation(moveLeft, moveRight);
+                this.player.draw(cameraX);
+                this.parallax.drawFront();
+
+                // Transition: Office -> Toilet (go right)
+                if (this.sceneCooldownFrames <= 0 && this.worldX >= maxWorldX - 5 && moveRight) {
+                    this.stage = 4;
+                    this.parallax.setStage(2, 1);
+                    this.worldX = -200; // Spawn at left side of toilet
                     this.sceneCooldownFrames = 60;
-                    console.log('Toilet -> High School');
+                    this.player.setCharacterType('teen');
+                    console.log('Office -> Toilet');
                 }
                 break;
             }
-            case 7: { // Tutorial page
-                if (!(this.play instanceof Tutorial)) {
-                    this.play = new Tutorial();
-                }
-                this.play.show();
-                if (this.play.willMove) {
-                    this.stage = 1;
-                    this.play.willMove = false;
-                    this.play.tutorialMode = 0;
-                    this.play.smileStartTime = null;
-                }
-                break;
-            }
+
             case 8: {           //mirror transition scene/stage, the "inbetween" of each level
                 if (!(this.play instanceof MirrorScreen)) {
                     this.play = new MirrorScreen();
