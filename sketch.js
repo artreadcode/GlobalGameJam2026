@@ -29,11 +29,19 @@ let gameMode = 0; // default (camera)
 let helpBtn;
 let aboutBtn;
 let paper;
+let longPaper;
 let barImg;
 let returnBtn;
+let closeBtn;
 let bgMusic;
 let walkSfx;
 let heartbeatSound;
+
+//Help image
+let help01;
+let help02;
+let help03;
+let help04;
 
 // Stage 1 bedroom parallax layers
 let bedroomBack;
@@ -140,11 +148,19 @@ function preload() {
 
   aboutBtn = loadImage('assets/aboutButton.png');
   helpBtn = loadImage('assets/helpButton.png');
+  closeBtn = loadImage('assets/closeButton.png');
 
   paper = loadImage('assets/paper.png');
+  longPaper = loadImage('assets/longPaper.png');
   barImg = loadImage('assets/bar.png');
 
   returnBtn = loadImage('assets/returnButton.png');
+
+  //loading help images
+  help01 = loadImage('assets/Help01.png');
+  help02 = loadImage('assets/Help02.png');
+  help03 = loadImage('assets/Help03.png');
+  help04 = loadImage('assets/Help04.png');
 
   // Stage 1 bedroom parallax
   bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
@@ -195,6 +211,9 @@ function setup() {
   faceMesh.detectStart(video, gotFaces);
   handPose.detectStart(video, gotHands);
 
+  //create top bar
+  header = new Header();
+
   // Create the game
   game = new Game();
 
@@ -204,6 +223,7 @@ function setup() {
 
 function draw() {
   game.show();
+  console.log(game.stage)
 
   if(detectHide()){
         // fill(255, 0, 0); // Red background alert
@@ -330,22 +350,37 @@ function detectHide(){
 
 function mousePressed() {
   // Unlock audio on first user interaction (required by browsers)
-  if (typeof userStartAudio === "function") {
+if (typeof userStartAudio === "function") {
     userStartAudio();
   }
 
-  if (typeof game === 'undefined') {
-
-  }
-  else if (game && game.play instanceof startScreen) {
-    game.play.modeChanging(mouseX, mouseY);
-  }
-  else if (game && game.play instanceof Tutorial) {
-    let det = game.play.goingBack(mouseX, mouseY);
-    console.log(det);
-    if (det) {
-      game.stage = 0;
-      game.started = false;
+ // 1. Check Header UI first
+  // Ensure 'game.stage' is actually a number
+  let uiClick = header.clicked(mouseX, mouseY, game.stage);
+  
+  // 2. Only check game interactions if the UI wasn't clicked
+  if (!uiClick) {
+    if (game && game.play) {
+      // Stage 0
+      if (game.play instanceof startScreen) { 
+        game.play.modeChanging(mouseX, mouseY); 
+      }
+      // Stage 5
+      else if (game.play instanceof Tutorial) {
+        let det = game.play.goingBack(mouseX, mouseY);
+        if (det) { 
+          game.stage = 0; 
+          game.started = false;
+      }
     }
+    }
+  }
+}
+
+function mouseWheel(event) {
+  // Check if header exists and overlay is open
+  if (typeof header !== 'undefined' && header.showOverlay) {
+    header.handleScroll(event.delta);
+    return false; // Blocks browser scrolling
   }
 }
