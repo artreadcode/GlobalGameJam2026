@@ -10,6 +10,7 @@ let handOptions = { maxHands: 1, flipHorizontal: false };
 
 let playerSprite;
 let mirrorSprite;
+let mirrorTeenSprite;
 let doorSprite;
 let blackScreenSprite;
 let mumSprite;
@@ -27,6 +28,9 @@ let playerWalkRight = [];
 
 // Player animation sprites - Teen (Stage 2)
 let teenStand;
+let teenStandSmile;
+let teenStandHide;
+
 let teenWalkLeft = [];
 let teenWalkRight = [];
 
@@ -46,8 +50,10 @@ let returnBtn;
 let closeBtn;
 let question;
 let bgMusic;
+let teenMusic;
 let walkSfx;
 let heartbeatSound;
+let cameraSfx;
 
 let tutorialbarImg;
 let tutorialEImg;
@@ -133,8 +139,10 @@ function keyReleased() {
 function preload() {
   // Audio
   bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
+  teenMusic = loadSound('assets/music/teen.mp3');
   walkSfx = loadSound('assets/music/walk.mp3');
   heartbeatSound = loadSound('assets/music/heartbeat.mp3');
+  cameraSfx = loadSound('assets/music/camera.mp3');
 
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(faceoptions);
@@ -142,11 +150,10 @@ function preload() {
 
 
   playerSprite = loadImage('assets/character.png');
-  playerStandSmile = loadImage('assets/characters/Stand_toddlerSmile.png');
-  playerStandHide = loadImage('assets/characters/Stand_toddlerClose.png');
 
 
   mirrorSprite = loadImage('assets/mirror.png');
+  mirrorTeenSprite = loadImage('assets/characters/Mirror_Teen.png');
   doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
   mumSprite = loadImage('assets/characters/MUM1.png');
@@ -155,8 +162,14 @@ function preload() {
   cameraBorder = loadImage('assets/Stage_1 bedroom/cameraOverlay.png');
   takingPictureSprite = loadImage('assets/characters/Mirror_Toddler.png')
   takingPictureSpriteSmile = loadImage('assets/characters/SMirror_Toddler.png')
+  
+  
   // Player animation sprites - Toddler (Stage 1)
   playerStand = loadImage('assets/characters/Stand_toddler.png');
+  playerStandSmile = loadImage('assets/characters/Stand_toddlerSmile.png');
+  playerStandHide = loadImage('assets/characters/Stand_toddlerClose.png');
+
+
   playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
   playerWalkLeft[1] = loadImage('assets/characters/WLeft2_toddler.png');
   playerWalkLeft[2] = loadImage('assets/characters/WLeft_toddler.png');
@@ -166,6 +179,9 @@ function preload() {
 
   // Player animation sprites - Teen (Stage 2)
   teenStand = loadImage('assets/characters/Stand_teen.png');
+  teenStandSmile = loadImage('assets/characters/Stand_teenSmile.png');
+  teenStandHide = loadImage('assets/characters/Stand_teenClose.png');
+
   teenWalkLeft[0] = loadImage('assets/characters/WLeft_teen.png');
   teenWalkLeft[1] = loadImage('assets/characters/WLeft2_teen.png');
   teenWalkLeft[2] = loadImage('assets/characters/WLeft_teen.png');
@@ -337,9 +353,9 @@ function updateEnergy() {
   } 
   // If NEITHER (doing nothing), Drift to 0.5
   else {
-    if (game.introvert > 0.6) {
+    if (game.introvert > 0.5) {
       game.introvert -= 0.005; // Drift down slowly
-    } else if (game.introvert < 0.6) {
+    } else if (game.introvert < 0.5) {
       game.introvert += 0.005; // Drift up slowly
     }
     
@@ -350,8 +366,8 @@ function updateEnergy() {
   }
 
   // 3. Clamp values (This keeps your max 1.0 limit without locking the logic)
-  game.introvert = Math.min(1, Math.max(0, Number(game.introvert.toFixed(3))));
-  game.extrovert = Math.min(1, Math.max(0, Number((1 - game.introvert).toFixed(3))));
+  game.introvert = Math.min(1, Math.max(0.002, Number(game.introvert.toFixed(3))));
+  game.extrovert = Math.min(1, Math.max(0.002, Number((1 - game.introvert).toFixed(3))));
 }
 
 function detectSmile() {

@@ -84,6 +84,10 @@ class Game1 {
       if (elapsed >= this.flashDurationMs) {
         this.status = "photo";
         this.photoStartMs = this._nowMs();
+        // Play camera shutter sound
+        if (cameraSfx && !cameraSfx.isPlaying()) {
+          cameraSfx.play();
+        }
       }
       return;
     }
