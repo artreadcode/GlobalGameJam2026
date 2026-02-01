@@ -11,6 +11,7 @@ let handOptions = { maxHands: 1, flipHorizontal: false };
 let playerSprite;
 let mirrorSprite;
 let blackScreenSprite;
+let placeholderSprite;
 
 let schoolbellFont;
 
@@ -71,6 +72,7 @@ function preload() {
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
+  placeholderSprite = loadImage('assets/placeholder.png');
 
 
   // Font is loaded via CSS in index.html

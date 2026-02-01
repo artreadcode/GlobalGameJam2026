@@ -7,9 +7,12 @@ class Game {
         this.player = new Player(width/4);
         this.camera = new Camera();
         this.worldX = 0;
-        this.mirrorObstacle = new Obstacle(0, 100, 100, { sprite: mirrorSprite, actionId: "1", actionType: "transition" });
+        this.mirrorObstacle = new Obstacle(0, 400, 400, { sprite: mirrorSprite, actionId: "1", actionType: "transition" });
         this.mirrorExitObstacle = new Obstacle(0, 40, 0, { actionId: "1", actionType: "return", visible: false });
-        this.obstacles = [this.mirrorObstacle];
+        this.minigame = new Game1();
+        this.minigameActive = false;
+        this.minigameTrigger = new Obstacle(0, 120, 120, { sprite: placeholderSprite, actionId: "1", actionType: "minigame" });
+        this.obstacles = [this.mirrorObstacle, this.minigameTrigger];
         /*
         this.w = windowWidth;
         this.h = windowHeight;
@@ -152,8 +155,10 @@ class Game {
                 walkingActive = moveRight || moveLeft;
 
                 const prevWorldX = this.worldX;
-                if (moveRight) this.worldX += this.player.speed;
-                if (moveLeft) this.worldX -= this.player.speed;
+                if (!this.minigameActive) {
+                    if (moveRight) this.worldX += this.player.speed;
+                    if (moveLeft) this.worldX -= this.player.speed;
+                }
 
                 const maxWorldX = Math.max(this.play.xMin, this.play.xMax - width / 2);
                 this.worldX = constrain(this.worldX, this.play.xMin, maxWorldX);
@@ -176,11 +181,15 @@ class Game {
                 this.parallax.drawFront();
 
                 this.mirrorObstacle.x = this.play.xMax - 200;
+                this.minigameTrigger.x = (this.play.xMin + this.play.xMax) / 2;
                 if (this.mirrorEntryCooldownFrames > 0) {
                     this.mirrorEntryCooldownFrames -= 1;
                 }
                 for (const obstacle of this.obstacles) {
                     obstacle.draw(cameraX);
+                    if (this.minigameActive) {
+                        continue;
+                    }
                     if (obstacle === this.mirrorObstacle && this.mirrorEntryCooldownFrames > 0) {
                         continue;
                     }
@@ -191,20 +200,15 @@ class Game {
                         }
                     }
                 }
-
-                // Draw compact UI panel
-                this.drawBars();
-
-                if (frameCount % 60 === 0) {
-                    console.log('worldX', this.worldX, 'camera', cameraX);
+                if (this.minigameActive) {
+                    this.minigame.update();
+                    this.minigame.draw();
+                    if (keyIsDown(27)) {
+                        this.minigameActive = false;
+                        this.minigame.stop();
+                        this.minigameTrigger.triggered = false;
+                    }
                 }
-
-                //show dialogue box
-                if(this.dialogue){
-                    this.dialogue.show();
-                }
-                        
-                
                 break;
             }
             case 2: {           //stage 2
@@ -248,9 +252,11 @@ class Game {
                 break;
             }
             case 5: { // Tutorial page
-                this.play = new Tutorial();
+                if (!(this.play instanceof Tutorial)) {
+                    this.play = new Tutorial();
+                }
                 this.play.show();
-                this.drawBars();
+                // this.drawBars();
                 break;
             }
         }
