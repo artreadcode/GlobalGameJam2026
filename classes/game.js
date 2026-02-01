@@ -594,7 +594,7 @@ class Game {
         }
 
         // Draw header with buttons on top of everything
-        if (this.stage !== 9) {
+        if (this.stage !== 9 && this.stage !== 8 && this.minigameActive === false) {
             header.display(this.stage);
         }
     }
