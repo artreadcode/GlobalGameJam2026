@@ -50,8 +50,10 @@ let returnBtn;
 let closeBtn;
 let question;
 let bgMusic;
+let teenMusic;
 let walkSfx;
 let heartbeatSound;
+let cameraSfx;
 
 let tutorialbarImg;
 let tutorialEImg;
@@ -137,8 +139,10 @@ function keyReleased() {
 function preload() {
   // Audio
   bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
+  teenMusic = loadSound('assets/music/teen.mp3');
   walkSfx = loadSound('assets/music/walk.mp3');
   heartbeatSound = loadSound('assets/music/heartbeat.mp3');
+  cameraSfx = loadSound('assets/music/camera.mp3');
 
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(faceoptions);
