@@ -79,37 +79,38 @@ class Game {
         this.hid = 0; // 0: false, 1: neutral, 2: true
 
         this.hideQuestionText = new JiggleText("?", 0, 0, 20, {color: 0});
+        // Bar used in header/playing mode
+        this.bar = new Bar();
     }
 
     // Draw compact UI panel with about/help buttons, face, and progress bars
     drawBars() {
-        let padding = 20; // Consistent with header padding
-        let panelY = padding;
+        let padding = 40;           // Distance from window edge
+        let faceSize = 70;          // Size of face circle
+        let faceSpacing = 10;       // Gap between face and bar
+        let barWidth = 250;         // Width of the bar UI
 
         push();
 
-        // Calculate panel width based on content
-        let barW = 200;
-        let faceSize = 70;
-        let spacing = 15;
-        let panelWidth = faceSize + spacing + barW;
-        let panelX = windowWidth - panelWidth-padding*4;
+        // Ensure Bar instance exists
+        if (!this.bar) this.bar = new Bar();
 
-        // Draw face area with face mesh
-        let faceX = panelX + padding;
-        let faceY = panelY + padding;
-        let centerX = faceX + faceSize / 2;
-        let centerY = faceY + faceSize / 2;
+        // Calculate positions working backwards from right edge
+        let rightEdge = windowWidth - padding-barWidth;
+        let barLeft = Math.max(padding, rightEdge - barWidth);  // Ensure bar doesn't go past left edge
+        let faceRight = barLeft - faceSpacing;
+        let faceLeft = Math.max(padding, faceRight - faceSize); // Ensure face doesn't go past left edge
+        
+        let centerX = faceLeft + faceSize / 2;
+        let centerY = padding + faceSize / 2;
 
+        // Draw face mesh area
         if (video && faces.length > 0) {
-            
             if (detectHide()) {
                 // Show only border and question mark when face is hidden                
-
                 imageMode(CENTER);
                 image(question, centerX, centerY, faceSize, faceSize);
                 imageMode(CORNER);
-                // Draw question mark image in center
                 this.hideQuestionText.setPosition(centerX, centerY);
                 this.hideQuestionText.show();
             } else {
@@ -134,7 +135,6 @@ class Game {
                 let bboxCenterX = minX + bboxWidth / 2;
                 let bboxCenterY = minY + bboxHeight / 2;
                 
-                
                 // Draw keypoint dots
                 noStroke();
                 fill(0);
@@ -147,43 +147,23 @@ class Game {
             }
         } else {
             // No video or no faces detected
-                this.hideQuestionText.setPosition(faceX + faceSize / 2, faceY + faceSize / 2);
-                this.hideQuestionText.show();
-                
-                // Draw question mark image in center
-                imageMode(CENTER);
-                image(question, faceX + faceSize / 2, faceY + faceSize / 2, faceSize, faceSize);
-                imageMode(CORNER);
+            this.hideQuestionText.setPosition(centerX, centerY);
+            this.hideQuestionText.show();
+            
+            imageMode(CENTER);
+            image(question, centerX, centerY, faceSize, faceSize);
+            imageMode(CORNER);
         }
 
         rectMode(CORNER);
-        // Progress bars - compact version
-        let barX = faceX + faceSize + spacing;
-        let barY = faceY + 15;
-        let barH = 18;
-        let barSpacing = 30;
-        let barPadding = 3;
 
-        textFont(schoolbellFont);
-        textAlign(LEFT, CENTER);
-        textSize(14);
-        fill(0);
-        noStroke();
-
-        // First bar
-        text("label", barX, barY);
-        image(barImg, barX + 40, barY - barH / 2, barW, barH);
-        fill(0);
-        let fill1Width = (this.bar1Value / 100) * (barW - barPadding * 2);
-        rect(barX + 40 + barPadding, barY - barH / 2 + barPadding, fill1Width, barH - barPadding * 2);
-
-        // Second bar
-        fill(0);
-        text("label", barX, barY + barSpacing);
-        image(barImg, barX + 40, barY + barSpacing - barH / 2, barW, barH);
-        fill(0);
-        let fill2Width = (this.bar2Value / 100) * (barW - padding * 2);
-        rect(barX + 40 + padding, barY + spacing - barH / 2 + padding, fill2Width, barH - padding * 2);
+        // Position bar to the right of face, aligned to top with padding
+        // Make sure bar stays within right edge
+        this.bar.headertx = constrain(barLeft, padding, windowWidth - padding - barWidth);
+        this.bar.headerty = padding;
+        
+        // Draw the bar
+        this.bar.show('playing', this.introvert, this.extrovert);
 
         pop();
     }
