@@ -10,6 +10,7 @@ let handOptions = { maxHands: 1, flipHorizontal: false };
 
 let playerSprite;
 let mirrorSprite;
+let mirrorTeenSprite;
 let doorSprite;
 let blackScreenSprite;
 let mumSprite;
@@ -148,6 +149,7 @@ function preload() {
 
 
   mirrorSprite = loadImage('assets/mirror.png');
+  mirrorTeenSprite = loadImage('assets/characters/Mirror_Teen.png');
   doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
   mumSprite = loadImage('assets/characters/MUM1.png');
@@ -347,9 +349,9 @@ function updateEnergy() {
   } 
   // If NEITHER (doing nothing), Drift to 0.5
   else {
-    if (game.introvert > 0.6) {
+    if (game.introvert > 0.5) {
       game.introvert -= 0.005; // Drift down slowly
-    } else if (game.introvert < 0.6) {
+    } else if (game.introvert < 0.5) {
       game.introvert += 0.005; // Drift up slowly
     }
     
@@ -360,8 +362,8 @@ function updateEnergy() {
   }
 
   // 3. Clamp values (This keeps your max 1.0 limit without locking the logic)
-  game.introvert = Math.min(1, Math.max(0, Number(game.introvert.toFixed(3))));
-  game.extrovert = Math.min(1, Math.max(0, Number((1 - game.introvert).toFixed(3))));
+  game.introvert = Math.min(1, Math.max(0.002, Number(game.introvert.toFixed(3))));
+  game.extrovert = Math.min(1, Math.max(0.002, Number((1 - game.introvert).toFixed(3))));
 }
 
 function detectSmile() {
