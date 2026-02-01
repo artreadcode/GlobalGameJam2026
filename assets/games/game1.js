@@ -26,7 +26,7 @@ class Game1 {
     fill(255);
     textAlign(CENTER, CENTER);
     textSize(Math.max(16, Math.min(width, height) * 0.05));
-    text('Minigame 1 (placeholder)', width / 2, height / 2 - 20);
+    text('Taking a picture!', width / 2, height / 2 - 20);
     textSize(Math.max(12, Math.min(width, height) * 0.025));
     text('Press Esc to close', width / 2, height / 2 + 30);
     pop();

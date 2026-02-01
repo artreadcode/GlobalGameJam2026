@@ -27,6 +27,9 @@ class Tutorial extends Stage {
     }
 
     show(energyI, energyE) {
+
+        ellipseMode(CENTER);
+        rectMode(CENTER);
         background(this.bg);
         this.bar = new Bar();
 

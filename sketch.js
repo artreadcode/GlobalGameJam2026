@@ -12,18 +12,25 @@ let playerSprite;
 let mirrorSprite;
 let doorSprite;
 let blackScreenSprite;
-let placeholderSprite;
+let mumSprite;
+let mumCameraSprite;
+let dadSprite;
+let takingPictureSprite;
 
 // Player animation sprites
 let playerStand;
+let playerStandSmile;
+let playerStandHide;
+
 let playerWalkLeft = [];
 let playerWalkRight = [];
+
 
 let schoolbellFont;
 
 // Tutorial images
 let tooltip;
-let cameraMode;
+let cameraBorder;
 let keyboardMode;
 let gameMode = 0; // default (camera)
 let helpBtn;
@@ -110,23 +117,6 @@ function keyPressed() {
       heartbeatGame.start();
     }
   }
-
-  // Dialogue box test with 'V' key
-  if (k === "v") {
-    if (game.dialogue) {
-
-      game.dialogue.typewriter.stop();
-      game.dialogue = null; // Close dialogue
-      
-
-    } else {
-      game.dialogue = new dialogueBox(
-        "Hello! This is a test dialogue box with typewriter effect. Press V again to close it.",
-        "Test Character",
-        { sound: typingSound }
-      );
-    }
-  }
 }
 
 function keyReleased() {
@@ -148,11 +138,19 @@ function preload() {
 
 
   playerSprite = loadImage('assets/character.png');
+  playerStandSmile = loadImage('assets/characters/Stand_toddlerSmile.png');
+  playerStandHide = loadImage('assets/characters/Stand_toddlerClose.png');
+
+
   mirrorSprite = loadImage('assets/mirror.png');
   doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
-  placeholderSprite = loadImage('assets/placeholder.png');
-
+  mumSprite = loadImage('assets/characters/MUM1.png');
+  mumCameraSprite = loadImage('assets/characters/MUM2.png');
+  dadSprite = loadImage('assets/characters/DAD.png');
+  cameraBorder = loadImage('assets/Stage_1 bedroom/cameraOverlay.png');
+  takingPictureSprite = loadImage('assets/characters/Mirror_Toddler.png')
+  takingPictureSpriteSmile = loadImage('assets/characters/SMirror_Toddler.png')
   // Player animation sprites
   playerStand = loadImage('assets/characters/Stand_toddler.png');
   playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
@@ -194,7 +192,7 @@ function preload() {
   help04 = loadImage('assets/Help04.png');
 
   //load dialogue sound effect
-  typingSound = loadSound('assets/music/typing.mp3');
+  typingSound = loadSound('assets/music/talking.mp3');
 
   // Stage 1 bedroom parallax
   bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
@@ -250,12 +248,16 @@ function setup() {
 
   // Create the game
   game = new Game();
-  
 
 }
 
 function draw() {
   game.show();
+
+  //detect for character expression
+  detectSmile();
+  detectHide();
+
   console.log(game.stage)
 
   if (detectHide()) {
@@ -272,6 +274,9 @@ function draw() {
     heartbeatGame.update();
     heartbeatGame.draw();
   }
+
+  updateEnergy();
+  detectSmile();
 }
 
 function modelLoaded() {
@@ -307,70 +312,73 @@ function gotHands(results) {
 }
 
 function updateEnergy() {
-  if (game.introvert >= 1.0 || game.extrovert >= 1.0 || game.introvert <= 0.0 || game.extrovert <= 0.0) {
-    // stop increasing/decreasing
-  }
+  // 1. Remove the top 'if' statement that was locking the game at 1.0
+  
+  // 2. Priority Logic
+  // If hiding, become Introverted
+  if (game.hid === 2) {
+    game.introvert += 0.005;
+  } 
+  // If smiling, become Extroverted (decrease Introvert)
+  else if (game.smiled === 2) {
+    game.introvert -= 0.005;
+  } 
+  // If NEITHER (doing nothing), Drift to 0.5
   else {
-    if (game.smiled === 2) {
-      game.introvert -= 0.005;
-      game.extrovert = 1.000 - game.introvert;
+    if (game.introvert > 0.6) {
+      game.introvert -= 0.005; // Drift down slowly
+    } else if (game.introvert < 0.6) {
+      game.introvert += 0.005; // Drift up slowly
     }
-    else if (game.smiled === 1) {
-      if (abs(game.introvert - game.extrovert) > 0.01) {
-        game.introvert += 0.005;
-        game.extrovert = 1.000 - game.introvert;
-      }
-    }
-    else if (game.hid === 2) {
-      game.introvert += 0.005;
-      game.extrovert = 1.000 - game.introvert;
-    }
-    else if (game.hid === 1) {
-      if (abs(game.introvert - game.extrovert) > 0.01) {
-        game.introvert -= 0.005;
-        game.extrovert = 1.000 - game.introvert;
-      }
+    
+    // Stop jittering if we are close to 0.5
+    if (Math.abs(game.introvert - 0.5) < 0.005) {
+      game.introvert = 0.5;
     }
   }
+
+  // 3. Clamp values (This keeps your max 1.0 limit without locking the logic)
+  game.introvert = Math.min(1, Math.max(0, Number(game.introvert.toFixed(3))));
+  game.extrovert = Math.min(1, Math.max(0, Number((1 - game.introvert).toFixed(3))));
 }
 
 function detectSmile() {
-
-  // console.log(faces.length);
-
-  if (faces.length != 0 && faces.length > 0 && gameMode === 0) {
+  // Check if we have a face AND we are in the correct game mode
+  if (faces.length > 0 && gameMode === 0) {
     let face = faces[0];
 
     let leftCorner = face.keypoints[61];
     let rightCorner = face.keypoints[291];
-
-    let topLip = face.keypoints[13];
-    let bottomLip = face.keypoints[14];
+    
 
     // 1. Calculate Mouth Width
     let mouthWidth = dist(leftCorner.x, leftCorner.y, rightCorner.x, rightCorner.y);
 
-    // 2. Calculate Face Width (to normalize across distances)
-
+    // 2. Calculate Face Width
     let leftCheek = face.keypoints[234];
     let rightCheek = face.keypoints[454];
     let faceWidth = dist(leftCheek.x, leftCheek.y, rightCheek.x, rightCheek.y);
-    // console.log(faceWidth);
+    
+    let ratio = mouthWidth / faceWidth;
 
-    if (mouthWidth / faceWidth > 0.45) { // Adjust based on testing
-      // console.log('***smile detected.***');
+    // DEBUG: Uncomment this line to see your numbers in the console!
+    // console.log("Smile Ratio:", ratio.toFixed(3)); 
+
+    // 3. Check Threshold
+    // You can adjust this based on the console log above.
+    if (ratio > 0.45) { 
       game.smiled = 2;
-      game.hid = 1;
-      updateEnergy();
       return true;
     }
     else {
-      // console.log('***smile X***');
       game.smiled = 0;
-      updateEnergy();
       return false;
     }
-  game.smiled = 1;
+  } 
+  // CRITICAL FIX: If no face is detected, we must reset the smile!
+  else {
+    game.smiled = 1;
+    return false;
   }
 }
 
@@ -409,13 +417,14 @@ function detectHide() {
       // Threshold: if hand is within 60 pixels of mouth
       if (d < 80) {
         game.hid = 2;
-        game.smiled = 1;
-        updateEnergy();
+        // game.smiled = 1;
+        // updateEnergy();
         return true;
       }
       else {
         game.hid = 0;
-        updateEnergy();
+        // game.smiled = 1;
+        // updateEnergy();
         return false;
       }
     }
