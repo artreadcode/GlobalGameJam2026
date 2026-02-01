@@ -201,7 +201,7 @@ class HeartbeatGame {
       this.hits.miss++;
       this.combo = 0;
       this.survivalBar = max(0, this.survivalBar - this.missedBeatPenalty);
-      this.showFeedback("MISS", [255, 50, 50]);
+      this.showFeedback("MISS", [100, 100, 100]);
       if (this.survivalBar <= 0) {
         this.gameOver = true;
         return;
@@ -251,24 +251,24 @@ class HeartbeatGame {
       this.score += 100;
       this.combo++;
       this.survivalBar = min(100, this.survivalBar + this.perfectBoost);
-      this.showFeedback("PERFECT!", [255, 215, 0]); // Gold
+      this.showFeedback("PERFECT!", [255, 255, 255]); // White
       this.shakeIntensity = 8;
     } else if (timing <= this.goodWindow) {
       this.hits.good++;
       this.score += 50;
       this.combo++;
-      this.showFeedback("GOOD!", [0, 255, 100]); // Green
+      this.showFeedback("GOOD!", [200, 200, 200]); // Light gray
       this.shakeIntensity = 5;
     } else if (timing <= this.okWindow) {
       this.hits.ok++;
       this.score += 25;
       this.combo++;
-      this.showFeedback("OK", [100, 200, 255]); // Light blue
+      this.showFeedback("OK", [150, 150, 150]); // Gray
       this.shakeIntensity = 3;
     } else {
       this.hits.miss++;
       this.combo = 0;
-      this.showFeedback("MISS", [255, 50, 50]); // Red
+      this.showFeedback("MISS", [100, 100, 100]); // Dark gray
     }
 
     this.beatHitThisPhase = true;
@@ -316,6 +316,7 @@ class HeartbeatGame {
     if (this.feedbackAlpha > 0) {
       textAlign(CENTER, CENTER);
       textSize(48);
+      textFont(schoolbellFont);
       fill(this.feedbackColor[0], this.feedbackColor[1], this.feedbackColor[2], this.feedbackAlpha);
       text(this.feedbackText, width / 2, height / 2 + 80);
     }
@@ -326,6 +327,9 @@ class HeartbeatGame {
     // Draw time remaining
     let timeLeft = max(0, this.duration - (millis() - this.startTime));
     textAlign(RIGHT, TOP);
+    textSize(18);
+    textFont(schoolbellFont);
+    fill(255);
     text("Time: " + (timeLeft / 1000).toFixed(1) + "s", width - 50, 50);
 
     // Draw low bar warning
@@ -337,7 +341,7 @@ class HeartbeatGame {
     textAlign(CENTER, BOTTOM);
     textSize(20);
     fill(200);
-    text("Press Q and E with the heartbeat rhythm!", width / 2, height - 30);
+    textFont(schoolbellFont);
 
     pop();
   }
@@ -346,10 +350,11 @@ class HeartbeatGame {
     push();
     translate(x, y);
 
-    // Heart color pulses with beat
-    let r = map(this.heartScale, 1, 1.3, 200, 255);
-    fill(r, 50, 80);
-    noStroke();
+    // Heart color pulses with beat (black and white)
+    let brightness = map(this.heartScale, 1, 1.3, 220, 255);
+    fill(brightness);
+    stroke(0);
+    strokeWeight(3);
 
     // Draw heart shape
     beginShape();
@@ -361,7 +366,8 @@ class HeartbeatGame {
     endShape(CLOSE);
 
     // Highlight
-    fill(255, 100, 120, 100);
+    fill(255, 255, 255, 100);
+    noStroke();
     ellipse(-20 * s, -20 * s, 20 * s, 15 * s);
 
     pop();
@@ -373,28 +379,30 @@ class HeartbeatGame {
     // Q indicator (left)
     push();
     let qAlpha = this.beatPhase === 0 ? 255 : 100;
-    fill(100, 200, 255, qAlpha);
-    stroke(255, qAlpha);
+    fill(255, qAlpha);
+    stroke(0, qAlpha);
     strokeWeight(3);
     ellipse(width / 2 - 100, centerY, 80, 80);
-    fill(255, qAlpha);
+    fill(0, qAlpha);
     noStroke();
     textAlign(CENTER, CENTER);
     textSize(32);
+    textFont(schoolbellFont);
     text("Q", width / 2 - 100, centerY);
     pop();
 
     // E indicator (right)
     push();
     let eAlpha = this.beatPhase === 1 ? 255 : 100;
-    fill(255, 150, 100, eAlpha);
-    stroke(255, eAlpha);
+    fill(255, eAlpha);
+    stroke(0, eAlpha);
     strokeWeight(3);
     ellipse(width / 2 + 100, centerY, 80, 80);
-    fill(255, eAlpha);
+    fill(0, eAlpha);
     noStroke();
     textAlign(CENTER, CENTER);
     textSize(32);
+    textFont(schoolbellFont);
     text("E", width / 2 + 100, centerY);
     pop();
   }
@@ -410,12 +418,15 @@ class HeartbeatGame {
     let barY = height / 2 + 220;
 
     // Background bar
-    fill(50);
-    noStroke();
+    fill(80);
+    stroke(255);
+    strokeWeight(2);
     rect(barX, barY, barWidth, barHeight, 5);
 
     // Progress indicator
-    fill(255, 100, 100);
+    fill(255);
+    stroke(0);
+    strokeWeight(2);
     let indicatorX = barX + progress * barWidth;
     ellipse(indicatorX, barY + barHeight / 2, 20, 20);
   }
@@ -427,23 +438,23 @@ class HeartbeatGame {
     let barY = 40;
 
     // Background
-    fill(40, 40, 60, 200);
-    stroke(255, 255, 255, 120);
+    fill(50);
+    stroke(255);
     strokeWeight(2);
     rect(barX, barY, barWidth, barHeight, 8);
 
-    // Fill
+    // Fill (white to gray gradient based on survival)
     let fillWidth = barWidth * (this.survivalBar / 100);
     noStroke();
-    let r = map(this.survivalBar, 0, 100, 255, 80);
-    let g = map(this.survivalBar, 0, 100, 80, 255);
-    fill(r, g, 100);
+    let brightness = map(this.survivalBar, 0, 100, 100, 255);
+    fill(brightness);
     rect(barX, barY, fillWidth, barHeight, 8);
 
     // Label
-    fill(255);
+    fill(0);
     textAlign(CENTER, CENTER);
     textSize(14);
+    textFont(schoolbellFont);
     text("SURVIVAL", width / 2, barY + barHeight / 2);
   }
 
@@ -451,7 +462,8 @@ class HeartbeatGame {
     let message = this.lowWarningMessages[this.lowWarningIndex];
     textAlign(CENTER, CENTER);
     textSize(22);
-    fill(255, 120, 120);
+    textFont(schoolbellFont);
+    fill(180);
     text(message, width / 2, 90);
   }
 

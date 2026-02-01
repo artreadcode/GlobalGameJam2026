@@ -112,6 +112,8 @@ class dialogueBox{
     }
 
     draw(){
+
+        rectMode(CORNER);
         push();
 
         //draw name tag container

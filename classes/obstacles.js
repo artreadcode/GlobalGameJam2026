@@ -4,6 +4,7 @@ class Obstacle {
     this.sprite = options.sprite ?? null;
     this.w = w ?? (this.sprite ? this.sprite.width : 64);
     this.h = h ?? (this.sprite ? this.sprite.height : 64);
+    this.yOffset = options.yOffset ?? 0;
     this.actionType = options.actionType ?? null;
     this.actionId = options.actionId ?? null;
     this.triggerOnce = options.triggerOnce ?? true;
@@ -14,7 +15,7 @@ class Obstacle {
 
   draw(cameraX = 0) {
     if (!this.visible) return;
-    const y = height - this.h;
+    const y = height - this.h - this.yOffset;
     if (this.sprite) {
       image(this.sprite, this.x - cameraX, y, this.w, this.h);
       return;
@@ -35,8 +36,8 @@ class Obstacle {
 
     const obsLeft = this.x;
     const obsRight = this.x + this.w;
-    const obsTop = height - this.h;
-    const obsBottom = height;
+    const obsTop = height - this.h - this.yOffset;
+    const obsBottom = height - this.yOffset;
 
     return (
       playerRight > obsLeft &&
