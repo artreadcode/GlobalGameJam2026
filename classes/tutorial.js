@@ -2,11 +2,12 @@ class Tutorial extends Stage {
     constructor() {
         super();
         this.bg = 255;
+        this.started = 0;
         // this.counter = 3; // 3 -> 2 -> 1 -> GO
         this.smileStartTime = null;
         this.tutorialMode = 0; // smile (1 will be the covering)
         this.willMove = false; // will it move onto the next stage?
-        
+        this.bar;
     }
 
     goingBack(mX, mY) {
@@ -25,14 +26,17 @@ class Tutorial extends Stage {
         }
     }
 
-    show() {
+    show(energyI, energyE) {
         background(this.bg);
+        this.bar = new Bar();
 
         let btnW = returnBtn.width * 0.5;
         let btnH = returnBtn.height * 0.5;
         let btnX = 0 + returnBtn.width * 0.1 / 2;
         let btnY = 0 + returnBtn.height * 0.3;
         image(returnBtn, btnX, btnY, btnW, btnH);
+
+        this.bar.show('tutorial', energyI, energyE);
 
         if (gameMode === 0 && video) {
             // Use forced video size for reliability
@@ -103,6 +107,7 @@ class Tutorial extends Stage {
                         this.smileStartTime = null; // reset
                         this.tutorialMode = 2; 
                         this.willMove = true;
+                        this.started = 0;
                     }
                 }
             }
