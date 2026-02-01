@@ -78,7 +78,9 @@ class Game {
         this.hid = 0; // 0: false, 1: neutral, 2: true
 
         this.hideQuestionText = new JiggleText("?", 0, 0, 20, {color: 0});
+
     }
+
 
     // Draw compact UI panel with about/help buttons, face, and progress bars
     drawBars() {
@@ -260,6 +262,7 @@ class Game {
                         this.minigameTriggerMum.draw(cameraX);
                     }
                     if (this.minigameTriggerDad) {
+
                         this.minigameTriggerDad.draw(cameraX);
                     }
                 }
