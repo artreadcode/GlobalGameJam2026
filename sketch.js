@@ -29,11 +29,19 @@ let gameMode = 0; // default (camera)
 let helpBtn;
 let aboutBtn;
 let paper;
+let longPaper;
 let barImg;
 let returnBtn;
 let closeBtn;
 let bgMusic;
 let walkSfx;
+let heartbeatSound;
+
+//Help image
+let help01;
+let help02;
+let help03;
+let help04;
 
 // Stage 1 bedroom parallax layers
 let bedroomBack;
@@ -47,6 +55,17 @@ let livingroomWall;
 let livingroomFloor;
 let livingroomMid;
 let livingroomFront;
+let livingroomDoor;
+let schoolWall;
+let schoolFloor;
+let schoolPoster;
+let schoolLockers;
+let schoolAssemble;
+let toiletBack;
+let toiletWall;
+let toiletFloor;
+let toiletMid;
+let toiletDoor;
 
 // movement
 
@@ -54,6 +73,7 @@ const pressedKeys = { a: false, d: false };
 
 function keyPressed() {
   const k = key.toLowerCase();
+  if (heartbeatGame && heartbeatGame.active && (k === "a" || k === "d")) return;
   if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = true;
 
   // Unlock audio on first user interaction (required by browsers)
@@ -69,10 +89,23 @@ function keyPressed() {
   if (game && k === "t") {
     game.testTransition();
   }
+
+  // Heartbeat rhythm game with 'P' key
+  if (k === "p") {
+    if (!heartbeatGame) {
+      heartbeatGame = new HeartbeatGame();
+    }
+    if (heartbeatGame.active) {
+      heartbeatGame.stop();
+    } else {
+      heartbeatGame.start();
+    }
+  }
 }
 
 function keyReleased() {
   const k = key.toLowerCase();
+  if (heartbeatGame && heartbeatGame.active && (k === "a" || k === "d")) return;
   if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = false;
 }
 
@@ -81,6 +114,7 @@ function preload() {
   // Audio
   bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
   walkSfx = loadSound('assets/music/walk.mp3');
+  heartbeatSound = loadSound('assets/music/heartbeat.mp3');
 
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(faceoptions);
@@ -117,9 +151,16 @@ function preload() {
   closeBtn = loadImage('assets/closeButton.png');
 
   paper = loadImage('assets/paper.png');
+  longPaper = loadImage('assets/longPaper.png');
   barImg = loadImage('assets/bar.png');
 
   returnBtn = loadImage('assets/returnButton.png');
+
+  //loading help images
+  help01 = loadImage('assets/Help01.png');
+  help02 = loadImage('assets/Help02.png');
+  help03 = loadImage('assets/Help03.png');
+  help04 = loadImage('assets/Help04.png');
 
   // Stage 1 bedroom parallax
   bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
@@ -133,6 +174,21 @@ function preload() {
   livingroomFloor = loadImage('assets/Stage_2 living room/Floor_LR.png');
   livingroomMid = loadImage('assets/Stage_2 living room/mid_LR.png');
   livingroomFront = loadImage('assets/Stage_2 living room/front_LR.png');
+  livingroomDoor = loadImage('assets/Stage_2 living room/Door_LR.png');
+
+  // Stage 3 school assets (used for stage 2 now)
+  schoolWall = loadImage('assets/Stage_3 School/wall_SCH.png');
+  schoolFloor = loadImage('assets/Stage_3 School/floor_SCH.png');
+  schoolPoster = loadImage('assets/Stage_3 School/poster_SCH.png');
+  schoolLockers = loadImage('assets/Stage_3 School/Lockers_SCH.png');
+  schoolAssemble = loadImage('assets/Stage_3 School/assenvle_SCH.png');
+
+  // Stage 4 toilet assets (used for stage 3 now)
+  toiletBack = loadImage('assets/Stage_4 Toilet/back_toilet.png');
+  toiletWall = loadImage('assets/Stage_4 Toilet/Wall_toilet.png');
+  toiletFloor = loadImage('assets/Stage_4 Toilet/Floor_toilet.png');
+  toiletMid = loadImage('assets/Stage_4 Toilet/mid_toilet.png');
+  toiletDoor = loadImage('assets/Stage_4 Toilet/Door_toilet.png');
 }
 
 function setup() {
@@ -177,6 +233,12 @@ function draw() {
         // textSize(32);
         // text("MOUTH COVERED! 🫢", 50, 40);
   };
+
+  // Heartbeat rhythm game
+  if (heartbeatGame && heartbeatGame.active) {
+    heartbeatGame.update();
+    heartbeatGame.draw();
+  }
 }
 
 function modelLoaded() {
@@ -312,5 +374,13 @@ if (typeof userStartAudio === "function") {
       }
     }
     }
+  }
+}
+
+function mouseWheel(event) {
+  // Check if header exists and overlay is open
+  if (typeof header !== 'undefined' && header.showOverlay) {
+    header.handleScroll(event.delta);
+    return false; // Blocks browser scrolling
   }
 }
