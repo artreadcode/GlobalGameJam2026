@@ -5,34 +5,54 @@ class Game1 {
 
     this.active = false;
     this.status = "idle";
+    this.done = false;
     this.durationMs = durationMs;
     this.type = type;
+    this.countdownSeconds = 5;
+    this.countdownStartMs = null;
     this.smile = new Smile({ durationMs, type });
   }
 
   start() {
     this.active = true;
-    this.status = "playing";
-    this.smile.start();
+    this.status = "countdown";
+    this.done = false;
+    this.countdownStartMs = this._nowMs();
   }
 
   stop() {
     this.active = false;
+    this.countdownStartMs = null;
     this.smile.stop();
   }
 
   update() {
     if (!this.active) return;
 
+    if (this.status === "countdown") {
+      const elapsed = Math.max(0, this._nowMs() - this.countdownStartMs);
+      if (elapsed >= this.countdownSeconds * 1000) {
+        this.status = "playing";
+        this.smile.start();
+      }
+      return;
+    }
+
     this.smile.update();
 
     if (this.status === "playing") {
       if (this.smile.complete) {
         this.status = "success";
+        this.done = true;
       } else if (this.smile.failed) {
         this.status = "fail";
+        this.done = true;
       }
     }
+  }
+
+  isDone() {
+    return this.done;
   }
 
   draw() {
@@ -58,7 +78,13 @@ class Game1 {
     text("Smile Exercise", width / 2, height * 0.22);
 
     textSize(bodySize);
-    if (this.status === "playing") {
+    if (this.status === "countdown") {
+      const elapsed = Math.max(0, this._nowMs() - this.countdownStartMs);
+      const remaining = Math.max(1, Math.ceil((this.countdownSeconds * 1000 - elapsed) / 1000));
+      text("Get ready to smile", width / 2, height * 0.32);
+      textSize(Math.max(36, Math.min(width, height) * 0.12));
+      text(remaining, width / 2, height * 0.45);
+    } else if (this.status === "playing") {
       if (this.type === 1) {
         text("Smile to fill the bar. Stop and it drains.", width / 2, height * 0.32);
       } else {
@@ -88,20 +114,27 @@ class Game1 {
     const fillW = Math.max(0, Math.min(barW, barW * progress));
     rect(barX, barY, fillW, barH, radius);
 
-    textSize(smallSize);
-    fill(255);
-    text(`${remainingSec.toFixed(1)}s remaining`, width / 2, barY + barH + 28);
+    if (this.status !== "countdown") {
+      textSize(smallSize);
+      fill(255);
+      text(`${remainingSec.toFixed(1)}s remaining`, width / 2, barY + barH + 28);
 
-    const smileStatus = this.smile.isSmiling ? "Smiling" : "Not smiling";
-    if (this.smile.isSmiling) {
-      fill(120, 255, 120);
-    } else {
-      fill(255, 140, 140);
+      const smileStatus = this.smile.isSmiling ? "Smiling" : "Not smiling";
+      if (this.smile.isSmiling) {
+        fill(120, 255, 120);
+      } else {
+        fill(255, 140, 140);
+      }
+      text(smileStatus, width / 2, barY + barH + 55);
     }
-    text(smileStatus, width / 2, barY + barH + 55);
 
     fill(255);
     text("Press Esc to close", width / 2, height * 0.82);
     pop();
+  }
+
+  _nowMs() {
+    if (typeof millis === "function") return millis();
+    return Date.now();
   }
 }

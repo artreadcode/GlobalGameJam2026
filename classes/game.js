@@ -200,13 +200,19 @@ class Game {
                         }
                     }
                 }
+                if (this.minigameTrigger && this.minigameTrigger.triggered && !this.minigameTrigger.overlaps(this.player)) {
+                    this.minigameTrigger.triggered = false;
+                }
                 if (this.minigameActive) {
                     this.minigame.update();
                     this.minigame.draw();
+                    if (this.minigame.isDone && this.minigame.isDone()) {
+                        this.minigameActive = false;
+                        this.minigame.stop();
+                    }
                     if (keyIsDown(27)) {
                         this.minigameActive = false;
                         this.minigame.stop();
-                        this.minigameTrigger.triggered = false;
                     }
                 }
                 break;
@@ -256,7 +262,6 @@ class Game {
                     this.play = new Tutorial();
                 }
                 this.play.show();
-                // this.drawBars();
                 if (this.play.willMove) {
                     this.stage = 1;
                     this.play.willMove = false;
@@ -265,6 +270,10 @@ class Game {
                 }
                 break;
             }
+        }
+
+        if (this.stage !== 4) {
+            this.drawBars();
         }
 
         // Footstep loop on any walking stage
