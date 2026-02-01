@@ -76,10 +76,15 @@ class Player {
       sprite = walkRightSprites[this.animFrame];
     } else {
       // Standing idle - check for smile/hide expressions
-      if (game && game.smiled === 2 && playerStandSmile) {
-        sprite = playerStandSmile;
-      } else if (game && game.hid === 2 && playerStandHide) {
-        sprite = playerStandHide;
+
+       //check for character type according to level/scene
+        let smileSprite = this.characterType === 'teen' ? teenStandSmile : playerStandSmile;
+        let hideSprite = this.characterType === 'teen' ? teenStandHide : playerStandHide;
+
+      if (game && game.smiled === 2 && smileSprite) {
+        sprite = smileSprite;
+      } else if (game && game.hid === 2 && hideSprite) {
+        sprite = hideSprite;
       } else {
         sprite = standSprite;
       }
