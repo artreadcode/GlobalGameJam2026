@@ -12,6 +12,14 @@ class Player {
     this.animTimer = 0;
     this.animSpeed = 8; // frames between animation changes
     this.direction = 0; // 0 = idle, -1 = left, 1 = right
+
+    // Character type: 'toddler' (stage 1) or 'teen' (stage 2)
+    this.characterType = 'toddler';
+  }
+
+  // Set character type based on stage
+  setCharacterType(type) {
+    this.characterType = type;
   }
 
   update(stage) {
@@ -47,15 +55,34 @@ class Player {
   draw(cameraX = 0) {
     let sprite;
 
+    // Select sprite set based on character type
+    let standSprite, walkLeftSprites, walkRightSprites;
+    if (this.characterType === 'teen') {
+      standSprite = teenStand;
+      walkLeftSprites = teenWalkLeft;
+      walkRightSprites = teenWalkRight;
+    } else {
+      // Default to toddler
+      standSprite = playerStand;
+      walkLeftSprites = playerWalkLeft;
+      walkRightSprites = playerWalkRight;
+    }
+
     if (this.direction === -1) {
       // Walking left
-      sprite = playerWalkLeft[this.animFrame];
+      sprite = walkLeftSprites[this.animFrame];
     } else if (this.direction === 1) {
       // Walking right
-      sprite = playerWalkRight[this.animFrame];
+      sprite = walkRightSprites[this.animFrame];
     } else {
-      // Standing idle
-      sprite = playerStand;
+      // Standing idle - check for smile/hide expressions
+      if (game && game.smiled === 2 && playerStandSmile) {
+        sprite = playerStandSmile;
+      } else if (game && game.hid === 2 && playerStandHide) {
+        sprite = playerStandHide;
+      } else {
+        sprite = standSprite;
+      }
     }
 
     if (sprite) {

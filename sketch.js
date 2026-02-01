@@ -17,10 +17,18 @@ let mumCameraSprite;
 let dadSprite;
 let takingPictureSprite;
 
-// Player animation sprites
+// Player animation sprites - Toddler (Stage 1)
 let playerStand;
+let playerStandSmile;
+let playerStandHide;
+
 let playerWalkLeft = [];
 let playerWalkRight = [];
+
+// Player animation sprites - Teen (Stage 2)
+let teenStand;
+let teenWalkLeft = [];
+let teenWalkRight = [];
 
 let schoolbellFont;
 
@@ -36,6 +44,7 @@ let longPaper;
 let barImg;
 let returnBtn;
 let closeBtn;
+let question;
 let bgMusic;
 let walkSfx;
 let heartbeatSound;
@@ -133,6 +142,10 @@ function preload() {
 
 
   playerSprite = loadImage('assets/character.png');
+  playerStandSmile = loadImage('assets/characters/Stand_toddlerSmile.png');
+  playerStandHide = loadImage('assets/characters/Stand_toddlerClose.png');
+
+
   mirrorSprite = loadImage('assets/mirror.png');
   doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
@@ -142,7 +155,7 @@ function preload() {
   cameraBorder = loadImage('assets/Stage_1 bedroom/cameraOverlay.png');
   takingPictureSprite = loadImage('assets/characters/Mirror_Toddler.png')
   takingPictureSpriteSmile = loadImage('assets/characters/SMirror_Toddler.png')
-  // Player animation sprites
+  // Player animation sprites - Toddler (Stage 1)
   playerStand = loadImage('assets/characters/Stand_toddler.png');
   playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
   playerWalkLeft[1] = loadImage('assets/characters/WLeft2_toddler.png');
@@ -151,6 +164,14 @@ function preload() {
   playerWalkRight[1] = loadImage('assets/characters/Wright2_toddler.png');
   playerWalkRight[2] = loadImage('assets/characters/Wright_toddler.png');
 
+  // Player animation sprites - Teen (Stage 2)
+  teenStand = loadImage('assets/characters/Stand_teen.png');
+  teenWalkLeft[0] = loadImage('assets/characters/WLeft_teen.png');
+  teenWalkLeft[1] = loadImage('assets/characters/WLeft2_teen.png');
+  teenWalkLeft[2] = loadImage('assets/characters/WLeft_teen.png');
+  teenWalkRight[0] = loadImage('assets/characters/Wright_teen.png');
+  teenWalkRight[1] = loadImage('assets/characters/Wright2_teen.png');
+  teenWalkRight[2] = loadImage('assets/characters/Wright_teen.png');
 
   // Font is loaded via CSS in index.html
   // Set the font name for use with textFont()
@@ -160,6 +181,7 @@ function preload() {
   tooltip = loadImage('assets/tooltip.png');
   cameraMode = loadImage('assets/camera.png');
   keyboardMode = loadImage('assets/keyboard.png');
+  question = loadImage('assets/question.png');
 
   aboutBtn = loadImage('assets/aboutButton.png');
   helpBtn = loadImage('assets/helpButton.png');
@@ -243,6 +265,11 @@ function setup() {
 
 function draw() {
   game.show();
+
+  //detect for character expression
+  detectSmile();
+  detectHide();
+
   console.log(game.stage)
 
   if (detectHide()) {
