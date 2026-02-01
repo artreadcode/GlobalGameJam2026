@@ -272,7 +272,7 @@ class Game {
             }
         }
 
-        if (this.stage !== 4) {
+        if (this.stage !== 4 && this.stage !== 0) {
             this.drawBars();
         }
 
