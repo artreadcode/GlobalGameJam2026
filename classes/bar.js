@@ -22,6 +22,13 @@ class Bar {
     }
 
     show(whichScene, eI, eE) {
+        let scaleFactor = min(windowWidth * 0.8 / this.bg.width, 0.5); 
+        this.tw = this.bg.width * scaleFactor;
+        this.th = this.bg.height * scaleFactor;
+
+        // Recalculate Center Position
+        this.tx = windowWidth / 2 - this.tw / 2;
+        this.ty = windowHeight * 0.75; // 3/4ths down the screen
         
         // 1. Draw the Background Images
         // We generally draw images from CORNER to align them easily with rects

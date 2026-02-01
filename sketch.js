@@ -22,6 +22,8 @@ let takingPictureSprite;
 let playerStand;
 let playerStandSmile;
 let playerStandHide;
+let playerStandLeft;
+let playerStandRight;
 
 let playerWalkLeft = [];
 let playerWalkRight = [];
@@ -30,9 +32,21 @@ let playerWalkRight = [];
 let teenStand;
 let teenStandSmile;
 let teenStandHide;
+let teenStandLeft;
+let teenStandRight;
 
 let teenWalkLeft = [];
 let teenWalkRight = [];
+
+// Player animation sprites - Adult (Stage 5)
+let adultStand;
+let adultStandSmile;
+let adultStandHide;
+let adultStandLeft;
+let adultStandRight;
+
+let adultWalkLeft = [];
+let adultWalkRight = [];
 
 let schoolbellFont;
 
@@ -74,6 +88,7 @@ let bedroomDoor;
 
 // Stage 2 living room parallax layers
 let livingroomWall;
+let livingroomBack;
 let livingroomFloor;
 let livingroomMid;
 let livingroomFront;
@@ -89,9 +104,19 @@ let toiletFloor;
 let toiletMid;
 let toiletDoor;
 
+// Stage 5 office parallax layers
+let officeWall;
+let officeBack;
+let officeMid;
+let officeMid2;
+let officeFloor;
+let officeFront;
+
 let header;
 
 let game;
+
+let launch;
 
 // movement
 
@@ -168,7 +193,8 @@ function preload() {
   playerStand = loadImage('assets/characters/Stand_toddler.png');
   playerStandSmile = loadImage('assets/characters/Stand_toddlerSmile.png');
   playerStandHide = loadImage('assets/characters/Stand_toddlerClose.png');
-
+  playerStandLeft = loadImage('assets/characters/Left_toddler.png');
+  playerStandRight = loadImage('assets/characters/Right_toddler.png');
 
   playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
   playerWalkLeft[1] = loadImage('assets/characters/WLeft2_toddler.png');
@@ -181,6 +207,8 @@ function preload() {
   teenStand = loadImage('assets/characters/Stand_teen.png');
   teenStandSmile = loadImage('assets/characters/Stand_teenSmile.png');
   teenStandHide = loadImage('assets/characters/Stand_teenClose.png');
+  teenStandLeft = loadImage('assets/characters/Left_teen.png');
+  teenStandRight = loadImage('assets/characters/Right_teen.png');
 
   teenWalkLeft[0] = loadImage('assets/characters/WLeft_teen.png');
   teenWalkLeft[1] = loadImage('assets/characters/WLeft2_teen.png');
@@ -188,6 +216,20 @@ function preload() {
   teenWalkRight[0] = loadImage('assets/characters/Wright_teen.png');
   teenWalkRight[1] = loadImage('assets/characters/Wright2_teen.png');
   teenWalkRight[2] = loadImage('assets/characters/Wright_teen.png');
+
+  // Player animation sprites - Adult (Stage 5)
+  adultStand = loadImage('assets/characters/Stand_Adult.png');
+  adultStandSmile = loadImage('assets/characters/Stand_AdultSmile.png');
+  adultStandHide = loadImage('assets/characters/Stand_AdultClose.png');
+  adultStandLeft = loadImage('assets/characters/Left_Adult.png');
+  adultStandRight = loadImage('assets/characters/Right_Adult.png');
+
+  adultWalkLeft[0] = loadImage('assets/characters/WLeft_adult.png');
+  adultWalkLeft[1] = loadImage('assets/characters/WLeft2_adult.png');
+  adultWalkLeft[2] = loadImage('assets/characters/WLeft_adult.png');
+  adultWalkRight[0] = loadImage('assets/characters/Wright_adult.png');
+  adultWalkRight[1] = loadImage('assets/characters/Wright2_adult.png');
+  adultWalkRight[2] = loadImage('assets/characters/Wright_adult.png');
 
   // Font is loaded via CSS in index.html
   // Set the font name for use with textFont()
@@ -213,6 +255,8 @@ function preload() {
 
   returnBtn = loadImage('assets/returnButton.png');
 
+  launch = loadImage('assets/GO.png');
+
   //loading help images
   help01 = loadImage('assets/Help01.png');
   help02 = loadImage('assets/Help02.png');
@@ -231,6 +275,7 @@ function preload() {
 
   // Stage 2 living room parallax
   livingroomWall = loadImage('assets/Stage_2 living room/wall_LR.png');
+  livingroomBack = loadImage('assets/Stage_2 living room/back_LR.png');
   livingroomFloor = loadImage('assets/Stage_2 living room/Floor_LR.png');
   livingroomMid = loadImage('assets/Stage_2 living room/mid_LR.png');
   livingroomFront = loadImage('assets/Stage_2 living room/front_LR.png');
@@ -249,6 +294,14 @@ function preload() {
   toiletFloor = loadImage('assets/Stage_4 Toilet/Floor_toilet.png');
   toiletMid = loadImage('assets/Stage_4 Toilet/mid_toilet.png');
   toiletDoor = loadImage('assets/Stage_4 Toilet/Door_toilet.png');
+
+  // Stage 5 office assets
+  officeWall = loadImage('assets/Stage_5 Office/Wall_office.png');
+  officeBack = loadImage('assets/Stage_5 Office/back_office.png');
+  officeMid = loadImage('assets/Stage_5 Office/mid_office.png');
+  officeMid2 = loadImage('assets/Stage_5 Office/mid2_office.png');
+  officeFloor = loadImage('assets/Stage_5 Office/Floor_office.png');
+  officeFront = loadImage('assets/Stage_5 Office/front_office.png');
 }
 
 function setup() {
@@ -470,7 +523,6 @@ function mousePressed() {
 
   let uiClick;
   // 1. Check Header UI first
-  // Ensure 'game.stage' is actually a number
   if (game !== undefined) {
     uiClick = header.clicked(mouseX, mouseY, game.stage);
   }
@@ -482,13 +534,25 @@ function mousePressed() {
       if (game.play instanceof startScreen) {
         game.play.modeChanging(mouseX, mouseY);
       }
-      // Stage 5
+      // Stage 9 (Tutorial)
       else if (game.play instanceof Tutorial) {
+        
+        // Check "Return" button
+        game.play.checkLaunch(mouseX, mouseY); 
+
         let det = game.play.goingBack(mouseX, mouseY);
+        console.log(det);
         if (det) {
           game.stage = 0;
           game.started = false;
+        } 
+        // --- ADD THE ELSE BLOCK ---
+        else {
+          // Check "Launch" button
+          // This sets 'willMove' to true inside the Tutorial class
+          game.play.checkLaunch(mouseX, mouseY); 
         }
+        // ---------------------------
       }
     }
   }

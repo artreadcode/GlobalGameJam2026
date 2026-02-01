@@ -250,7 +250,7 @@ class Game1 {
     }
 
     if (playerStand) {
-      const scale = 1.2;
+      const scale = 0.9;
       const drawW = playerStand.width * scale;
       const drawH = playerStand.height * scale;
       const x = width * 0.45 - drawW / 2;
@@ -261,7 +261,10 @@ class Game1 {
 
   _drawCameraScene() {
     if (cameraBorder) {
-      image(cameraBorder, 0, 0, width, height);
+      push();
+      imageMode(CENTER);
+      image(cameraBorder, windowWidth / 2, windowHeight / 2, width * 0.5, height * 0.5);
+      pop();
     }
     if (takingPictureSprite) {
       const scale = height / takingPictureSprite.height;
@@ -275,7 +278,8 @@ class Game1 {
     if (cameraBorder) {
       push();
       tint(255, alpha);
-      image(cameraBorder, 0, 0, width, height);
+      imageMode(CENTER)
+      image(cameraBorder, windowWidth / 2, windowHeight / 2, width * 0.5, height * 0.5);
       pop();
     }
     if (takingPictureSpriteSmile) {
@@ -284,7 +288,7 @@ class Game1 {
       const drawH = takingPictureSpriteSmile.height * scale;
       push();
       tint(255, alpha);
-      image(takingPictureSpriteSmile, width / 2 - drawW / 2, height - drawH, drawW, drawH);
+      image(takingPictureSpriteSmile, 0, 0, drawW, drawH);
       pop();
     }
   }
