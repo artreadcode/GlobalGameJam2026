@@ -189,7 +189,6 @@ class Game {
             if (bedroomDoor && bedroomDoor.width && bedroomDoor.height) {
                 let doorRatio = bedroomDoor.width / bedroomDoor.height;
                 let doorDrawH = height * 0.4; // use 0.7 if you want the mirror
-            taller
                 let doorDrawW = doorDrawH * doorRatio;
                 let doorWorldX = sceneWidth - doorDrawW + 70;
                 this.mirrorObstacle.x = doorWorldX;
