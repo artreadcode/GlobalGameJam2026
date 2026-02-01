@@ -121,6 +121,8 @@ function setup() {
   // Create the game
   game = new Game();
 
+  
+
 }
 
 function draw() {
@@ -129,7 +131,7 @@ function draw() {
   if(detectHide()){
         // fill(255, 0, 0); // Red background alert
         // rect(0, 0, width, 50);
-        
+
         // fill(255);
         // textSize(32);
         // text("MOUTH COVERED! 🫢", 50, 40);
@@ -139,9 +141,9 @@ function draw() {
 function modelLoaded() {
   console.log("FaceMesh Model is loaded and ready!");
 
-  // game.stage = 1;
-  // game.started = true;
-  // game.play = new Stage();
+   //game.stage = 1;
+  //  game.started = true;
+  //  game.play = new Stage();
 
 }
 

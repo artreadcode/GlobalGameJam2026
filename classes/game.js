@@ -38,6 +38,9 @@ class Game {
         // Progress bars (0-100)
         this.bar1Value = 50;
         this.bar2Value = 30;
+
+        //Dialogue box
+        this.dialogue = null; 
     }
 
     // Draw compact UI panel with about/help buttons, face, and progress bars
@@ -136,6 +139,14 @@ class Game {
             case 1: {           //stage 1
                 if (!this.play) this.play = new Stage();
 
+                //Dialogue box 
+                if(!this.dialogue){
+                    this.dialogue = new dialogueBox(
+                        "Testing dialogue box hiiiiiii",
+                        "character Name"
+                    );
+                }
+
                 const moveRight = keyIsDown(68);
                 const moveLeft = keyIsDown(65);
                 walkingActive = moveRight || moveLeft;
@@ -180,6 +191,20 @@ class Game {
                         }
                     }
                 }
+
+                // Draw compact UI panel
+                this.drawBars();
+
+                if (frameCount % 60 === 0) {
+                    console.log('worldX', this.worldX, 'camera', cameraX);
+                }
+
+                //show dialogue box
+                if(this.dialogue){
+                    this.dialogue.show();
+                }
+                        
+                
                 break;
             }
             case 2: {           //stage 2
@@ -248,4 +273,5 @@ class Game {
 // Ref: https://p5js.org/reference/p5/windowResized/
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+
 }
