@@ -22,6 +22,12 @@ class Game {
         this.takingPicture = new Obstacle(0, 700, 700, { sprite: takingPictureSprite, actionId: null, actionType: null, yOffset: 42 });
         this.takingPictureSmile = new Obstacle(0, 700, 700, { sprite: takingPictureSpriteSmile, actionId: null, actionType: null, yOffset: 42 });
 
+        // Crowd puzzle minigame for high school (Stage 3)
+        this.crowdGame = new CrowdGame();
+        this.crowdGameActive = false;
+        this.crowdGameCompleted = false;
+        this.crowdTriggerX = 400; // X position where crowd minigame triggers
+
 
 
         this.minigameCompleted = false;
@@ -462,13 +468,17 @@ class Game {
             case 3: {           // Stage 3: High School
                 if (!(this.play instanceof Stage)) this.play = new Stage();
 
+                // Lock movement when crowd minigame is active
+                const lockMovement = this.crowdGameActive && this.crowdGame && this.crowdGame.locksMovement;
                 const moveRight = keyIsDown(68);
                 const moveLeft = keyIsDown(65);
-                walkingActive = moveRight || moveLeft;
+                walkingActive = !lockMovement && (moveRight || moveLeft);
 
                 const prevWorldX = this.worldX;
-                if (moveRight) this.worldX += this.player.speed;
-                if (moveLeft) this.worldX -= this.player.speed;
+                if (!lockMovement) {
+                    if (moveRight) this.worldX += this.player.speed;
+                    if (moveLeft) this.worldX -= this.player.speed;
+                }
 
                 const sceneWidth = this.parallax.getSceneWidth();
                 const maxWorldX = Math.max(0, sceneWidth - width / 2);
@@ -481,12 +491,72 @@ class Game {
                 this.parallax.update(deltaX);
                 this.parallax.draw(cameraX);
 
-                this.player.updateAnimation(moveLeft, moveRight);
+                this.player.updateAnimation(!lockMovement && moveLeft, !lockMovement && moveRight);
                 this.player.draw(cameraX);
                 this.parallax.drawFront();
 
-                // Transitions
-                if (this.sceneCooldownFrames <= 0) {
+                // Crowd minigame trigger - triggers when player reaches a certain position
+                // The crowd appears as an obstacle in the middle of the school hallway
+                if (!this.crowdGameCompleted && !this.crowdGameActive) {
+                    // Trigger when player is around the center of the scene
+                    const triggerZoneStart = sceneWidth * 0.3;
+                    const triggerZoneEnd = sceneWidth * 0.5;
+                    const playerWorldX = cameraX + width / 2;
+                    
+                    if (playerWorldX >= triggerZoneStart && playerWorldX <= triggerZoneEnd) {
+                        console.log('Crowd minigame triggered!');
+                        this.crowdGameActive = true;
+                        this.crowdGame.start();
+                    }
+                }
+
+                // Update and draw crowd minigame
+                if (this.crowdGameActive) {
+                    this.crowdGame.update();
+                    this.crowdGame.draw();
+                    
+                    if (this.crowdGame.isDone && this.crowdGame.isDone()) {
+                        this.crowdGameActive = false;
+                        
+                        // Check if we need to trigger heartbeat game (failed)
+                        if (this.crowdGame.triggerHeartbeat) {
+                            console.log('Starting heartbeat panic attack game');
+                            this.crowdGame.stop();
+                            // Start heartbeat game
+                            if (!heartbeatGame) {
+                                heartbeatGame = new HeartbeatGame();
+                            }
+                            heartbeatGame.start();
+                        } else {
+                            // Success - complete the minigame
+                            this.crowdGame.stop();
+                            this.crowdGameCompleted = true;
+                            console.log('Crowd minigame completed successfully');
+                        }
+                    }
+                    
+                    // Allow escape to cancel
+                    if (keyIsDown(27)) {
+                        this.crowdGameActive = false;
+                        this.crowdGame.stop();
+                    }
+                }
+                
+                // Handle heartbeat game completion - retry crowd game
+                if (heartbeatGame && heartbeatGame.active) {
+                    // Heartbeat game is handled in sketch.js draw()
+                    // When it ends, we can optionally retry the crowd game
+                    if (heartbeatGame.gameOver) {
+                        // Reset crowd game for retry
+                        if (!this.crowdGameCompleted) {
+                            console.log('Heartbeat game over - crowd game can be retried');
+                            // Don't auto-restart, let player walk back and trigger again
+                        }
+                    }
+                }
+
+                // Transitions (only when minigame is not active)
+                if (this.sceneCooldownFrames <= 0 && !this.crowdGameActive) {
                     if (this.worldX <= 10) {
                         // High School -> Living Room (go left)
                         this.stage = 2;

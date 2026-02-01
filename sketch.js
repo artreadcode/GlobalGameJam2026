@@ -19,6 +19,9 @@ let mumSprite;
 let mumCameraSprite;
 let dadSprite;
 let takingPictureSprite;
+let crowdSprite; // Crowd for high school minigame
+let mirrorTeenNotSmiling; // Teen mirror not smiling
+let mirrorTeenSmiling; // Teen mirror smiling
 
 // Player animation sprites - Toddler (Stage 1)
 let playerStand;
@@ -197,6 +200,11 @@ function preload() {
   cameraBorder = loadImage('assets/Stage_1 bedroom/cameraOverlay.png');
   takingPictureSprite = loadImage('assets/characters/Mirror_Toddler.png')
   takingPictureSpriteSmile = loadImage('assets/characters/SMirror_Toddler.png')
+  
+  // Crowd puzzle assets for high school (Stage 3)
+  crowdSprite = loadImage('assets/Stage_3 School/CROWD_SCH.png');
+  mirrorTeenNotSmiling = loadImage('assets/characters/Mirror_Teen.png');
+  mirrorTeenSmiling = loadImage('assets/characters/SMirror_Teen.png');
   
   
   // Player animation sprites - Toddler (Stage 1)
