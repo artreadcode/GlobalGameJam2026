@@ -12,6 +12,9 @@ class Game {
         this.mirrorExitObstacle = new Obstacle(0, 40, 0, { actionId: "1", actionType: "return", visible: false });
         this.minigame = new Game1();
         this.minigameActive = false;
+        this.mirrorMinigame = new MirrorSmileGame({ durationMs: 4000 });
+        this.mirrorMinigameActive = false;
+        this.mirrorMinigameCompleted = false;
         this.minigameTriggerMum = new Obstacle(0, 110, 400, { sprite: mumSprite, actionId: "1", actionType: "minigame", yOffset: 42 });
         this.minigameTriggerMumCamera = new Obstacle(0, 400, 400, { sprite: mumCameraSprite, actionId: null, actionType: null, yOffset: 0 });
         this.minigameTriggerDad = new Obstacle(0, 260, 500, { sprite: dadSprite, actionId: null, actionType: null, yOffset: 42 });
@@ -59,6 +62,9 @@ class Game {
         this.returnX = null;
         this.mirrorEntryCooldownFrames = 0;
         this.sceneCooldownFrames = 0; // Cooldown for scene transitions within a stage
+        this.stage1Spawned = false;
+        this.stage1CameraOffset = 0;
+        this.stage1Centering = false;
 
         // Progress bars (0-100)
         this.bar1Value = 50;
@@ -233,8 +239,25 @@ class Game {
                 const maxWorldX = Math.max(0, sceneWidth - width / 2);
                 this.worldX = constrain(this.worldX, 0, maxWorldX);
 
-                const cameraX = this.worldX;
-                this.player.x = cameraX + width / 2;
+                if (!this.stage1Spawned) {
+                    const leftMargin = 40;
+                    this.stage1CameraOffset = Math.max(0, width / 2 - leftMargin);
+                    this.stage1Spawned = true;
+                    this.stage1Centering = false;
+                }
+                if (moveRight || moveLeft) {
+                    this.stage1Centering = true;
+                }
+                if (this.stage1Centering) {
+                    this.stage1CameraOffset = lerp(this.stage1CameraOffset, 0, 0.01);
+                    if (Math.abs(this.stage1CameraOffset) < 0.5) {
+                        this.stage1CameraOffset = 0;
+                        this.stage1Centering = false;
+                    }
+                }
+
+                const cameraX = this.worldX + this.stage1CameraOffset;
+                this.player.x = this.worldX + width / 2;
 
                 const deltaX = this.worldX - prevWorldX;
                 this.parallax.update(deltaX);
@@ -281,9 +304,23 @@ class Game {
                 this.parallax.draw(cameraX);
 
                 // Draw mum and dad in living room - behind front layer
+                // Position mirror trigger near end of living room (scene width - 100px)
+                if (this.mirrorObstacle) {
+                    // Use blank mirror as the trigger sprite in living room
+                    if (blankMirrorSprite) {
+                        const scale = 0.7; // 30% smaller trigger
+                        this.mirrorObstacle.sprite = blankMirrorSprite;
+                        this.mirrorObstacle.w = blankMirrorSprite.width * scale;
+                        this.mirrorObstacle.h = blankMirrorSprite.height * scale;
+                    }
+                    const mirrorW = this.mirrorObstacle.w || 400;
+                    this.mirrorObstacle.x = sceneWidth - mirrorW - 100;
+                }
+
+                // Draw mum and dad - behind front layer
                 if (this.minigameTriggerMum) {
-                    const centerX = Math.max(sceneWidth * 0.5, width * 0.5);
-                    this.minigameTriggerMum.x = centerX - 2100;
+                    const rightMargin = 1600;
+                    this.minigameTriggerMum.x = Math.max(0, sceneWidth - rightMargin);
                     if (this.minigameTriggerDad) {
                         this.minigameTriggerDad.x = this.minigameTriggerMum.x + 150;
                     }
@@ -305,6 +342,9 @@ class Game {
                         this.parallax.setStage(1, 0);
                         const newSceneWidth = this.parallax.getSceneWidth();
                         this.worldX = Math.max(0, newSceneWidth - width / 2);
+                        this.stage1Spawned = false;
+                        this.stage1CameraOffset = 0;
+                        this.stage1Centering = false;
                         this.sceneCooldownFrames = 60;
                         console.log('Living Room -> Bedroom');
                     } else if (this.worldX >= maxWorldX - 5) {
@@ -316,6 +356,11 @@ class Game {
                         this.player.setCharacterType('teen');
                         console.log('Living Room -> High School');
                     }
+                }
+
+                // Mirror trigger
+                if (this.mirrorObstacle && this.mirrorObstacle.hit(this.player)) {
+                    Actions.run(this.mirrorObstacle.actionType, "3", this, this.mirrorObstacle);
                 }
 
                 // Minigame collision and logic
@@ -337,12 +382,14 @@ class Game {
                     if (this.minigame.isDone && this.minigame.isDone()) {
                         this.minigameActive = false;
                         this.minigame.stop();
-                        this.minigameCompleted = true;
-                        if (this.minigameTriggerMum) {
-                            this.minigameTriggerMum.visible = false;
-                        }
-                        if (this.minigameTriggerDad) {
-                            this.minigameTriggerDad.visible = false;
+                        if (this.minigame.success) {
+                            this.minigameCompleted = true;
+                            if (this.minigameTriggerMum) {
+                                this.minigameTriggerMum.visible = false;
+                            }
+                            if (this.minigameTriggerDad) {
+                                this.minigameTriggerDad.visible = false;
+                            }
                         }
                     }
                     if (keyIsDown(27)) {
@@ -489,6 +536,23 @@ class Game {
                     this.sceneCooldownFrames = 60;
                     this.player.setCharacterType('teen');
                     console.log('Office -> Toilet');
+                    console.log('Toilet -> High School');
+                }
+                break;
+            }
+            case 7: { // Tutorial page
+                if (!(this.play instanceof Tutorial)) {
+                    this.play = new Tutorial();
+                }
+                this.play.show();
+                if (this.play.willMove) {
+                    this.stage = 1;
+                    this.play.willMove = false;
+                    this.play.tutorialMode = 0;
+                    this.play.smileStartTime = null;
+                    this.stage1Spawned = false;
+                    this.stage1CameraOffset = 0;
+                    this.stage1Centering = false;
                 }
                 break;
             }
@@ -503,13 +567,33 @@ class Game {
                 const moveRight = keyIsDown(68);
                 const moveLeft = keyIsDown(65);
                 walkingActive = moveRight || moveLeft;
-                if (moveRight) this.player.x += this.player.speed;
-                if (moveLeft) this.player.x -= this.player.speed;
-                this.player.x = constrain(this.player.x, this.play.xMin, this.play.xMax);
-
+                this.play.updateMirrorPosition(moveLeft, moveRight, this.player.speed);
+                this.player.x = this.play.mirrorX;
                 this.play.show();
-                this.player.updateAnimation(moveLeft, moveRight);
-                this.player.draw(0);
+
+                if (!this.mirrorMinigameActive && this.mirrorMinigame && !this.mirrorMinigameCompleted) {
+                    this.mirrorMinigameActive = true;
+                    this.mirrorMinigame.start();
+                }
+
+                if (this.mirrorMinigameActive && this.mirrorMinigame) {
+                    this.mirrorMinigame.update();
+                    this.mirrorMinigame.draw();
+                    if (this.mirrorMinigame.isDone && this.mirrorMinigame.isDone()) {
+                        this.mirrorMinigameActive = false;
+                        this.mirrorMinigame.stop();
+                        if (this.mirrorMinigame.success) {
+                            this.mirrorMinigameCompleted = true;
+                            this.stage = 3;
+                            this.parallax.setStage(2, 0);
+                            this.worldX = 0;
+                            this.sceneCooldownFrames = 60;
+                            this.player.setCharacterType('teen');
+                            console.log('Mirror minigame complete -> High School');
+                            break;
+                        }
+                    }
+                }
 
                 const exitOffset = Math.round(width * (400 / 1920));
                 this.mirrorExitObstacle.x = exitOffset;
@@ -535,6 +619,9 @@ class Game {
                     this.play.tutorialMode = 0;
                     this.play.smileStartTime = null;
                     this.isTutorialEnded = 1; // true
+                    this.stage1Spawned = false;
+                    this.stage1CameraOffset = 0;
+                    this.stage1Centering = false;
 
                     // 2. CRITICAL FIX: Destroy the Tutorial object!
                     // If we don't do this, Case 1 thinks the Tutorial object is the Bedroom Stage.
