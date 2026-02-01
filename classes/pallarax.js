@@ -1,35 +1,64 @@
-// Bedroom parallax layers for Stage 1
-// Layer order (back to front): wall -> mid -> player -> floor -> front
+// Parallax layers for different stages
+// Stage 1 (bedroom): wall -> floor -> back -> mid -> player -> front
+// Stage 2 (living room): wall -> floor -> mid -> player -> front
 
 class Parallax {
   constructor() {
+    this.currentStage = 1;
+
     // Layers drawn BEFORE player (background)
     this.backLayers = [
-      { name: "wall", x: 0, speed: 0.1, img: null },    // 5: wall background, slowest
-      { name: "back", x: 0, speed: 0.3, img: null },    // 4: furniture (bed, lamp, bookshelf)
-      { name: "mid", x: 0, speed: 0.5, img: null },     // 3: decorations (window, papers)
-      { name: "floor", x: 0, speed: 0, img: null },     // 2: floor, stable
+      { name: "wall", x: 0, speed: 0.1, img: null },
+      { name: "floor", x: 0, speed: 0, img: null },
+      { name: "back", x: 0, speed: 0.3, img: null },
+      { name: "mid", x: 0, speed: 0.5, img: null },
     ];
     // Layers drawn AFTER player (foreground)
     this.frontLayers = [
-      { name: "front", x: 0, speed: 1.0, img: null },   // 1: front, topmost
+      { name: "front", x: 0, speed: 1.0, img: null },
     ];
   }
 
-  // Call this after images are loaded
-  setImages() {
-    this.backLayers[0].img = bedroomWall;
-    this.backLayers[1].img = bedroomBack;
-    this.backLayers[2].img = bedroomMid;
-    this.backLayers[3].img = bedroomFloor;
-    this.frontLayers[0].img = bedroomFront;
+  // Set stage and load appropriate images
+  setStage(stageNum) {
+    this.currentStage = stageNum;
+    // Reset layer positions
+    for (let layer of this.backLayers) {
+      layer.x = 0;
+    }
+    for (let layer of this.frontLayers) {
+      layer.x = 0;
+    }
 
-    // Debug: check if images loaded
-    console.log('Wall loaded:', !!bedroomWall);
-    console.log('Back loaded:', !!bedroomBack);
-    console.log('Mid loaded:', !!bedroomMid);
-    console.log('Floor loaded:', !!bedroomFloor);
-    console.log('Front loaded:', !!bedroomFront);
+    if (stageNum === 1) {
+      // Stage 1: Bedroom
+      this.backLayers = [
+        { name: "wall", x: 0, speed: 0.1, img: bedroomWall },
+        { name: "floor", x: 0, speed: 0, img: bedroomFloor },
+        { name: "back", x: 0, speed: 0.3, img: bedroomBack },
+        { name: "mid", x: 0, speed: 0.5, img: bedroomMid },
+      ];
+      this.frontLayers = [
+        { name: "front", x: 0, speed: 1.0, img: bedroomFront },
+      ];
+      console.log('Parallax set to Stage 1: Bedroom');
+    } else if (stageNum === 2) {
+      // Stage 2: Living room (wall -> floor -> mid -> player -> front)
+      this.backLayers = [
+        { name: "wall", x: 0, speed: 0.1, img: livingroomWall },
+        { name: "floor", x: 0, speed: 0, img: livingroomFloor },
+        { name: "mid", x: 0, speed: 0.5, img: livingroomMid },
+      ];
+      this.frontLayers = [
+        { name: "front", x: 0, speed: 1.0, img: livingroomFront },
+      ];
+      console.log('Parallax set to Stage 2: Living Room');
+    }
+  }
+
+  // Call this after images are loaded (for initial stage 1)
+  setImages() {
+    this.setStage(1);
   }
 
   update(deltaX) {

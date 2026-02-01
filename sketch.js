@@ -7,10 +7,15 @@ let faces = []; // This one will store the markers across the faces.
 let hands = []; // This one will store the markers across the hands.
 let faceoptions = { maxFaces: 1, refineLandmarks: false, flipHorizontal: false };
 let handOptions = { maxHands: 1, flipHorizontal: false };
+
 let playerSprite;
 let mirrorSprite;
 let blackScreenSprite;
+let placeholderSprite;
+
 let schoolbellFont;
+
+// Tutorial images
 let tooltip;
 let cameraMode;
 let keyboardMode;
@@ -20,6 +25,8 @@ let aboutBtn;
 let paper;
 let barImg;
 let returnBtn;
+let bgMusic;
+let walkSfx;
 
 // Stage 1 bedroom parallax layers
 let bedroomWall;
@@ -30,20 +37,33 @@ let bedroomFront;
 
 // movement
 
-const pressedKeys = {a: false, d: false };
+const pressedKeys = { a: false, d: false };
 
-  function keyPressed() {
-    const k = key.toLowerCase();
-    if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = true;
+function keyPressed() {
+  const k = key.toLowerCase();
+  if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = true;
+
+  // Unlock audio on first user interaction (required by browsers)
+  if (typeof userStartAudio === "function") {
+    userStartAudio();
   }
 
-  function keyReleased() {
-    const k = key.toLowerCase();
-    if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = false;
+  if (game && game.play instanceof startScreen && gameMode === 1 && k === "e") {
+    game.stage = 1;
   }
+}
+
+function keyReleased() {
+  const k = key.toLowerCase();
+  if (pressedKeys.hasOwnProperty(k)) pressedKeys[k] = false;
+}
 
 
 function preload() {
+  // Audio
+  bgMusic = loadSound('assets/music/gamejamtoddler.mp3');
+  walkSfx = loadSound('assets/music/walk.mp3');
+
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(faceoptions);
   handPose = ml5.handPose(handOptions);
@@ -52,6 +72,7 @@ function preload() {
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
+  placeholderSprite = loadImage('assets/placeholder.png');
 
 
   // Font is loaded via CSS in index.html
@@ -102,6 +123,8 @@ function setup() {
   // Create the game
   game = new Game();
 
+  
+
 }
 
 function draw() {
@@ -110,7 +133,7 @@ function draw() {
   if(detectHide()){
         // fill(255, 0, 0); // Red background alert
         // rect(0, 0, width, 50);
-        
+
         // fill(255);
         // textSize(32);
         // text("MOUTH COVERED! 🫢", 50, 40);
@@ -120,9 +143,9 @@ function draw() {
 function modelLoaded() {
   console.log("FaceMesh Model is loaded and ready!");
 
-  // game.stage = 1;
-  // game.started = true;
-  // game.play = new Stage();
+   //game.stage = 1;
+  //  game.started = true;
+  //  game.play = new Stage();
 
 }
 
@@ -225,15 +248,23 @@ function detectHide(){
 }
 
 function mousePressed() {
-  if (game && game.play instanceof startScreen) {
+  // Unlock audio on first user interaction (required by browsers)
+  if (typeof userStartAudio === "function") {
+    userStartAudio();
+  }
+
+  if (typeof game === 'undefined') {
+
+  }
+  else if (game && game.play instanceof startScreen) {
     game.play.modeChanging(mouseX, mouseY);
   }
-}
-
-function keyPressed() {
-  if (game && game.play instanceof startScreen && gameMode === 1) {
-    if (key === 'e') {
-      game.stage = 5;
+  else if (game && game.play instanceof Tutorial) {
+    let det = game.play.goingBack(mouseX, mouseY);
+    console.log(det);
+    if (det) {
+      game.stage = 0;
+      game.started = false;
     }
   }
 }

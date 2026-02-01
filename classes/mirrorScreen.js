@@ -5,6 +5,7 @@ class MirrorScreen extends Stage {
     this.exitMargin = 100;
     this.spriteW = null;
     this.spriteH = null;
+    this.exitCooldownFrames = 0;
   }
 
   updateBounds() {
@@ -27,6 +28,10 @@ class MirrorScreen extends Stage {
   }
 
   shouldExit(player) {
+    if (this.exitCooldownFrames > 0) {
+      this.exitCooldownFrames -= 1;
+      return false;
+    }
     return player.x < -this.exitMargin || player.x > width + this.exitMargin;
   }
 }

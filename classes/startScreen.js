@@ -33,6 +33,8 @@ class startScreen extends Stage {
         //     }
         // );
 
+        
+
         // Properties
         this.tooltipMSG = "This game uses webcam face detection without storing data. If you’re not comfortable with this, you can choose keyboard mode.";
         this.tooltipW = 32;
