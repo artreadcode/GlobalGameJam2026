@@ -240,6 +240,7 @@ class Game {
                 walkSfx.stop();
             }
         }
+        header.display(this.stage);
     }
 }
 
