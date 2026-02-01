@@ -62,8 +62,8 @@ class Parallax {
         this.frontLayers = [
           { name: "front", x: 0, speed: 1.0, img: livingroomFront },
         ];
-        // Door at end of living room - leads to high school
-        this.door = { x: 0, speed: 0.3, img: livingroomDoor };
+        // Door at end of living room - show teen mirror instead of door
+        this.door = { x: 0, speed: 0.3, img: mirrorTeenSprite || livingroomDoor };
         console.log('Parallax set to Stage 1 Scene 1: Living room');
       }
     } else if (stageNum === 2) {

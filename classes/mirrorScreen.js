@@ -17,13 +17,14 @@ class MirrorScreen extends Stage {
     this.updateBounds();
     background(this.bg);
 
-    const w = this.spriteW ?? (mirrorSprite ? mirrorSprite.width : 100);
-    const h = this.spriteH ?? (mirrorSprite ? mirrorSprite.height : 100);
+    const sprite = mirrorTeenSprite || mirrorSprite;
+    const w = this.spriteW ?? (sprite ? sprite.width : 100);
+    const h = this.spriteH ?? (sprite ? sprite.height : 100);
     const x = width / 2 - w / 2;
     const y = height - h;
 
-    if (mirrorSprite) {
-      image(mirrorSprite, x, y, w, h);
+    if (sprite) {
+      image(sprite, x, y, w, h);
     }
   }
 

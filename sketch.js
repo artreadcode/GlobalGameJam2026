@@ -10,6 +10,7 @@ let handOptions = { maxHands: 1, flipHorizontal: false };
 
 let playerSprite;
 let mirrorSprite;
+let mirrorTeenSprite;
 let doorSprite;
 let blackScreenSprite;
 let mumSprite;
@@ -17,7 +18,7 @@ let mumCameraSprite;
 let dadSprite;
 let takingPictureSprite;
 
-// Player animation sprites
+// Player animation sprites - Toddler (Stage 1)
 let playerStand;
 let playerStandSmile;
 let playerStandHide;
@@ -25,6 +26,10 @@ let playerStandHide;
 let playerWalkLeft = [];
 let playerWalkRight = [];
 
+// Player animation sprites - Teen (Stage 2)
+let teenStand;
+let teenWalkLeft = [];
+let teenWalkRight = [];
 
 let schoolbellFont;
 
@@ -143,6 +148,7 @@ function preload() {
 
 
   mirrorSprite = loadImage('assets/mirror.png');
+  mirrorTeenSprite = loadImage('assets/characters/Mirror_Teen.png');
   doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
   mumSprite = loadImage('assets/characters/MUM1.png');
@@ -151,7 +157,7 @@ function preload() {
   cameraBorder = loadImage('assets/Stage_1 bedroom/cameraOverlay.png');
   takingPictureSprite = loadImage('assets/characters/Mirror_Toddler.png')
   takingPictureSpriteSmile = loadImage('assets/characters/SMirror_Toddler.png')
-  // Player animation sprites
+  // Player animation sprites - Toddler (Stage 1)
   playerStand = loadImage('assets/characters/Stand_toddler.png');
   playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
   playerWalkLeft[1] = loadImage('assets/characters/WLeft2_toddler.png');
@@ -160,6 +166,14 @@ function preload() {
   playerWalkRight[1] = loadImage('assets/characters/Wright2_toddler.png');
   playerWalkRight[2] = loadImage('assets/characters/Wright_toddler.png');
 
+  // Player animation sprites - Teen (Stage 2)
+  teenStand = loadImage('assets/characters/Stand_teen.png');
+  teenWalkLeft[0] = loadImage('assets/characters/WLeft_teen.png');
+  teenWalkLeft[1] = loadImage('assets/characters/WLeft2_teen.png');
+  teenWalkLeft[2] = loadImage('assets/characters/WLeft_teen.png');
+  teenWalkRight[0] = loadImage('assets/characters/Wright_teen.png');
+  teenWalkRight[1] = loadImage('assets/characters/Wright2_teen.png');
+  teenWalkRight[2] = loadImage('assets/characters/Wright_teen.png');
 
   // Font is loaded via CSS in index.html
   // Set the font name for use with textFont()
@@ -325,9 +339,9 @@ function updateEnergy() {
   } 
   // If NEITHER (doing nothing), Drift to 0.5
   else {
-    if (game.introvert > 0.6) {
+    if (game.introvert > 0.5) {
       game.introvert -= 0.005; // Drift down slowly
-    } else if (game.introvert < 0.6) {
+    } else if (game.introvert < 0.5) {
       game.introvert += 0.005; // Drift up slowly
     }
     
@@ -338,8 +352,8 @@ function updateEnergy() {
   }
 
   // 3. Clamp values (This keeps your max 1.0 limit without locking the logic)
-  game.introvert = Math.min(1, Math.max(0, Number(game.introvert.toFixed(3))));
-  game.extrovert = Math.min(1, Math.max(0, Number((1 - game.introvert).toFixed(3))));
+  game.introvert = Math.min(1, Math.max(0.002, Number(game.introvert.toFixed(3))));
+  game.extrovert = Math.min(1, Math.max(0.002, Number((1 - game.introvert).toFixed(3))));
 }
 
 function detectSmile() {
