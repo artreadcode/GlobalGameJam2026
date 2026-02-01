@@ -93,7 +93,7 @@ class Tutorial extends Stage {
             textAlign(CENTER);
             fill(0);
             textSize(min(windowWidth, windowHeight) * 0.03);
-            text('Smile or cover your mouth to\nrecharge your energy.', windowWidth / 2, windowHeight / 2);
+            text('Smile or cover your mouth to\nrecharge your introverted or\nextroverted energy.', windowWidth / 2, windowHeight / 2);
             pop();
 
             // 5. Accumulate "Test Time"
