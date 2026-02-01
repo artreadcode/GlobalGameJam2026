@@ -111,7 +111,7 @@ class Tutorial extends Stage {
                 imageMode(CENTER);
                 image(launch, windowWidth / 2, windowHeight / 6 * 5, launch.width * 0.5, launch.height * 0.5);
                 
-                // Optional: Pulse effect or "Click to Start" text could go here
+                
             }
         }
         else if (gameMode === 1) {

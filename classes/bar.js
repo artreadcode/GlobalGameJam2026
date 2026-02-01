@@ -15,9 +15,20 @@ class Bar {
         
         // I adjusted this slightly to ensure it stays on screen
         this.ty = windowHeight / 4 * 3; 
+        
+        //X and Y position for header
+        this.headertx=windowWidth-this.bg.width*0.5-20;
+        this.headerty=this.bg.height*0.5+20;
     }
 
     show(whichScene, eI, eE) {
+        let scaleFactor = min(windowWidth * 0.8 / this.bg.width, 0.5); 
+        this.tw = this.bg.width * scaleFactor;
+        this.th = this.bg.height * scaleFactor;
+
+        // Recalculate Center Position
+        this.tx = windowWidth / 2 - this.tw / 2;
+        this.ty = windowHeight * 0.75; // 3/4ths down the screen
         
         // 1. Draw the Background Images
         // We generally draw images from CORNER to align them easily with rects
@@ -55,6 +66,36 @@ class Bar {
             // -- Extrovert Bar (Bottom) --
             rect(this.tx + paddingX * 0.2, this.ty + this.th + 10, maxBarWidth * eE, barHeight - paddingY * 2 );
             
+        }
+        if (whichScene === 'playing') {
+            let imgW = this.intro.width * 0.5;
+            let imgH = this.intro.height * 0.5;
+            let spacing = 10;
+            
+            // Left: Intro/Extro images
+            image(this.intro, this.headertx, this.headerty, imgW, imgH);
+            image(this.extro, this.headertx, this.headerty + this.th + 10, imgW, imgH);
+
+            // Right: Bar backgrounds (next to images)
+            let barStartX = this.headertx + imgW + spacing;
+            image(this.bg, barStartX, this.headerty, this.tw, this.th);
+            image(this.bg, barStartX, this.headerty + this.th + 10, this.tw, this.th);
+
+            // Draw colored fill bars
+            let paddingX = 3; 
+            let paddingY = 1;
+            let maxBarWidth = this.tw - paddingX; 
+            let barHeight = this.th;
+
+            noStroke();
+            fill(0);
+            rectMode(CORNER);
+
+            // Introvert bar (top)
+            rect(barStartX + paddingX * 0.2, this.headerty, maxBarWidth * eI, barHeight);
+
+            // Extrovert bar (bottom)
+            rect(barStartX + paddingX * 0.2, this.headerty + this.th + 10, maxBarWidth * eE, barHeight - paddingY * 2);
         }
     }
 }

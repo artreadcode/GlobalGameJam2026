@@ -53,17 +53,18 @@ class Parallax {
         console.log('Parallax set to Stage 1 Scene 0: Bedroom');
       } else if (sceneNum === 1) {
         // Stage 1 Scene 1: Living room - door at end leads to Stage 2 (High school)
-        // Draw order (back to front): wall -> floor -> door -> mid -> player -> front
+        // Draw order (back to front): wall -> back -> floor -> door -> mid -> player -> front
         this.backLayers = [
           { name: "wall", x: 0, speed: 0, img: livingroomWall },
+          { name: "back", x: 0, speed: 0.3, img: livingroomBack },
           { name: "floor", x: 0, speed: 0, img: livingroomFloor },
           { name: "mid", x: 0, speed: 0.5, img: livingroomMid },
         ];
         this.frontLayers = [
           { name: "front", x: 0, speed: 1.0, img: livingroomFront },
         ];
-        // Door at end of living room - show teen mirror instead of door
-        this.door = { x: 0, speed: 0.3, img: mirrorTeenSprite || livingroomDoor };
+        // Door at end of living room - use blank mirror as the trigger visual
+        this.door = { x: 0, speed: 0.3, img: blankMirrorSprite || livingroomDoor };
         console.log('Parallax set to Stage 1 Scene 1: Living room');
       }
     } else if (stageNum === 2) {
@@ -77,17 +78,34 @@ class Parallax {
         console.log('Parallax set to Stage 2 Scene 0: High school');
       } else if (sceneNum === 1) {
         // Stage 2 Scene 1: Toilet - camera scrolling, door behind player
-        // Draw order (back to front): wall -> floor -> back -> door -> mid -> player
+        // Draw order (back to front): wall -> back -> floor -> door -> mid -> player
         this.backLayers = [
           { name: "wall", x: 0, speed: 0, img: toiletWall },
-          { name: "toiletfloor", x: 0, speed: 0, img: toiletFloor },
           { name: "back", x: 0, speed: 0, img: toiletBack },
+          { name: "toiletfloor", x: 0, speed: 0, img: toiletFloor },
           { name: "toiletdoor", x: 0, speed: 0, img: toiletDoor },
           { name: "mid", x: 0, speed: 0, img: toiletMid },
         ];
         this.frontLayers = [];
         this.door = { x: 0, speed: 0, img: null };
         console.log('Parallax set to Stage 2 Scene 1: Toilet');
+      }
+    } else if (stageNum === 3) {
+      if (sceneNum === 0) {
+        // Stage 3 Scene 0: Office
+        // Draw order (back to front): wall -> back -> mid -> floor -> mid2 -> player -> front
+        this.backLayers = [
+          { name: "wall", x: 0, speed: 0, img: officeWall },
+          { name: "back", x: 0, speed: 0, img: officeBack },
+          { name: "mid", x: 0, speed: 0, img: officeMid },
+          { name: "floor", x: 0, speed: 0, img: officeFloor },
+          { name: "mid2", x: 0, speed: 0, img: officeMid2 },
+        ];
+        this.frontLayers = [
+          { name: "front", x: 0, speed: 0, img: officeFront },
+        ];
+        this.door = { x: 0, speed: 0, img: null };
+        console.log('Parallax set to Stage 3 Scene 0: Office');
       }
     }
   }
@@ -98,8 +116,8 @@ class Parallax {
   }
 
   update(deltaX) {
-    // Stage 2 scene 0 (school) uses camera scrolling instead of parallax
-    if (this.currentStage === 2 && this.currentScene === 0) return;
+    // Stage 2 scene 0 (school) and Stage 3 (office) use camera scrolling instead of parallax
+    if ((this.currentStage === 2 && this.currentScene === 0) || this.currentStage === 3) return;
     for (let layer of this.backLayers) {
       if (layer.speed > 0) {
         layer.x -= deltaX * layer.speed;
@@ -192,8 +210,8 @@ class Parallax {
     let drawY = 0;
     let drawX = layer.x;
 
-    // Stage 2 (school and toilet) uses camera scrolling instead of parallax
-    if (this.currentStage === 2) {
+    // Stage 2 (school and toilet) and Stage 3 (office) use camera scrolling instead of parallax
+    if (this.currentStage === 2 || this.currentStage === 3) {
       drawX = layer.x - (this.cameraX || 0);
     }
 
@@ -211,7 +229,7 @@ class Parallax {
 
   // Get the scene width based on back layer
   getSceneWidth() {
-    // Try "back" for stage 1, "wall"/"school" for stage 2
+    // Try "back" for stage 1, "wall"/"school" for stage 2/3
     let backLayer = this.backLayers.find(l => l.name === "back") ||
                     this.backLayers.find(l => l.name === "wall") ||
                     this.backLayers.find(l => l.name === "school");
@@ -220,6 +238,10 @@ class Parallax {
     let backRatio = backLayer.img.width / backLayer.img.height;
     let baseWidth = height * backRatio;
 
+    // Stage 3 scene 0 (office) - use base width + 100px for camera scrolling
+    if (this.currentStage === 3 && this.currentScene === 0) {
+      return baseWidth + 100;
+    }
     // Stage 2 scene 0 (school) - use base width for camera scrolling
     if (this.currentStage === 2 && this.currentScene === 0) {
       return baseWidth;

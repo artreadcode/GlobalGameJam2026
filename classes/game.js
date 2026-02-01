@@ -12,6 +12,9 @@ class Game {
         this.mirrorExitObstacle = new Obstacle(0, 40, 0, { actionId: "1", actionType: "return", visible: false });
         this.minigame = new Game1();
         this.minigameActive = false;
+        this.mirrorMinigame = new MirrorSmileGame({ durationMs: 4000 });
+        this.mirrorMinigameActive = false;
+        this.mirrorMinigameCompleted = false;
         this.minigameTriggerMum = new Obstacle(0, 110, 400, { sprite: mumSprite, actionId: "1", actionType: "minigame", yOffset: 42 });
         this.minigameTriggerMumCamera = new Obstacle(0, 400, 400, { sprite: mumCameraSprite, actionId: null, actionType: null, yOffset: 0 });
         this.minigameTriggerDad = new Obstacle(0, 260, 500, { sprite: dadSprite, actionId: null, actionType: null, yOffset: 42 });
@@ -34,6 +37,7 @@ class Game {
         // Stage 2: Living Room
         // Stage 3: High School
         // Stage 4: Toilet
+        // Stage 5: Office
         // Stage 8: Mirror transition
         // Stage 9: Tutorial
         this.stage = 0;
@@ -58,6 +62,9 @@ class Game {
         this.returnX = null;
         this.mirrorEntryCooldownFrames = 0;
         this.sceneCooldownFrames = 0; // Cooldown for scene transitions within a stage
+        this.stage1Spawned = false;
+        this.stage1CameraOffset = 0;
+        this.stage1Centering = false;
 
         // Progress bars (0-100)
         this.bar1Value = 50;
@@ -79,7 +86,8 @@ class Game {
         this.hid = 0; // 0: false, 1: neutral, 2: true
 
         this.hideQuestionText = new JiggleText("?", 0, 0, 20, {color: 0});
-
+        // Bar used in header/playing mode
+        this.bar = new Bar();
         // Dialogue state for minigame trigger
         this.dialogueState = null; // null, 'typing', 'waiting_for_delay', 'ready_for_minigame'
         this.dialogueCompleteTime = null;
@@ -91,33 +99,32 @@ class Game {
 
     // Draw compact UI panel with about/help buttons, face, and progress bars
     drawBars() {
-        let padding = 20; // Consistent with header padding
-        let panelY = padding;
+        let padding = 40;           // Distance from window edge
+        let faceSize = 70;          // Size of face circle
+        let faceSpacing = 10;       // Gap between face and bar
+        let barWidth = 250;         // Width of the bar UI
 
         push();
 
-        // Calculate panel width based on content
-        let barW = 200;
-        let faceSize = 70;
-        let spacing = 15;
-        let panelWidth = faceSize + spacing + barW;
-        let panelX = windowWidth - panelWidth-padding*4;
+        // Ensure Bar instance exists
+        if (!this.bar) this.bar = new Bar();
 
-        // Draw face area with face mesh
-        let faceX = panelX + padding;
-        let faceY = panelY + padding;
-        let centerX = faceX + faceSize / 2;
-        let centerY = faceY + faceSize / 2;
+        // Calculate positions working backwards from right edge
+        let rightEdge = windowWidth - padding-barWidth;
+        let barLeft = Math.max(padding, rightEdge - barWidth);  // Ensure bar doesn't go past left edge
+        let faceRight = barLeft - faceSpacing;
+        let faceLeft = Math.max(padding, faceRight - faceSize); // Ensure face doesn't go past left edge
+        
+        let centerX = faceLeft + faceSize / 2;
+        let centerY = padding + faceSize / 2;
 
+        // Draw face mesh area
         if (video && faces.length > 0) {
-            
             if (detectHide()) {
                 // Show only border and question mark when face is hidden                
-
                 imageMode(CENTER);
                 image(question, centerX, centerY, faceSize, faceSize);
                 imageMode(CORNER);
-                // Draw question mark image in center
                 this.hideQuestionText.setPosition(centerX, centerY);
                 this.hideQuestionText.show();
             } else {
@@ -142,7 +149,6 @@ class Game {
                 let bboxCenterX = minX + bboxWidth / 2;
                 let bboxCenterY = minY + bboxHeight / 2;
                 
-                
                 // Draw keypoint dots
                 noStroke();
                 fill(0);
@@ -155,43 +161,23 @@ class Game {
             }
         } else {
             // No video or no faces detected
-                this.hideQuestionText.setPosition(faceX + faceSize / 2, faceY + faceSize / 2);
-                this.hideQuestionText.show();
-                
-                // Draw question mark image in center
-                imageMode(CENTER);
-                image(question, faceX + faceSize / 2, faceY + faceSize / 2, faceSize, faceSize);
-                imageMode(CORNER);
+            this.hideQuestionText.setPosition(centerX, centerY);
+            this.hideQuestionText.show();
+            
+            imageMode(CENTER);
+            image(question, centerX, centerY, faceSize, faceSize);
+            imageMode(CORNER);
         }
 
         rectMode(CORNER);
-        // Progress bars - compact version
-        let barX = faceX + faceSize + spacing;
-        let barY = faceY + 15;
-        let barH = 18;
-        let barSpacing = 30;
-        let barPadding = 3;
 
-        textFont(schoolbellFont);
-        textAlign(LEFT, CENTER);
-        textSize(14);
-        fill(0);
-        noStroke();
-
-        // First bar
-        text("label", barX, barY);
-        image(barImg, barX + 40, barY - barH / 2, barW, barH);
-        fill(0);
-        let fill1Width = (this.bar1Value / 100) * (barW - barPadding * 2);
-        rect(barX + 40 + barPadding, barY - barH / 2 + barPadding, fill1Width, barH - barPadding * 2);
-
-        // Second bar
-        fill(0);
-        text("label", barX, barY + barSpacing);
-        image(barImg, barX + 40, barY + barSpacing - barH / 2, barW, barH);
-        fill(0);
-        let fill2Width = (this.bar2Value / 100) * (barW - padding * 2);
-        rect(barX + 40 + padding, barY + spacing - barH / 2 + padding, fill2Width, barH - padding * 2);
+        // Position bar to the right of face, aligned to top with padding
+        // Make sure bar stays within right edge
+        this.bar.headertx = constrain(barLeft, padding, windowWidth - padding - barWidth);
+        this.bar.headerty = padding;
+        
+        // Draw the bar
+        this.bar.show('playing', this.introvert, this.extrovert);
 
         pop();
     }
@@ -207,8 +193,8 @@ class Game {
                 bgMusic.setLoop(true);
                 bgMusic.play();
             }
-        } else if (this.stage === 3 || this.stage === 4) {
-            // Stage 3-4 (High School, Toilet): Play teen music
+        } else if (this.stage === 3 || this.stage === 4 || this.stage === 5) {
+            // Stage 3-5 (High School, Toilet, Office): Play teen music
             if (bgMusic && bgMusic.isPlaying()) bgMusic.stop();
             if (teenMusic && !teenMusic.isPlaying() && getAudioContext().state === "running") {
                 teenMusic.setLoop(true);
@@ -259,8 +245,25 @@ class Game {
                 const maxWorldX = Math.max(0, sceneWidth - width / 2);
                 this.worldX = constrain(this.worldX, 0, maxWorldX);
 
-                const cameraX = this.worldX;
-                this.player.x = cameraX + width / 2;
+                if (!this.stage1Spawned) {
+                    const leftMargin = 40;
+                    this.stage1CameraOffset = Math.max(0, width / 2 - leftMargin);
+                    this.stage1Spawned = true;
+                    this.stage1Centering = false;
+                }
+                if (moveRight || moveLeft) {
+                    this.stage1Centering = true;
+                }
+                if (this.stage1Centering) {
+                    this.stage1CameraOffset = lerp(this.stage1CameraOffset, 0, 0.01);
+                    if (Math.abs(this.stage1CameraOffset) < 0.5) {
+                        this.stage1CameraOffset = 0;
+                        this.stage1Centering = false;
+                    }
+                }
+
+                const cameraX = this.worldX + this.stage1CameraOffset;
+                this.player.x = this.worldX + width / 2;
 
                 const deltaX = this.worldX - prevWorldX;
                 this.parallax.update(deltaX);
@@ -368,6 +371,9 @@ class Game {
                         this.parallax.setStage(1, 0);
                         const newSceneWidth = this.parallax.getSceneWidth();
                         this.worldX = Math.max(0, newSceneWidth - width / 2);
+                        this.stage1Spawned = false;
+                        this.stage1CameraOffset = 0;
+                        this.stage1Centering = false;
                         this.sceneCooldownFrames = 60;
                         console.log('Living Room -> Bedroom');
                     } else if (this.worldX >= maxWorldX - 5) {
@@ -379,6 +385,16 @@ class Game {
                         this.player.setCharacterType('teen');
                         console.log('Living Room -> High School');
                     }
+                }
+
+                // Mirror trigger
+                if (this.mirrorObstacle && this.mirrorObstacle.hit(this.player)) {
+                    Actions.run(this.mirrorObstacle.actionType, "3", this, this.mirrorObstacle);
+                }
+
+                // Mirror trigger
+                if (this.mirrorObstacle && this.mirrorObstacle.hit(this.player)) {
+                    Actions.run(this.mirrorObstacle.actionType, "3", this, this.mirrorObstacle);
                 }
 
                 // Minigame trigger - automatically triggers after dialogue sequence completes
@@ -400,12 +416,14 @@ class Game {
                     if (this.minigame.isDone && this.minigame.isDone()) {
                         this.minigameActive = false;
                         this.minigame.stop();
-                        this.minigameCompleted = true;
-                        if (this.minigameTriggerMum) {
-                            this.minigameTriggerMum.visible = false;
-                        }
-                        if (this.minigameTriggerDad) {
-                            this.minigameTriggerDad.visible = false;
+                        if (this.minigame.success) {
+                            this.minigameCompleted = true;
+                            if (this.minigameTriggerMum) {
+                                this.minigameTriggerMum.visible = false;
+                            }
+                            if (this.minigameTriggerDad) {
+                                this.minigameTriggerDad.visible = false;
+                            }
                         }
                     }
                     if (keyIsDown(27)) {
@@ -493,13 +511,65 @@ class Game {
                 this.player.draw(cameraX);
                 this.parallax.drawFront();
 
-                // Transition: Toilet -> High School (go right at door position)
-                if (this.sceneCooldownFrames <= 0 && this.worldX >= 1390 && moveRight) {
-                    this.stage = 3;
-                    this.parallax.setStage(2, 0);
-                    const newSceneWidth = this.parallax.getSceneWidth();
-                    this.worldX = Math.max(0, newSceneWidth - width / 2);
+                // Transitions
+                if (this.sceneCooldownFrames <= 0) {
+                    if (this.worldX >= 1390 && moveRight) {
+                        // Toilet -> High School (go right at door position)
+                        this.stage = 3;
+                        this.parallax.setStage(2, 0);
+                        const newSceneWidth = this.parallax.getSceneWidth();
+                        this.worldX = Math.max(0, newSceneWidth - width / 2);
+                        this.sceneCooldownFrames = 60;
+                        console.log('Toilet -> High School');
+                    } else if (this.worldX <= -190 && moveLeft) {
+                        // Toilet -> Office (go left)
+                        this.stage = 5;
+                        this.parallax.setStage(3, 0);
+                        const newSceneWidth = this.parallax.getSceneWidth();
+                        // Spawn player at the rightmost position
+                        this.worldX = Math.max(0, newSceneWidth - width / 2);
+                        this.sceneCooldownFrames = 60;
+                        this.player.setCharacterType('adult');
+                        console.log('Toilet -> Office');
+                    }
+                }
+                break;
+            }
+
+            case 5: {           // Stage 5: Office
+                if (!(this.play instanceof Stage)) this.play = new Stage();
+
+                const moveRight = keyIsDown(68);
+                const moveLeft = keyIsDown(65);
+                walkingActive = moveRight || moveLeft;
+
+                const prevWorldX = this.worldX;
+                if (moveRight) this.worldX += this.player.speed;
+                if (moveLeft) this.worldX -= this.player.speed;
+
+                const sceneWidth = this.parallax.getSceneWidth();
+                const maxWorldX = Math.max(0, sceneWidth - width / 2);
+                this.worldX = constrain(this.worldX, 0, maxWorldX);
+
+                const cameraX = this.worldX;
+                this.player.x = cameraX + width / 2;
+
+                const deltaX = this.worldX - prevWorldX;
+                this.parallax.update(deltaX);
+                this.parallax.draw(cameraX);
+
+                this.player.updateAnimation(moveLeft, moveRight);
+                this.player.draw(cameraX);
+                this.parallax.drawFront();
+
+                // Transition: Office -> Toilet (go right)
+                if (this.sceneCooldownFrames <= 0 && this.worldX >= maxWorldX - 5 && moveRight) {
+                    this.stage = 4;
+                    this.parallax.setStage(2, 1);
+                    this.worldX = -200; // Spawn at left side of toilet
                     this.sceneCooldownFrames = 60;
+                    this.player.setCharacterType('teen');
+                    console.log('Office -> Toilet');
                     console.log('Toilet -> High School');
                 }
                 break;
@@ -514,9 +584,13 @@ class Game {
                     this.play.willMove = false;
                     this.play.tutorialMode = 0;
                     this.play.smileStartTime = null;
+                    this.stage1Spawned = false;
+                    this.stage1CameraOffset = 0;
+                    this.stage1Centering = false;
                 }
                 break;
             }
+
             case 8: {           //mirror transition scene/stage, the "inbetween" of each level
                 if (!(this.play instanceof MirrorScreen)) {
                     this.play = new MirrorScreen();
@@ -527,13 +601,33 @@ class Game {
                 const moveRight = keyIsDown(68);
                 const moveLeft = keyIsDown(65);
                 walkingActive = moveRight || moveLeft;
-                if (moveRight) this.player.x += this.player.speed;
-                if (moveLeft) this.player.x -= this.player.speed;
-                this.player.x = constrain(this.player.x, this.play.xMin, this.play.xMax);
-
+                this.play.updateMirrorPosition(moveLeft, moveRight, this.player.speed);
+                this.player.x = this.play.mirrorX;
                 this.play.show();
-                this.player.updateAnimation(moveLeft, moveRight);
-                this.player.draw(0);
+
+                if (!this.mirrorMinigameActive && this.mirrorMinigame && !this.mirrorMinigameCompleted) {
+                    this.mirrorMinigameActive = true;
+                    this.mirrorMinigame.start();
+                }
+
+                if (this.mirrorMinigameActive && this.mirrorMinigame) {
+                    this.mirrorMinigame.update();
+                    this.mirrorMinigame.draw();
+                    if (this.mirrorMinigame.isDone && this.mirrorMinigame.isDone()) {
+                        this.mirrorMinigameActive = false;
+                        this.mirrorMinigame.stop();
+                        if (this.mirrorMinigame.success) {
+                            this.mirrorMinigameCompleted = true;
+                            this.stage = 3;
+                            this.parallax.setStage(2, 0);
+                            this.worldX = 0;
+                            this.sceneCooldownFrames = 60;
+                            this.player.setCharacterType('teen');
+                            console.log('Mirror minigame complete -> High School');
+                            break;
+                        }
+                    }
+                }
 
                 const exitOffset = Math.round(width * (400 / 1920));
                 this.mirrorExitObstacle.x = exitOffset;
@@ -559,6 +653,9 @@ class Game {
                     this.play.tutorialMode = 0;
                     this.play.smileStartTime = null;
                     this.isTutorialEnded = 1; // true
+                    this.stage1Spawned = false;
+                    this.stage1CameraOffset = 0;
+                    this.stage1Centering = false;
 
                     // 2. CRITICAL FIX: Destroy the Tutorial object!
                     // If we don't do this, Case 1 thinks the Tutorial object is the Bedroom Stage.
@@ -597,7 +694,7 @@ class Game {
         }
 
         // Draw header with buttons on top of everything
-        if (this.stage !== 9) {
+        if (this.stage !== 9 && this.stage !== 8 && this.minigameActive === false) {
             header.display(this.stage);
         }
     }
