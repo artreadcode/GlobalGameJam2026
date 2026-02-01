@@ -19,17 +19,16 @@ class Actions {
       case 'transition':
         switch (actionKey) {
           case '1':
-            // Example: advance to stage 2 when the mirror is touched.
-            game.returnStage = game.stage;
-            game.returnX = obstacle ? obstacle.x : null;
-            game.stage = 4;
-            game.play = new MirrorScreen();
-            game.play.exitCooldownFrames = 90;
-            if (game.mirrorExitObstacle) {
-              game.mirrorExitObstacle.triggered = false;
-            }
-            game.player.x = width / 2;
+            // Transition from bedroom (stage 1) to living room (stage 2)
+            game.stage = 2;
+            game.play = new Stage();
+            game.parallax.setStage(2);
+            game.worldX = 0;
+            game.player.x = width / 4;
             game.camera.x = 0;
+            if (game.mirrorObstacle) {
+              game.mirrorObstacle.triggered = false;
+            }
             break;
           default:
             break;

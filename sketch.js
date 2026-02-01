@@ -14,6 +14,11 @@ let doorSprite;
 let blackScreenSprite;
 let placeholderSprite;
 
+// Player animation sprites
+let playerStand;
+let playerWalkLeft = [];
+let playerWalkRight = [];
+
 let schoolbellFont;
 
 // Tutorial images
@@ -35,6 +40,12 @@ let bedroomMid;
 let bedroomFloor;
 let bedroomFront;
 let bedroomDoor;
+
+// Stage 2 living room parallax layers
+let livingroomWall;
+let livingroomFloor;
+let livingroomMid;
+let livingroomFront;
 
 // movement
 
@@ -76,6 +87,15 @@ function preload() {
   blackScreenSprite = loadImage('assets/blackScreen.png');
   placeholderSprite = loadImage('assets/placeholder.png');
 
+  // Player animation sprites
+  playerStand = loadImage('assets/characters/Stand_toddler.png');
+  playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
+  playerWalkLeft[1] = loadImage('assets/characters/WLeft2_toddler.png');
+  playerWalkLeft[2] = loadImage('assets/characters/WLeft_toddler.png');
+  playerWalkRight[0] = loadImage('assets/characters/Wright_toddler.png');
+  playerWalkRight[1] = loadImage('assets/characters/Wright2_toddler.png');
+  playerWalkRight[2] = loadImage('assets/characters/Wright_toddler.png');
+
 
   // Font is loaded via CSS in index.html
   // Set the font name for use with textFont()
@@ -100,6 +120,12 @@ function preload() {
   bedroomFloor = loadImage('assets/Stage_1 bedroom/floor_bedroom.png');
   bedroomFront = loadImage('assets/Stage_1 bedroom/Front_bedroom.png');
   bedroomDoor = loadImage('assets/Stage_1 bedroom/door.png');
+
+  // Stage 2 living room parallax
+  livingroomWall = loadImage('assets/Stage_2 living room/wall_LR.png');
+  livingroomFloor = loadImage('assets/Stage_2 living room/Floor_LR.png');
+  livingroomMid = loadImage('assets/Stage_2 living room/mid_LR.png');
+  livingroomFront = loadImage('assets/Stage_2 living room/front_LR.png');
 }
 
 function setup() {

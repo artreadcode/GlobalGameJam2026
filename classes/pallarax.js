@@ -157,7 +157,9 @@ class Parallax {
 
   // Get the scene width based on back layer
   getSceneWidth() {
-    let backLayer = this.backLayers.find(l => l.name === "back");
+    // Try "back" for stage 1, "wall" for stage 2
+    let backLayer = this.backLayers.find(l => l.name === "back") ||
+                    this.backLayers.find(l => l.name === "wall");
     if (!backLayer || !backLayer.img) return width;
 
     let backRatio = backLayer.img.width / backLayer.img.height;

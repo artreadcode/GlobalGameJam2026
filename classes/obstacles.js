@@ -27,10 +27,11 @@ class Obstacle {
   }
 
   overlaps(player) {
-    const playerLeft = player.x;
-    const playerRight = player.x + player.spriteW;
-    const playerTop = height - player.spriteH;
-    const playerBottom = height;
+    // Player x is center-based
+    const playerLeft = player.x - player.spriteW / 2;
+    const playerRight = player.x + player.spriteW / 2;
+    const playerTop = height - player.spriteH - 20;
+    const playerBottom = height - 20;
 
     const obsLeft = this.x;
     const obsRight = this.x + this.w;
