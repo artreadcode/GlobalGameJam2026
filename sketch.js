@@ -63,6 +63,11 @@ function keyPressed() {
   if (game && game.play instanceof startScreen && gameMode === 1 && k === "e") {
     game.stage = 1;
   }
+
+  // Test transition effect with 'T' key
+  if (game && k === "t") {
+    game.testTransition();
+  }
 }
 
 function keyReleased() {

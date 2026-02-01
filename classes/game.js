@@ -1,4 +1,5 @@
 class Game {
+
     constructor() {
         this.started = false; // Did the player start playing? 
         this.ended = false; // Did the player reach to the ending?
@@ -43,7 +44,10 @@ class Game {
         this.bar2Value = 30;
 
         //Dialogue box
-        this.dialogue = null; 
+        this.dialogue = null;
+
+        // Transition effect
+        this.transition = new Transition();
     }
 
     // Draw compact UI panel with about/help buttons, face, and progress bars
@@ -224,6 +228,8 @@ class Game {
                         this.minigame.stop();
                     }
                 }
+
+
                 break;
             }
             case 2: {           //stage 2 - Living Room
@@ -323,6 +329,17 @@ class Game {
                 walkSfx.stop();
             }
         }
+
+        // Draw transition effect on top of everything
+        if (this.transition.active) {
+            this.transition.show();
+        }
+    }
+
+    // Test method to trigger transition
+    testTransition() {
+        this.transition.capture();
+        this.transition.start(1);
     }
 }
 
