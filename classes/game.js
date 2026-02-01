@@ -324,7 +324,7 @@ class Game {
             }
         }
 
-        if (this.stage !== 4 && this.stage !== 0) {
+        if (this.stage !== 4 && this.stage !== 0 && this.stage !== 5) {
             this.drawBars();
         }
 

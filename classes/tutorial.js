@@ -112,7 +112,7 @@ class Tutorial extends Stage {
         }
         else if (gameMode === 1) {
             console.log('Keyboard tutorial is activated.');
-
+            // c.f. Keyboard tutorial doesn't exist.
             image(returnBtn, 0 + returnBtn.width * 0.1 / 2, 0 + returnBtn.height * 0.3, returnBtn.width * 0.5, returnBtn.height * 0.5);
         }
     }
