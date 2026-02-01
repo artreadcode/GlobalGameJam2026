@@ -301,19 +301,17 @@ class Game {
                 this.parallax.update(deltaX);
                 this.parallax.draw(cameraX);
 
-                // Draw mum and dad in living room (scene 1) - behind front layer
-                if (this.scene === 1) {
-                    if (this.minigameTriggerMum) {
-                        const centerX = Math.max(sceneWidth * 0.5, width * 0.5);
-                        this.minigameTriggerMum.x = centerX - 2100;
-                        if (this.minigameTriggerDad) {
-                            this.minigameTriggerDad.x = this.minigameTriggerMum.x + 150;
-                        }
-                        this.minigameTriggerMum.draw(cameraX);
-                    }
+                // Draw mum and dad in living room - behind front layer
+                if (this.minigameTriggerMum) {
+                    const centerX = Math.max(sceneWidth * 0.5, width * 0.5);
+                    this.minigameTriggerMum.x = centerX - 2100;
                     if (this.minigameTriggerDad) {
-                        this.minigameTriggerDad.draw(cameraX);
+                        this.minigameTriggerDad.x = this.minigameTriggerMum.x + 150;
                     }
+                    this.minigameTriggerMum.draw(cameraX);
+                }
+                if (this.minigameTriggerDad) {
+                    this.minigameTriggerDad.draw(cameraX);
                 }
 
                 this.player.updateAnimation(!lockMovement && moveLeft, !lockMovement && moveRight);
