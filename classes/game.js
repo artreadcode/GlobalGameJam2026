@@ -7,12 +7,12 @@ class Game {
         this.player = new Player(width/4);
         this.camera = new Camera();
         this.worldX = 0;
-        this.mirrorObstacle = new Obstacle(0, 400, 400, { sprite: mirrorSprite, actionId: "1", actionType: "transition" });
+        this.mirrorObstacle = new Obstacle(0, null, null, { actionId: "1", actionType: "transition", visible: false });
         this.mirrorExitObstacle = new Obstacle(0, 40, 0, { actionId: "1", actionType: "return", visible: false });
-        this.minigame = new Game1();
-        this.minigameActive = false;
-        this.minigameTrigger = new Obstacle(0, 120, 120, { sprite: placeholderSprite, actionId: "1", actionType: "minigame" });
-        this.obstacles = [this.mirrorObstacle, this.minigameTrigger];
+        // this.minigame = new Game1();
+        // this.minigameActive = false;
+        // this.minigameTrigger = new Obstacle(0, 120, 120, { sprite: placeholderSprite, actionId: "1", actionType: "minigame" });
+        this.obstacles = [this.mirrorObstacle];
         /*
         this.w = windowWidth;
         this.h = windowHeight;
@@ -155,41 +155,44 @@ class Game {
                 walkingActive = moveRight || moveLeft;
 
                 const prevWorldX = this.worldX;
-                if (!this.minigameActive) {
-                    if (moveRight) this.worldX += this.player.speed;
-                    if (moveLeft) this.worldX -= this.player.speed;
-                }
+                // if (!this.minigameActive) {
+                if (moveRight) this.worldX += this.player.speed;
+                if (moveLeft) this.worldX -= this.player.speed;
+                // }
 
-                const maxWorldX = Math.max(this.play.xMin, this.play.xMax - width / 2);
-                this.worldX = constrain(this.worldX, this.play.xMin, maxWorldX);
+                // Use scene width from parallax (based on back_bedroom image)
+                const sceneWidth = this.parallax.getSceneWidth();
+                // Allow player to walk past the door (add extra 200px)
+                const maxWorldX = Math.max(0, sceneWidth - width / 2);
+                this.worldX = constrain(this.worldX, 0, maxWorldX);
 
                 const cameraX = this.worldX;
                 this.player.x = cameraX + width / 2;
 
                 const deltaX = this.worldX - prevWorldX;
                 this.parallax.update(deltaX);
-                this.parallax.draw();
-                if (blackScreenSprite) {
-                    const wallW = width;
-                    const wallH = height;
-                    // const wallX = this.play.xMax;
-                    // image(blackScreenSprite, wallX - cameraX, 0, wallW, wallH);
-                }
+                this.parallax.draw(cameraX);
+
+                // Position door obstacle to match parallax door position
+                let doorRatio = bedroomDoor.width / bedroomDoor.height;
+                let doorDrawH = height * 0.7;
+                let doorDrawW = doorDrawH * doorRatio;
+                this.mirrorObstacle.x = sceneWidth - doorDrawW + 50;
+
+                // Draw player on top of door
                 this.player.draw(cameraX);
 
                 // Draw front parallax layer (in front of player)
                 this.parallax.drawFront();
 
-                this.mirrorObstacle.x = this.play.xMax - 200;
-                this.minigameTrigger.x = (this.play.xMin + this.play.xMax) / 2;
+                // Handle obstacle collisions
                 if (this.mirrorEntryCooldownFrames > 0) {
                     this.mirrorEntryCooldownFrames -= 1;
                 }
                 for (const obstacle of this.obstacles) {
-                    obstacle.draw(cameraX);
-                    if (this.minigameActive) {
-                        continue;
-                    }
+                    // if (this.minigameActive) {
+                    //     continue;
+                    // }
                     if (obstacle === this.mirrorObstacle && this.mirrorEntryCooldownFrames > 0) {
                         continue;
                     }
@@ -272,7 +275,7 @@ class Game {
             }
         }
 
-        if (this.stage !== 4) {
+        if (this.stage !== 4 && this.stage !== 0) {
             this.drawBars();
         }
 

@@ -11,6 +11,25 @@ class Game1 {
     this.countdownSeconds = 5;
     this.countdownStartMs = null;
     this.smile = new Smile({ durationMs, type });
+
+    this.titleText = new JiggleText("Smile Exercise", width / 2, height * 0.22, 32, {
+      color: 255,
+      jiggleX: 1,
+      jiggleY: 1,
+      jiggleRot: 0.02,
+    });
+    this.bodyText = new JiggleText("", width / 2, height * 0.32, 18, {
+      color: 255,
+      jiggleX: 1,
+      jiggleY: 1,
+      jiggleRot: 0.02,
+    });
+    this.countdownText = new JiggleText("5", width / 2, height * 0.45, 64, {
+      color: 255,
+      jiggleX: 2,
+      jiggleY: 2,
+      jiggleRot: 0.04,
+    });
   }
 
   start() {
@@ -73,29 +92,48 @@ class Game1 {
     const bodySize = Math.max(12, Math.min(width, height) * 0.028);
     const smallSize = Math.max(12, Math.min(width, height) * 0.024);
 
-    fill(255);
-    textSize(titleSize);
-    text("Smile Exercise", width / 2, height * 0.22);
+    this.titleText.setPosition(width / 2, height * 0.22);
+    this.titleText.size = titleSize;
+    this.titleText.show();
 
     textSize(bodySize);
     if (this.status === "countdown") {
       const elapsed = Math.max(0, this._nowMs() - this.countdownStartMs);
       const remaining = Math.max(1, Math.ceil((this.countdownSeconds * 1000 - elapsed) / 1000));
-      text("Get ready to smile", width / 2, height * 0.32);
-      textSize(Math.max(36, Math.min(width, height) * 0.12));
-      text(remaining, width / 2, height * 0.45);
+      this.bodyText.color = 255;
+      this.bodyText.setText("Get ready to smile");
+      this.bodyText.setPosition(width / 2, height * 0.32);
+      this.bodyText.size = bodySize;
+      this.bodyText.show();
+
+      this.countdownText.color = 255;
+      this.countdownText.setText(String(remaining));
+      this.countdownText.setPosition(width / 2, height * 0.45);
+      this.countdownText.size = Math.max(36, Math.min(width, height) * 0.12);
+      this.countdownText.show();
     } else if (this.status === "playing") {
       if (this.type === 1) {
-        text("Smile to fill the bar. Stop and it drains.", width / 2, height * 0.32);
+        this.bodyText.color = 255;
+        this.bodyText.setText("Smile to fill the bar. Stop and it drains.");
       } else {
-        text("Keep smiling for the full time. Any break fails.", width / 2, height * 0.32);
+        this.bodyText.color = 255;
+        this.bodyText.setText("Keep smiling for the full time. Any break fails.");
       }
+      this.bodyText.setPosition(width / 2, height * 0.32);
+      this.bodyText.size = bodySize;
+      this.bodyText.show();
     } else if (this.status === "success") {
-      fill(140, 255, 140);
-      text("Nice! You did it.", width / 2, height * 0.32);
+      this.bodyText.color = [140, 255, 140];
+      this.bodyText.setText("Nice! You did it.");
+      this.bodyText.setPosition(width / 2, height * 0.32);
+      this.bodyText.size = bodySize;
+      this.bodyText.show();
     } else if (this.status === "fail") {
-      fill(255, 140, 140);
-      text("Oops! Try again.", width / 2, height * 0.32);
+      this.bodyText.color = [255, 140, 140];
+      this.bodyText.setText("Oops! Try again.");
+      this.bodyText.setPosition(width / 2, height * 0.32);
+      this.bodyText.size = bodySize;
+      this.bodyText.show();
     }
 
     const barW = Math.min(width * 0.7, 520);
