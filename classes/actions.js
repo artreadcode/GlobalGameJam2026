@@ -44,6 +44,9 @@ class Actions {
             game.worldX = Math.max(0, sceneWidth - width);
             game.player.x = game.worldX + width / 2;
             game.camera.x = 0;
+            game.stage1Spawned = false;
+            game.stage1CameraOffset = 0;
+            game.stage1Centering = false;
             if (game.mirrorObstacle) {
               game.mirrorObstacle.triggered = false;
             }
@@ -52,19 +55,22 @@ class Actions {
             }
             break;
           case '3':
-            // Transition from school (stage 2) to toilet (stage 3)
-            game.stage = 3;
-            game.play = new Stage();
-            game.parallax.setStage(3);
-            game.worldX = 0;
-            game.player.x = game.worldX + width / 2;
+            // Transition to mirror scene (stage 8)
+            game.returnStage = game.stage;
+            game.returnScene = game.scene;
+            game.returnX = game.worldX;
+            game.stage = 8;
+            game.play = new MirrorScreen();
+            if (game.mirrorMinigame) {
+              game.mirrorMinigameActive = true;
+              game.mirrorMinigameCompleted = false;
+              game.mirrorMinigame.start();
+            }
+            if (game.mirrorExitObstacle) {
+              game.mirrorExitObstacle.triggered = false;
+            }
+            game.player.x = width / 2;
             game.camera.x = 0;
-            if (game.mirrorObstacle) {
-              game.mirrorObstacle.triggered = false;
-            }
-            if (game.backDoorObstacle) {
-              game.backDoorObstacle.triggered = false;
-            }
             break;
           default:
             break;
@@ -103,12 +109,24 @@ class Actions {
             const targetX = game.returnX ?? width / 2;
             game.stage = targetStage;
             game.play = new Stage();
+            if (game.mirrorMinigameActive && game.mirrorMinigame) {
+              game.mirrorMinigameActive = false;
+              game.mirrorMinigame.stop();
+            }
+            if (game.returnScene !== null && game.returnScene !== undefined) {
+              game.scene = game.returnScene;
+              game.parallax.setStage(game.stage, game.scene);
+            }
             game.worldX = Math.max(game.play.xMin, targetX - width / 2);
             game.player.x = targetX;
             game.camera.x = 0;
             game.mirrorEntryCooldownFrames = 30;
             if (game.mirrorObstacle) {
               game.mirrorObstacle.triggered = false;
+            }
+            if (game.returnScene !== null && game.returnScene !== undefined) {
+              game.scene = game.returnScene;
+              game.parallax.setStage(game.stage, game.scene);
             }
             break;
           }

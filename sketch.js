@@ -11,6 +11,8 @@ let handOptions = { maxHands: 1, flipHorizontal: false };
 let playerSprite;
 let mirrorSprite;
 let mirrorTeenSprite;
+let mirrorSCSprite;
+let blankMirrorSprite;
 let doorSprite;
 let blackScreenSprite;
 let mumSprite;
@@ -68,6 +70,7 @@ let teenMusic;
 let walkSfx;
 let heartbeatSound;
 let cameraSfx;
+let typingSound;
 
 let tutorialbarImg;
 let tutorialEImg;
@@ -179,6 +182,8 @@ function preload() {
 
   mirrorSprite = loadImage('assets/mirror.png');
   mirrorTeenSprite = loadImage('assets/characters/Mirror_Teen.png');
+  mirrorSCSprite = loadImage('assets/characters/Mirror_SC.png');
+  blankMirrorSprite = loadImage('assets/Stage_1 bedroom/Blankmirror.png');
   doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
   mumSprite = loadImage('assets/characters/MUM1.png');

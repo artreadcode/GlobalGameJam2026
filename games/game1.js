@@ -1,25 +1,18 @@
 class Game1 {
   constructor(options = {}) {
     const durationMs = typeof options.durationMs === "number" ? options.durationMs : 7000;
-    const type = Number(options.type) === 2 ? 2 : 1;
 
     this.active = false;
     this.status = "idle";
     this.done = false;
+    this.success = false;
     this.durationMs = durationMs;
-    this.type = type;
     this.countdownSeconds = 5;
     this.countdownStartMs = null;
-    this.smile = new Smile({ durationMs, type });
+    this.smile = new Smile({ durationMs, type: 1, drainMultiplier: 1 });
     this.locksMovement = true;
     this.introDurationMs = 5000;
     this.introStartMs = null;
-    this.flashDurationMs = 200;
-    this.photoDurationMs = 3000;
-    this.fadeDurationMs = 600;
-    this.flashStartMs = null;
-    this.photoStartMs = null;
-    this.fadeStartMs = null;
 
     this.titleText = new JiggleText("Smile for the camera!", width / 2, height * 0.37, 32, {
       color: 255,
@@ -45,11 +38,9 @@ class Game1 {
     this.active = true;
     this.status = "intro";
     this.done = false;
+    this.success = false;
     this.countdownStartMs = null;
     this.introStartMs = this._nowMs();
-    this.flashStartMs = null;
-    this.photoStartMs = null;
-    this.fadeStartMs = null;
   }
 
   stop() {
@@ -79,45 +70,17 @@ class Game1 {
       return;
     }
 
-    if (this.status === "flash") {
-      const elapsed = Math.max(0, this._nowMs() - this.flashStartMs);
-      if (elapsed >= this.flashDurationMs) {
-        this.status = "photo";
-        this.photoStartMs = this._nowMs();
-        // Play camera shutter sound
-        if (cameraSfx && !cameraSfx.isPlaying()) {
-          cameraSfx.play();
-        }
-      }
-      return;
-    }
-
-    if (this.status === "photo") {
-      const elapsed = Math.max(0, this._nowMs() - this.photoStartMs);
-      if (elapsed >= this.photoDurationMs) {
-        this.status = "fadeout";
-        this.fadeStartMs = this._nowMs();
-      }
-      return;
-    }
-
-    if (this.status === "fadeout") {
-      const elapsed = Math.max(0, this._nowMs() - this.fadeStartMs);
-      if (elapsed >= this.fadeDurationMs) {
-        this.done = true;
-      }
-      return;
-    }
-
     this.smile.update();
 
     if (this.status === "playing") {
       if (this.smile.complete) {
-        this.status = "flash";
-        this.flashStartMs = this._nowMs();
+        this.status = "complete";
+        this.done = true;
+        this.success = true;
       } else if (this.smile.failed) {
         this.status = "fail";
         this.done = true;
+        this.success = false;
       }
     }
   }
@@ -144,14 +107,6 @@ class Game1 {
 
     if (this.status === "intro") {
       this._drawIntroScene();
-    } else if (this.status === "flash") {
-      this._drawFlash();
-    } else if (this.status === "photo") {
-      this._drawPhoto(255);
-    } else if (this.status === "fadeout") {
-      const elapsed = Math.max(0, this._nowMs() - this.fadeStartMs);
-      const alpha = Math.max(0, Math.min(255, 255 - (elapsed / this.fadeDurationMs) * 255));
-      this._drawPhoto(alpha);
     } else {
       this._drawCameraScene();
     }
@@ -176,44 +131,26 @@ class Game1 {
       this.countdownText.setPosition(width / 2, height * 0.5);
       this.countdownText.size = Math.max(36, Math.min(width, height) * 0.12);
       this.countdownText.show();
-    } else if (this.status === "playing") {
-      if (this.type !== 1) {
-        this.bodyText.color = 0;
-        this.bodyText.setText("Keep smiling for the full time. Any break fails.");
-        this.bodyText.setPosition(width / 2, height * 0.12);
-        this.bodyText.size = bodySize;
-        this.bodyText.show();
-      }
-    } else if (this.status === "success") {
-      this.bodyText.color = [140, 255, 140];
-      this.bodyText.setText("Nice! You did it.");
-      this.bodyText.setPosition(width / 2, height * 0.12);
-      this.bodyText.size = bodySize;
-      this.bodyText.show();
-    } else if (this.status === "fail") {
-      this.bodyText.color = [255, 140, 140];
-      this.bodyText.setText("Oops! Try again.");
-      this.bodyText.setPosition(width / 2, height * 0.12);
-      this.bodyText.size = bodySize;
-      this.bodyText.show();
     }
 
-    if (this.status === "playing" && (this.smile.isSmiling || this.smile.getProgress() > 0)) {
+    if (this.status === "playing") {
       const barW = Math.min(width * 0.7, 520);
       const barH = Math.max(18, Math.min(width, height) * 0.035);
       const barX = width / 2 - barW / 2;
       const barY = height * 0.11;
       const radius = barH / 2;
 
-      noFill();
-      stroke(0);
-      strokeWeight(2);
-      rect(barX, barY, barW, barH, radius);
+      if (this.smile.isSmiling || progress > 0) {
+        noFill();
+        stroke(0);
+        strokeWeight(2);
+        rect(barX, barY, barW, barH, radius);
 
-      noStroke();
-      fill(255, 216, 0);
-      const fillW = Math.max(0, Math.min(barW, barW * progress));
-      rect(barX, barY, fillW, barH, radius);
+        noStroke();
+        fill(255, 216, 0);
+        const fillW = Math.max(0, Math.min(barW, barW * progress));
+        rect(barX, barY, fillW, barH, radius);
+      }
 
       textSize(smallSize);
       fill(0);
@@ -225,10 +162,9 @@ class Game1 {
       } else {
         fill(255, 140, 140);
       }
-      text(smileStatus, width / 2, barY + barH + 30);
+      text(smileStatus, width / 2, barY + barH + 24);
     }
 
-    // Esc hint removed per request
     pop();
   }
 

@@ -1,11 +1,12 @@
 class MirrorScreen extends Stage {
   constructor() {
     super();
-    this.bg = 20;
+    this.bg = 110;
     this.exitMargin = 100;
     this.spriteW = null;
     this.spriteH = null;
     this.exitCooldownFrames = 0;
+    this.mirrorX = width / 2;
   }
 
   updateBounds() {
@@ -20,12 +21,25 @@ class MirrorScreen extends Stage {
     const sprite = mirrorTeenSprite || mirrorSprite;
     const w = this.spriteW ?? (sprite ? sprite.width : 100);
     const h = this.spriteH ?? (sprite ? sprite.height : 100);
-    const x = width / 2 - w / 2;
-    const y = height - h;
+    const scale = 0.8;
+    const drawW = w * scale;
+    const drawH = h * scale;
+    const x = this.mirrorX - drawW / 2;
+    const y = height - drawH;
 
     if (sprite) {
-      image(sprite, x, y, w, h);
+      image(sprite, x, y, drawW, drawH);
     }
+
+    // Foreground overlay
+    if (mirrorSCSprite) {
+      image(mirrorSCSprite, 0, 0, width, height);
+    }
+  }
+
+  updateMirrorPosition(moveLeft, moveRight, speed = 8) {
+    if (moveLeft) this.mirrorX -= speed;
+    if (moveRight) this.mirrorX += speed;
   }
 
   shouldExit(player) {
