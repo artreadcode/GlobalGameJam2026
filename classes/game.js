@@ -8,12 +8,27 @@ class Game {
         this.player = new Player(width/4);
         this.camera = new Camera();
         this.worldX = 0;
-        this.mirrorObstacle = new Obstacle(0, 400, 400, { sprite: mirrorSprite, actionId: "1", actionType: "transition", visible: true });
+        this.mirrorObstacle = new Obstacle(0, 400, 400, { sprite: bedroomDoor, actionId: "1", actionType: "transition", visible: true });
         this.mirrorExitObstacle = new Obstacle(0, 40, 0, { actionId: "1", actionType: "return", visible: false });
         this.minigame = new Game1();
         this.minigameActive = false;
-        this.minigameTrigger = new Obstacle(0, 120, 120, { sprite: placeholderSprite, actionId: "1", actionType: "minigame" });
+        this.minigameTriggerMum = new Obstacle(0, 110, 400, { sprite: mumSprite, actionId: "1", actionType: "minigame", yOffset: 42 });
+        this.minigameTriggerMumCamera = new Obstacle(0, 400, 400, { sprite: mumCameraSprite, actionId: null, actionType: null, yOffset: 0 });
+        this.minigameTriggerDad = new Obstacle(0, 260, 500, { sprite: dadSprite, actionId: null, actionType: null, yOffset: 42 });
+        this.Camera = new Obstacle(0, 400, 400, { sprite: cameraBorder, actionId: null, actionType: null, yOffset: 42 });
+        this.takingPicture = new Obstacle(0, 700, 700, { sprite: takingPictureSprite, actionId: null, actionType: null, yOffset: 42 });
+        this.takingPictureSmile = new Obstacle(0, 700, 700, { sprite: takingPictureSpriteSmile, actionId: null, actionType: null, yOffset: 42 });
+
+
+
+        this.minigameCompleted = false;
         this.obstacles = [this.mirrorObstacle];
+        // Back door to go from living room back to bedroom
+        this.backDoorObstacle = new Obstacle(0, 100, 300, { actionId: "2", actionType: "transition", visible: false });
+        /*
+        this.w = windowWidth;
+        this.h = windowHeight;
+        */
 
         // Stage structure:
         // Stage 0: Start screen
@@ -153,21 +168,103 @@ class Game {
                     this.play.show();
 
                     if (this.play.isFaceThere) {
-                        this.stage = 5; // Move onto the tutorial screen.
+                        this.stage = 7; // Move onto the tutorial screen.
                     }
                 }
                 break;
 
-            case 1: { // Stage 1: Bedroom (scene 0) → Living room (scene 1)
+            case 1: {           //stage 1
                 if (!(this.play instanceof Stage)) this.play = new Stage();
 
+                //Dialogue box 
+                if(!this.dialogue){
+                    this.dialogue = new dialogueBox(
+                        "Testing dialogue box hiiiiiii",
+                        "character Name"
+                    );
+                }
+
+                const lockMovement = this.minigameActive && this.minigame && this.minigame.locksMovement;
                 const moveRight = keyIsDown(68);
                 const moveLeft = keyIsDown(65);
-                walkingActive = moveRight || moveLeft;
+                walkingActive = !lockMovement && (moveRight || moveLeft);
 
                 const prevWorldX = this.worldX;
-                if (moveRight) this.worldX += this.player.speed;
-                if (moveLeft) this.worldX -= this.player.speed;
+                if (!lockMovement) {
+                    if (moveRight) this.worldX += this.player.speed;
+                    if (moveLeft) this.worldX -= this.player.speed;
+                }
+
+                // Use scene width from parallax (based on back_bedroom image)
+                const sceneWidth = this.parallax.getSceneWidth();
+                // Allow player to walk past the door (add extra 200px)
+                const maxWorldX = Math.max(0, sceneWidth - width / 2);
+                this.worldX = constrain(this.worldX, 0, maxWorldX);
+
+                const cameraX = this.worldX;
+                this.player.x = cameraX + width / 2;
+
+                const deltaX = this.worldX - prevWorldX;
+                this.parallax.update(deltaX);
+                this.parallax.draw(cameraX);
+
+                // Position door obstacle to match parallax door position
+            if (bedroomDoor && bedroomDoor.width && bedroomDoor.height) {
+                let doorRatio = bedroomDoor.width / bedroomDoor.height;
+                let doorDrawH = height * 0.4; // use 0.7 if you want the mirror
+                let doorDrawW = doorDrawH * doorRatio;
+                let doorWorldX = sceneWidth - doorDrawW + 70;
+                this.mirrorObstacle.x = doorWorldX;
+                this.mirrorObstacle.w = doorDrawW;
+                this.mirrorObstacle.h = doorDrawH;
+            } else {
+                this.mirrorObstacle.x = sceneWidth - 200;
+            }
+
+            // Update player animation if this method exists
+            this.player.updateAnimation?.(moveLeft, moveRight);
+
+                // Handle obstacle collisions + draw obstacles (except minigame trigger, drawn later)
+                if (this.mirrorEntryCooldownFrames > 0) {
+                    this.mirrorEntryCooldownFrames -= 1;
+                }
+                for (const obstacle of this.obstacles) {
+                    obstacle.draw(cameraX);
+                    // if (this.minigameActive) {
+                    //     continue;
+                    // }
+                    if (obstacle === this.mirrorObstacle && this.mirrorEntryCooldownFrames > 0) {
+                        continue;
+                    }
+                    if (obstacle.hit(this.player)) {
+                        if (obstacle.actionType) {
+                            Actions.run(obstacle.actionType, obstacle.actionId, this, obstacle);
+                            break;
+                        }
+                    }
+                }
+
+                // Draw player on top of door
+                this.player.draw(cameraX);
+
+                // Draw front parallax layer (in front of player)
+                this.parallax.drawFront();
+
+                break;
+            }
+            case 2: {           //stage 2 - Living Room
+                if (!(this.play instanceof Stage)) this.play = new Stage();
+
+                const lockMovement = this.minigameActive && this.minigame && this.minigame.locksMovement;
+                const moveRight = keyIsDown(68);
+                const moveLeft = keyIsDown(65);
+                walkingActive = !lockMovement && (moveRight || moveLeft);
+
+                const prevWorldX = this.worldX;
+                if (!lockMovement) {
+                    if (moveRight) this.worldX += this.player.speed;
+                    if (moveLeft) this.worldX -= this.player.speed;
+                }
 
                 const sceneWidth = this.parallax.getSceneWidth();
                 const maxWorldX = Math.max(0, sceneWidth - width / 2);
@@ -180,7 +277,10 @@ class Game {
                 this.parallax.update(deltaX);
                 this.parallax.draw(cameraX);
 
-                this.player.updateAnimation(moveLeft, moveRight);
+                // Update player animation based on movement
+                this.player.updateAnimation(!lockMovement && moveLeft, !lockMovement && moveRight);
+
+                // Draw player
                 this.player.draw(cameraX);
                 this.parallax.drawFront();
 
@@ -210,6 +310,61 @@ class Game {
                         this.sceneCooldownFrames = 60;
                         console.log('Stage 1: Living room -> Stage 2: High school');
                     }
+                }
+                if (this.minigameTriggerMum) {
+                    const centerX = Math.max(sceneWidth * 0.5, width * 0.5);
+                    this.minigameTriggerMum.x = centerX - 2100;
+                    if (this.minigameTriggerDad) {
+                        this.minigameTriggerDad.x = this.minigameTriggerMum.x + 150;
+                    }
+                }
+
+                if (!this.minigameCompleted && this.minigameTriggerMum) {
+                    if (this.minigameTriggerMum.hit(this.player)) {
+                        if (this.minigameTriggerMum.actionType) {
+                            Actions.run(this.minigameTriggerMum.actionType, this.minigameTriggerMum.actionId, this, this.minigameTriggerMum);
+                        }
+                    }
+                }
+
+                if (this.minigameTriggerMum) {
+                    this.minigameTriggerMum.draw(cameraX);
+                }
+                if (this.minigameTriggerDad) {
+                    this.minigameTriggerDad.draw(cameraX);
+                }
+                if (!this.minigameCompleted && this.minigameTriggerMum && this.minigameTriggerMum.triggered && !this.minigameTriggerMum.overlaps(this.player)) {
+                    this.minigameTriggerMum.triggered = false;
+                }
+
+                if (this.minigameActive) {
+                    this.minigame.update();
+                    this.minigame.draw();
+                    if (this.minigame.isDone && this.minigame.isDone()) {
+                        this.minigameActive = false;
+                        this.minigame.stop();
+                        this.minigameCompleted = true;
+                        if (this.minigameTriggerMum) {
+                            this.minigameTriggerMum.visible = false;
+                        }
+                        if (this.minigameTriggerDad) {
+                            this.minigameTriggerDad.visible = false;
+                        }
+                    }
+                    if (keyIsDown(27)) {
+                        this.minigameActive = false;
+                        this.minigame.stop();
+                    }
+                }
+
+                // Back door on left side to go back to bedroom
+                if (this.backDoorCooldownFrames > 0) {
+                    this.backDoorCooldownFrames--;
+                }
+                // Only trigger back door when player is at far left (worldX near 0)
+                if (this.worldX <= 10 && this.backDoorCooldownFrames <= 0) {
+                    this.backDoorCooldownFrames = 60;
+                    Actions.run("transition", "2", this, null);
                 }
                 break;
             }
@@ -286,8 +441,41 @@ class Game {
                 }
                 break;
             }
-
-            case 4: { // Mirror transition scene
+            case 4: {           //stage 4 (placeholder)
+                walkingActive = keyIsDown(68) || keyIsDown(65);
+                this.player.update(this.play);
+                const cameraX = this.camera.update(this.play, this.player.x);
+                this.player.draw(cameraX);
+                break;
+            }
+            case 5: {           //stage 5 (placeholder)
+                walkingActive = keyIsDown(68) || keyIsDown(65);
+                this.player.update(this.play);
+                const cameraX = this.camera.update(this.play, this.player.x);
+                this.player.draw(cameraX);
+                break;
+            }
+            case 6: {           //stage 6 (placeholder)
+                walkingActive = keyIsDown(68) || keyIsDown(65);
+                this.player.update(this.play);
+                const cameraX = this.camera.update(this.play, this.player.x);
+                this.player.draw(cameraX);
+                break;
+            }
+            case 7: { // Tutorial page
+                if (!(this.play instanceof Tutorial)) {
+                    this.play = new Tutorial();
+                }
+                this.play.show();
+                if (this.play.willMove) {
+                    this.stage = 1;
+                    this.play.willMove = false;
+                    this.play.tutorialMode = 0;
+                    this.play.smileStartTime = null;
+                }
+                break;
+            }
+            case 8: {           //mirror transition scene/stage, the "inbetween" of each level
                 if (!(this.play instanceof MirrorScreen)) {
                     this.play = new MirrorScreen();
                     this.mirrorExitObstacle.triggered = false;

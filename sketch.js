@@ -12,7 +12,10 @@ let playerSprite;
 let mirrorSprite;
 let doorSprite;
 let blackScreenSprite;
-let placeholderSprite;
+let mumSprite;
+let mumCameraSprite;
+let dadSprite;
+let takingPictureSprite;
 
 // Player animation sprites
 let playerStand;
@@ -23,7 +26,7 @@ let schoolbellFont;
 
 // Tutorial images
 let tooltip;
-let cameraMode;
+let cameraBorder;
 let keyboardMode;
 let gameMode = 0; // default (camera)
 let helpBtn;
@@ -150,8 +153,12 @@ function preload() {
   mirrorSprite = loadImage('assets/mirror.png');
   doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
-  placeholderSprite = loadImage('assets/placeholder.png');
-
+  mumSprite = loadImage('assets/characters/MUM1.png');
+  mumCameraSprite = loadImage('assets/characters/MUM2.png');
+  dadSprite = loadImage('assets/characters/DAD.png');
+  cameraBorder = loadImage('assets/Stage_1 bedroom/cameraOverlay.png');
+  takingPictureSprite = loadImage('assets/characters/Mirror_Toddler.png')
+  takingPictureSpriteSmile = loadImage('assets/characters/SMirror_Toddler.png')
   // Player animation sprites
   playerStand = loadImage('assets/characters/Stand_toddler.png');
   playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
