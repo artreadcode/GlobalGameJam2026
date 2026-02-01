@@ -261,7 +261,5 @@ class startScreen extends Stage {
             }
         }
 
-        image(aboutBtn, 0 + aboutBtn.width * 0.3 / 2, 0 + aboutBtn.height * 0.3, aboutBtn.width * 0.5, aboutBtn.height * 0.5);
-        image(helpBtn, 0 + aboutBtn.width * 0.3 / 2 + aboutBtn.width * 0.6, 0 + aboutBtn.height * 0.3, helpBtn.width * 0.5, helpBtn.height * 0.5);
     }
 }
