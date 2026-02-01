@@ -67,24 +67,31 @@ class Bar {
             rect(this.tx + paddingX * 0.2, this.ty + this.th + 10, maxBarWidth * eE, barHeight - paddingY * 2 );
             
         }
-        if (whichScene === 'playing') {
+if (whichScene === 'playing') {
+            // Create a local variable for the shortened width (30% shorter)
+            let drawWidth = this.tw * 0.7;
+
             let imgW = this.intro.width * 0.5;
             let imgH = this.intro.height * 0.5;
             let spacing = 10;
             
             // Left: Intro/Extro images
+            // drawn at headertx (which is now correctly calculated in Game.js)
             image(this.intro, this.headertx, this.headerty, imgW, imgH);
             image(this.extro, this.headertx, this.headerty + this.th + 10, imgW, imgH);
 
             // Right: Bar backgrounds (next to images)
             let barStartX = this.headertx + imgW + spacing;
-            image(this.bg, barStartX, this.headerty, this.tw, this.th);
-            image(this.bg, barStartX, this.headerty + this.th + 10, this.tw, this.th);
+            
+            // Draw background using the shorter drawWidth
+            image(this.bg, barStartX, this.headerty, drawWidth, this.th);
+            image(this.bg, barStartX, this.headerty + this.th + 10, drawWidth, this.th);
 
             // Draw colored fill bars
             let paddingX = 3; 
             let paddingY = 1;
-            let maxBarWidth = this.tw - paddingX; 
+            // Use drawWidth for the fill calculation too
+            let maxBarWidth = (drawWidth - paddingX); 
             let barHeight = this.th;
 
             noStroke();

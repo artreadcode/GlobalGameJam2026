@@ -86,22 +86,38 @@ class Game {
 
 
     // Draw compact UI panel with about/help buttons, face, and progress bars
-    drawBars() {
+// Draw compact UI panel with about/help buttons, face, and progress bars
+     drawBars() {
         let padding = 40;           // Distance from window edge
         let faceSize = 70;          // Size of face circle
         let faceSpacing = 10;       // Gap between face and bar
-        let barWidth = 250;         // Width of the bar UI
+        
+        // Ensure Bar instance exists so we can read its image dimensions
+        if (!this.bar) this.bar = new Bar();
 
         push();
 
-        // Ensure Bar instance exists
-        if (!this.bar) this.bar = new Bar();
+        // --- NEW WIDTH CALCULATION ---
+        // 1. Calculate the scale factor exactly as the Bar class does
+        let scaleFactor = min(windowWidth * 0.8 / this.bar.bg.width, 0.5); 
+        
+        // 2. Calculate widths of the components
+        let iconWidth = this.bar.intro.width * 0.5;
+        let originalBarWidth = this.bar.bg.width * scaleFactor;
+        let reducedBarWidth = originalBarWidth * 0.7; // The 30% shorter width
+        let barSpacing = 10; // The gap between icon and bar
 
-        // Calculate positions working backwards from right edge
-        let rightEdge = windowWidth - padding-barWidth;
-        let barLeft = Math.max(padding, rightEdge - barWidth);  // Ensure bar doesn't go past left edge
+        // 3. Total width of the right-side UI element
+        let totalUIWidth = iconWidth + barSpacing + reducedBarWidth;
+
+        // 4. Set the Start Position (headertx) based on the Total Width
+        // This guarantees it fits within the window minus padding
+        let rightEdge = windowWidth - padding;
+        let barLeft = rightEdge - totalUIWidth; 
+        // -----------------------------
+
         let faceRight = barLeft - faceSpacing;
-        let faceLeft = Math.max(padding, faceRight - faceSize); // Ensure face doesn't go past left edge
+        let faceLeft = Math.max(padding, faceRight - faceSize); 
         
         let centerX = faceLeft + faceSize / 2;
         let centerY = padding + faceSize / 2;
@@ -159,9 +175,8 @@ class Game {
 
         rectMode(CORNER);
 
-        // Position bar to the right of face, aligned to top with padding
-        // Make sure bar stays within right edge
-        this.bar.headertx = constrain(barLeft, padding, windowWidth - padding - barWidth);
+        // Pass the calculated position to the bar
+        this.bar.headertx = barLeft;
         this.bar.headerty = padding;
         
         // Draw the bar
