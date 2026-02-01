@@ -29,11 +29,18 @@ let gameMode = 0; // default (camera)
 let helpBtn;
 let aboutBtn;
 let paper;
+let longPaper;
 let barImg;
 let returnBtn;
 let closeBtn;
 let bgMusic;
 let walkSfx;
+
+//Help image
+let help01;
+let help02;
+let help03;
+let help04;
 
 // Stage 1 bedroom parallax layers
 let bedroomBack;
@@ -117,9 +124,16 @@ function preload() {
   closeBtn = loadImage('assets/closeButton.png');
 
   paper = loadImage('assets/paper.png');
+  longPaper = loadImage('assets/longPaper.png');
   barImg = loadImage('assets/bar.png');
 
   returnBtn = loadImage('assets/returnButton.png');
+
+  //loading help images
+  help01 = loadImage('assets/Help01.png');
+  help02 = loadImage('assets/Help02.png');
+  help03 = loadImage('assets/Help03.png');
+  help04 = loadImage('assets/Help04.png');
 
   // Stage 1 bedroom parallax
   bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
@@ -312,5 +326,13 @@ if (typeof userStartAudio === "function") {
       }
     }
     }
+  }
+}
+
+function mouseWheel(event) {
+  // Check if header exists and overlay is open
+  if (typeof header !== 'undefined' && header.showOverlay) {
+    header.handleScroll(event.delta);
+    return false; // Blocks browser scrolling
   }
 }
