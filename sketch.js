@@ -114,6 +114,11 @@ let officeMid;
 let officeMid2;
 let officeFloor;
 let officeFront;
+// Stage 6 street parallax layers
+let streetBack;
+let streetMid;
+let streetFront1;
+let streetFront2;
 
 let header;
 
@@ -307,6 +312,12 @@ function preload() {
   officeMid2 = loadImage('assets/Stage_5 Office/mid2_office.png');
   officeFloor = loadImage('assets/Stage_5 Office/Floor_office.png');
   officeFront = loadImage('assets/Stage_5 Office/front_office.png');
+
+  // Stage 6 street assets
+  streetBack = loadImage('assets/Stage_6 Street/Street_Main_back.png');
+  streetMid = loadImage('assets/Stage_6 Street/Street_Main_mid.png');
+  streetFront1 = loadImage('assets/Stage_6 Street/Street_Main_front1.png');
+  streetFront2 = loadImage('assets/Stage_6 Street/Street_Main_front2.png');
 }
 
 function setup() {

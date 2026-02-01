@@ -38,6 +38,7 @@ class Game {
         // Stage 3: High School
         // Stage 4: Toilet
         // Stage 5: Office
+        //stage 6: Tower
         // Stage 8: Mirror transition
         // Stage 9: Tutorial
         this.stage = 0;
@@ -193,8 +194,8 @@ class Game {
                 bgMusic.setLoop(true);
                 bgMusic.play();
             }
-        } else if (this.stage === 3 || this.stage === 4 || this.stage === 5) {
-            // Stage 3-5 (High School, Toilet, Office): Play teen music
+        } else if (this.stage === 3 || this.stage === 4 || this.stage === 5 || this.stage === 6) {
+            // Stage 3-6 (High School, Toilet, Office, Street): Play teen music
             if (bgMusic && bgMusic.isPlaying()) bgMusic.stop();
             if (teenMusic && !teenMusic.isPlaying() && getAudioContext().state === "running") {
                 teenMusic.setLoop(true);
@@ -578,10 +579,55 @@ class Game {
                     this.sceneCooldownFrames = 60;
                     this.player.setCharacterType('teen');
                     console.log('Office -> Toilet');
-                    console.log('Toilet -> High School');
+                } else if (this.sceneCooldownFrames <= 0 && this.worldX <= 5 && moveLeft) {
+                    // Office -> Street (go left)
+                    this.stage = 6;
+                    this.parallax.setStage(6, 0);
+                    const newSceneWidth = this.parallax.getSceneWidth();
+                    this.worldX = Math.max(0, newSceneWidth - width / 2);
+                    this.sceneCooldownFrames = 60;
+                    console.log('Office -> Street');
                 }
                 break;
             }
+
+            case 6: {           // Stage 6: Street
+                if (!(this.play instanceof Stage)) this.play = new Stage();
+
+                const moveRight = keyIsDown(68);
+                const moveLeft = keyIsDown(65);
+                walkingActive = moveRight || moveLeft;
+
+                const prevWorldX = this.worldX;
+                if (moveRight) this.worldX += this.player.speed;
+                if (moveLeft) this.worldX -= this.player.speed;
+
+                const sceneWidth = this.parallax.getSceneWidth();
+                const maxWorldX = Math.max(0, sceneWidth - width / 2);
+                this.worldX = constrain(this.worldX, 0, maxWorldX);
+
+                const cameraX = this.worldX;
+                this.player.x = cameraX + width / 2;
+
+                const deltaX = this.worldX - prevWorldX;
+                this.parallax.update(deltaX);
+                this.parallax.draw(cameraX);
+
+                this.player.updateAnimation(moveLeft, moveRight);
+                this.player.draw(cameraX);
+                this.parallax.drawFront();
+
+                // Transition: Street -> Office (go right)
+                if (this.sceneCooldownFrames <= 0 && this.worldX >= maxWorldX - 5 && moveRight) {
+                    this.stage = 5;
+                    this.parallax.setStage(3, 0);
+                    this.worldX = 0; // Spawn at left side of office
+                    this.sceneCooldownFrames = 60;
+                    console.log('Street -> Office');
+                }
+                break;
+            }
+
             case 7: { // Tutorial page
                 if (!(this.play instanceof Tutorial)) {
                     this.play = new Tutorial();

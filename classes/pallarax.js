@@ -107,6 +107,21 @@ class Parallax {
         this.door = { x: 0, speed: 0, img: null };
         console.log('Parallax set to Stage 3 Scene 0: Office');
       }
+    } else if (stageNum === 6) {
+      if (sceneNum === 0) {
+        // Stage 6 Scene 0: Street
+        // Desired draw order (front to back): front2 -> player -> front1 -> mid -> back
+        this.backLayers = [
+          { name: "back", x: 0, speed: 0, img: streetBack },
+          { name: "mid", x: 0, speed: 0, img: streetMid },
+          { name: "front1", x: 0, speed: 0, img: streetFront1 },
+        ];
+        this.frontLayers = [
+          { name: "front2", x: 0, speed: 0, img: streetFront2 },
+        ];
+        this.door = { x: 0, speed: 0, img: null };
+        console.log('Parallax set to Stage 6 Scene 0: Street');
+      }
     }
   }
 
@@ -116,8 +131,8 @@ class Parallax {
   }
 
   update(deltaX) {
-    // Stage 2 scene 0 (school) and Stage 3 (office) use camera scrolling instead of parallax
-    if ((this.currentStage === 2 && this.currentScene === 0) || this.currentStage === 3) return;
+    // Stage 2 scene 0 (school), Stage 3 (office), and Stage 6 (street) use camera scrolling instead of parallax
+    if ((this.currentStage === 2 && this.currentScene === 0) || this.currentStage === 3 || this.currentStage === 6) return;
     for (let layer of this.backLayers) {
       if (layer.speed > 0) {
         layer.x -= deltaX * layer.speed;
@@ -210,8 +225,8 @@ class Parallax {
     let drawY = 0;
     let drawX = layer.x;
 
-    // Stage 2 (school and toilet) and Stage 3 (office) use camera scrolling instead of parallax
-    if (this.currentStage === 2 || this.currentStage === 3) {
+    // Stage 2 (school and toilet), Stage 3 (office), and Stage 6 (street) use camera scrolling instead of parallax
+    if (this.currentStage === 2 || this.currentStage === 3 || this.currentStage === 6) {
       drawX = layer.x - (this.cameraX || 0);
     }
 
@@ -240,6 +255,10 @@ class Parallax {
 
     // Stage 3 scene 0 (office) - use base width + 100px for camera scrolling
     if (this.currentStage === 3 && this.currentScene === 0) {
+      return baseWidth + 100;
+    }
+    // Stage 6 scene 0 (street) - use base width + 100px for camera scrolling
+    if (this.currentStage === 6 && this.currentScene === 0) {
       return baseWidth + 100;
     }
     // Stage 2 scene 0 (school) - use base width for camera scrolling
