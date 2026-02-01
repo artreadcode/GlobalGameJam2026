@@ -7,7 +7,12 @@ class MirrorSmileGame {
     this.active = false;
     this.done = false;
     this.success = false;
-    this.smile = new Smile({ durationMs, type, drainMultiplier });
+    this.smile = new Smile({
+      durationMs,
+      type,
+      drainMultiplier,
+      detector: this._detectSmile.bind(this),
+    });
   }
 
   start() {
@@ -42,6 +47,14 @@ class MirrorSmileGame {
     const clamped = Math.max(0, Math.min(1, progress));
     const alpha = Math.round(255 * clamped);
 
+    if (alpha > 0) {
+      push();
+      noStroke();
+      fill(255, alpha);
+      rect(0, 0, width, height);
+      pop();
+    }
+
     push();
     textAlign(CENTER, TOP);
     textFont(schoolbellFont);
@@ -51,17 +64,24 @@ class MirrorSmileGame {
     strokeWeight(3);
     text("Smile!", width / 2, height * 0.05);
     pop();
-
-    if (alpha <= 0) return;
-
-    push();
-    noStroke();
-    fill(255, alpha);
-    rect(0, 0, width, height);
-    pop();
   }
 
   isDone() {
     return this.done;
+  }
+
+  _detectSmile() {
+    if (!faces || faces.length === 0) return false;
+    const face = faces[0];
+    const leftCorner = face.keypoints[61];
+    const rightCorner = face.keypoints[291];
+    const leftCheek = face.keypoints[234];
+    const rightCheek = face.keypoints[454];
+
+    const mouthWidth = dist(leftCorner.x, leftCorner.y, rightCorner.x, rightCorner.y);
+    const faceWidth = dist(leftCheek.x, leftCheek.y, rightCheek.x, rightCheek.y);
+    const ratio = mouthWidth / faceWidth;
+
+    return ratio > 0.45;
   }
 }

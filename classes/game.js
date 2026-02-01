@@ -331,6 +331,20 @@ class Game {
                 this.parallax.update(deltaX);
                 this.parallax.draw(cameraX);
 
+                // Align mirror trigger with the living room door/blank mirror
+                if (this.mirrorObstacle) {
+                    const mirrorSprite = blankMirrorSprite || livingroomDoor;
+                    const ratio = mirrorSprite ? mirrorSprite.width / mirrorSprite.height : 1;
+                    const doorDrawH = height * 0.55;
+                    const doorDrawW = doorDrawH * ratio;
+                    const floorHeight = height * 0.15;
+                    this.mirrorObstacle.sprite = mirrorSprite;
+                    this.mirrorObstacle.w = doorDrawW;
+                    this.mirrorObstacle.h = doorDrawH;
+                    this.mirrorObstacle.yOffset = floorHeight;
+                    this.mirrorObstacle.x = sceneWidth - doorDrawW - 100;
+                }
+
                 // Draw mum and dad - behind front layer
                 if (this.minigameTriggerMum) {
                     const centerX = Math.max(sceneWidth * 0.5, width * 0.5);
@@ -402,24 +416,7 @@ class Game {
                         this.dialogueState = null;
                         this.dialogueShown = false;
                         console.log('Living Room -> Bedroom');
-                    } else if (this.worldX >= maxWorldX - 5) {
-                        // Living Room -> High School (go right)
-                        this.stage = 3;
-                        this.parallax.setStage(2, 0);
-                        this.worldX = 0;
-                        this.sceneCooldownFrames = 60;
-                        this.player.setCharacterType('teen');
-                        // Reset dialogue state when leaving Living Room
-                        this.dialogue = null;
-                        this.dialogueState = null;
-                        this.dialogueShown = false;
-                        console.log('Living Room -> High School');
                     }
-                }
-
-                // Mirror trigger
-                if (this.mirrorObstacle && this.mirrorObstacle.hit(this.player)) {
-                    Actions.run(this.mirrorObstacle.actionType, "3", this, this.mirrorObstacle);
                 }
 
                 // Mirror trigger

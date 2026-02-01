@@ -13,6 +13,11 @@ class Game1 {
     this.locksMovement = true;
     this.introDurationMs = 5000;
     this.introStartMs = null;
+    this.flashDurationMs = 200;
+    this.photoHoldMs = 3000;
+    this.photoFadeMs = 800;
+    this.flashStartMs = null;
+    this.photoStartMs = null;
 
     this.titleText = new JiggleText("Smile for the camera!", width / 2, height * 0.37, 32, {
       color: 255,
@@ -41,6 +46,8 @@ class Game1 {
     this.success = false;
     this.countdownStartMs = null;
     this.introStartMs = this._nowMs();
+    this.flashStartMs = null;
+    this.photoStartMs = null;
   }
 
   stop() {
@@ -70,17 +77,34 @@ class Game1 {
       return;
     }
 
-    this.smile.update();
-
     if (this.status === "playing") {
+      this.smile.update();
       if (this.smile.complete) {
-        this.status = "complete";
-        this.done = true;
-        this.success = true;
+        this.status = "flash";
+        this.flashStartMs = this._nowMs();
       } else if (this.smile.failed) {
         this.status = "fail";
         this.done = true;
         this.success = false;
+      }
+      return;
+    }
+
+    if (this.status === "flash") {
+      const elapsed = Math.max(0, this._nowMs() - this.flashStartMs);
+      if (elapsed >= this.flashDurationMs) {
+        this.status = "photo";
+        this.photoStartMs = this._nowMs();
+      }
+      return;
+    }
+
+    if (this.status === "photo") {
+      const elapsed = Math.max(0, this._nowMs() - this.photoStartMs);
+      if (elapsed >= this.photoHoldMs + this.photoFadeMs) {
+        this.status = "complete";
+        this.done = true;
+        this.success = true;
       }
     }
   }
@@ -165,6 +189,19 @@ class Game1 {
       text(smileStatus, width / 2, barY + barH + 24);
     }
 
+    if (this.status === "flash") {
+      this._drawFlash();
+    }
+
+    if (this.status === "photo") {
+      const elapsed = Math.max(0, this._nowMs() - this.photoStartMs);
+      const fadeElapsed = Math.max(0, elapsed - this.photoHoldMs);
+      const alpha = fadeElapsed <= 0
+        ? 255
+        : Math.max(0, 255 * (1 - fadeElapsed / this.photoFadeMs));
+      this._drawPhoto(alpha);
+    }
+
     pop();
   }
 
@@ -224,7 +261,7 @@ class Game1 {
       const drawH = takingPictureSpriteSmile.height * scale;
       push();
       tint(255, alpha);
-      image(takingPictureSpriteSmile, 0, 0, drawW, drawH);
+      image(takingPictureSpriteSmile, width / 2 - drawW / 2, height - drawH, drawW, drawH);
       pop();
     }
   }
