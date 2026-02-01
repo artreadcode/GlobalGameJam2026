@@ -102,7 +102,7 @@ class Tutorial extends Stage {
                         this.smileStartTime = millis();
                     }
                     
-                    if (millis() - this.smileStartTime > 0 && millis() - this.smileSartTime < 1500) {
+                    if (millis() - this.smileStartTime > 0 && millis() - this.smileStartTime < 1500) {
                         console.log('countdown...');
                     }
                     else {

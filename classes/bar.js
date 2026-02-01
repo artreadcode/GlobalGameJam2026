@@ -3,6 +3,9 @@ class Bar {
         // this.bgPATH = 'assets/tutorial_emptyBar.png';
         this.bg = tutorialbarImg;
 
+        this.intro = tutorialIImg;
+        this.extro = tutorialEImg;
+
         // Actual displayed width and height of the bar image
         this.tw = this.bg.width * 0.5;
         this.th = this.bg.height * 0.5;
@@ -21,6 +24,10 @@ class Bar {
         imageMode(CORNER); 
         
         if (whichScene === 'tutorial') {
+            
+            image(this.intro, this.tx - this.tw * 0.30, this.ty, this.intro.width * 0.5, this.intro.height * 0.5);
+            image(this.extro, this.tx - this.tw * 0.32, this.ty + this.th + 8, this.extro.width * 0.5, this.extro.height * 0.5);
+
             // Draw Introvert Background (Top)
             image(this.bg, this.tx, this.ty, this.tw, this.th);
             
