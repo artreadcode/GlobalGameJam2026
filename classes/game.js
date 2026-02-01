@@ -140,7 +140,7 @@ class Game {
                 break;
 
             case 1: {           //stage 1
-                if (!this.play) this.play = new Stage();
+                if (!(this.play instanceof Stage)) this.play = new Stage();
 
                 //Dialogue box 
                 if(!this.dialogue){
@@ -257,6 +257,12 @@ class Game {
                 }
                 this.play.show();
                 // this.drawBars();
+                if (this.play.willMove) {
+                    this.stage = 1;
+                    this.play.willMove = false;
+                    this.play.tutorialMode = 0;
+                    this.play.smileStartTime = null;
+                }
                 break;
             }
         }
