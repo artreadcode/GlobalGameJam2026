@@ -489,7 +489,10 @@ function mousePressed() {
       else if (game.play instanceof Tutorial) {
         
         // Check "Return" button
+        game.play.checkLaunch(mouseX, mouseY); 
+
         let det = game.play.goingBack(mouseX, mouseY);
+        console.log(det);
         if (det) {
           game.stage = 0;
           game.started = false;
