@@ -15,10 +15,10 @@ class Bar {
         if (whichScene === 'tutorial') {
             image(this.bg, this.tx, this.ty, this.tw, this.th);
 
-            console.log(eE, eI);
-            
+            // console.log(eE, eI);
+
             fill(0);
-            rect(100, 100, 30, 50);
+            // rect(this.tx, this.ty, eE * this.th - , 50);
 
         }
     }

@@ -311,9 +311,9 @@ function updateEnergy() {
   // If NEITHER (doing nothing), Drift to 0.5
   else {
     if (game.introvert > 0.6) {
-      game.introvert -= 0.002; // Drift down slowly
+      game.introvert -= 0.005; // Drift down slowly
     } else if (game.introvert < 0.6) {
-      game.introvert += 0.002; // Drift up slowly
+      game.introvert += 0.005; // Drift up slowly
     }
     
     // Stop jittering if we are close to 0.5

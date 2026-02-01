@@ -168,7 +168,7 @@ class Game {
                     this.play.show();
 
                     if (this.play.isFaceThere) {
-                        this.stage = 7; // Move onto the tutorial screen.
+                        this.stage = 9; // Move onto the tutorial screen.
                     }
                 }
                 break;
@@ -503,7 +503,7 @@ class Game {
                 break;
             }
 
-            case 5: { // Tutorial page
+            case 9: { // Tutorial page
                 if (!(this.play instanceof Tutorial)) {
                     this.play = new Tutorial();
                     this.isTutorialStarted = 1; // true
@@ -525,7 +525,7 @@ class Game {
             }
         }
 
-        if (this.stage !== 4 && this.stage !== 0 && this.stage !== 5) {
+        if (this.stage !== 4 && this.stage !== 0 && this.stage !== 9) {
             this.drawBars();
         }
 
@@ -552,7 +552,9 @@ class Game {
         }
 
         // Draw header with buttons on top of everything
-        header.display(this.stage);
+        if (this.stage !== 9) {
+            header.display(this.stage);
+        }
     }
 
     // Test method to trigger transition
