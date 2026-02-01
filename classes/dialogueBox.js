@@ -32,7 +32,8 @@ class dialogueBox{
             {
                 color: this.textColor,
                 speed: 30,
-                align: LEFT
+                align: LEFT, 
+                sound: options.sound 
             }
         );
 
@@ -106,6 +107,8 @@ class dialogueBox{
     skipToEnd(){
         this.typewriter.currentIndex = this.typewriter.fullText.length;
         this.typewriter.displayedText = this.typewriter.fullText;
+
+        this.typewriter.stop();
     }
 
     draw(){
