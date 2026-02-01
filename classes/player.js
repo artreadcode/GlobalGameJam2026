@@ -56,6 +56,13 @@ class Player {
     } else {
       // Standing idle
       sprite = playerStand;
+      if(game && game.smiled === 2 && playerStandSmile){
+        sprite = playerStandSmile;
+      } else if (game && game.hid === 2 && playerStandHide){
+        sprite = playerStandHide;
+      } else {
+        sprite = playerStand;
+      }
     }
 
     if (sprite) {

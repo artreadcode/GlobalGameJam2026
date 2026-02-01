@@ -176,14 +176,6 @@ class Game {
             case 1: {           //stage 1
                 if (!(this.play instanceof Stage)) this.play = new Stage();
 
-                //Dialogue box 
-                if(!this.dialogue){
-                    this.dialogue = new dialogueBox(
-                        "Testing dialogue box hiiiiiii",
-                        "character Name"
-                    );
-                }
-
                 const lockMovement = this.minigameActive && this.minigame && this.minigame.locksMovement;
                 const moveRight = keyIsDown(68);
                 const moveLeft = keyIsDown(65);

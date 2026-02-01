@@ -19,8 +19,12 @@ let takingPictureSprite;
 
 // Player animation sprites
 let playerStand;
+let playerStandSmile;
+let playerStandHide;
+
 let playerWalkLeft = [];
 let playerWalkRight = [];
+
 
 let schoolbellFont;
 
@@ -150,6 +154,10 @@ function preload() {
 
 
   playerSprite = loadImage('assets/character.png');
+  playerStandSmile = loadImage('assets/characters/Stand_toddlerSmile.png');
+  playerStandHide = loadImage('assets/characters/Stand_toddlerClose.png');
+
+
   mirrorSprite = loadImage('assets/mirror.png');
   doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
@@ -261,6 +269,11 @@ function setup() {
 
 function draw() {
   game.show();
+
+  //detect for character expression
+  detectSmile();
+  detectHide();
+
   console.log(game.stage)
 
   if (detectHide()) {
