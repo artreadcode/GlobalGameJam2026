@@ -80,6 +80,12 @@ class Game {
 
         this.hideQuestionText = new JiggleText("?", 0, 0, 20, {color: 0});
 
+        // Dialogue state for minigame trigger
+        this.dialogueState = null; // null, 'typing', 'waiting_for_delay', 'ready_for_minigame'
+        this.dialogueCompleteTime = null;
+        this.dialogueDelay = 2000; // 3 seconds delay in milliseconds
+        this.dialogueShown = false; // Track if dialogue has been shown already
+
     }
 
 
@@ -300,22 +306,57 @@ class Game {
                 this.parallax.update(deltaX);
                 this.parallax.draw(cameraX);
 
-                // Draw mum and dad in living room (scene 1) - behind front layer
-                if (this.scene === 1) {
-                    if (this.minigameTriggerMum) {
-                        const centerX = Math.max(sceneWidth * 0.5, width * 0.5);
-                        this.minigameTriggerMum.x = centerX - 2100;
-                        if (this.minigameTriggerDad) {
-                            this.minigameTriggerDad.x = this.minigameTriggerMum.x + 150;
-                        }
-                        this.minigameTriggerMum.draw(cameraX);
-                    }
+                // Draw mum and dad - behind front layer
+                if (this.minigameTriggerMum) {
+                    const centerX = Math.max(sceneWidth * 0.5, width * 0.5);
+                    this.minigameTriggerMum.x = centerX - 2100;
                     if (this.minigameTriggerDad) {
-                        this.minigameTriggerDad.draw(cameraX);
+                        this.minigameTriggerDad.x = this.minigameTriggerMum.x + 150;
+                    }
+                   this.minigameTriggerMum.draw(cameraX);
+                }
+                if (this.minigameTriggerDad) {
+                    this.minigameTriggerDad.draw(cameraX);
+                }
+                
+                // Dialogue and minigame sequence
+                if (!this.minigameCompleted && this.minigameTriggerMum) {
+                    // Step 1: Create dialogue on collision
+                    if (this.minigameTriggerMum.hit(this.player)) {
+                        if (!this.dialogue && !this.dialogueShown) {
+                            this.dialogue = new dialogueBox(
+                                "Hey sweetie! Can you help me take a picture for Dad? Smile!",
+                                "Mom",
+                                { sound: typingSound }
+                            );
+                            this.dialogueState = 'typing';
+                            this.dialogueShown = true;
+                            console.log("Dialogue created - typewriter started");
+                        }
+                    }
+
+                    // Step 2: Check if typewriter is done, then start delay (works even if player moves away)
+                    if (this.dialogueState === 'typing' && this.dialogue && this.dialogue.isComplete()) {
+                        this.dialogueState = 'waiting_for_delay';
+                        this.dialogueCompleteTime = millis();
+                        console.log("Typewriter done - starting 3 second delay");
+                    }
+
+                    // Step 3: Check if delay is complete (works even if player moves away)
+                    if (this.dialogueState === 'waiting_for_delay') {
+                        const elapsed = millis() - this.dialogueCompleteTime;
+                        if (elapsed >= this.dialogueDelay) {
+                            // Delay complete - close dialogue and mark ready for minigame
+                            this.dialogue = null;
+                            this.dialogueState = 'ready_for_minigame';
+                            console.log("Delay complete - dialogue closed - ready for minigame");
+                        }
                     }
                 }
 
+
                 this.player.updateAnimation(!lockMovement && moveLeft, !lockMovement && moveRight);
+
                 this.player.draw(cameraX);
                 this.parallax.drawFront();
 
@@ -340,12 +381,12 @@ class Game {
                     }
                 }
 
-                // Minigame collision and logic
+                // Minigame trigger - automatically triggers after dialogue sequence completes
                 if (!this.minigameCompleted && this.minigameTriggerMum) {
-                    if (this.minigameTriggerMum.hit(this.player)) {
-                        if (this.minigameTriggerMum.actionType) {
-                            Actions.run(this.minigameTriggerMum.actionType, this.minigameTriggerMum.actionId, this, this.minigameTriggerMum);
-                        }
+                    if (this.minigameTriggerMum.actionType && this.dialogueState === 'ready_for_minigame') {
+                        Actions.run(this.minigameTriggerMum.actionType, this.minigameTriggerMum.actionId, this, this.minigameTriggerMum);
+                        this.dialogueState = null; // Reset state after triggering
+                        console.log("Minigame triggered after dialogue sequence");
                     }
                 }
 

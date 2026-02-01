@@ -54,6 +54,7 @@ let teenMusic;
 let walkSfx;
 let heartbeatSound;
 let cameraSfx;
+let typingSound;
 
 let tutorialbarImg;
 let tutorialEImg;
