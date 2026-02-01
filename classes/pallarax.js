@@ -1,5 +1,5 @@
 // Parallax layers for different stages
-// Stage 1 (bedroom): wall -> floor -> back -> mid -> player -> front
+// Stage 1 (bedroom): white bg -> floor -> back -> mid -> door (rightmost) -> player -> front
 // Stage 2 (living room): wall -> floor -> mid -> player -> front
 
 class Parallax {
@@ -8,7 +8,6 @@ class Parallax {
 
     // Layers drawn BEFORE player (background)
     this.backLayers = [
-      { name: "wall", x: 0, speed: 0.1, img: null },
       { name: "floor", x: 0, speed: 0, img: null },
       { name: "back", x: 0, speed: 0.3, img: null },
       { name: "mid", x: 0, speed: 0.5, img: null },
@@ -17,6 +16,10 @@ class Parallax {
     this.frontLayers = [
       { name: "front", x: 0, speed: 1.0, img: null },
     ];
+
+    // Door for scene transition (positioned at rightmost, same speed as back layer)
+    this.door = { x: 0, speed: 0.3, img: null };
+    this.sceneWidth = 0; // Will be set based on back_bedroom image
   }
 
   // Set stage and load appropriate images
@@ -31,9 +34,8 @@ class Parallax {
     }
 
     if (stageNum === 1) {
-      // Stage 1: Bedroom
+      // Stage 1: Bedroom - white background (no wall), mid layer, door at rightmost
       this.backLayers = [
-        { name: "wall", x: 0, speed: 0.1, img: bedroomWall },
         { name: "floor", x: 0, speed: 0, img: bedroomFloor },
         { name: "back", x: 0, speed: 0.3, img: bedroomBack },
         { name: "mid", x: 0, speed: 0.5, img: bedroomMid },
@@ -41,6 +43,9 @@ class Parallax {
       this.frontLayers = [
         { name: "front", x: 0, speed: 1.0, img: bedroomFront },
       ];
+      // Set door image (same speed as back layer to stay aligned)
+      this.door = { x: 0, speed: 0.3, img: bedroomDoor };
+      // Scene width will be calculated in draw based on back image
       console.log('Parallax set to Stage 1: Bedroom');
     } else if (stageNum === 2) {
       // Stage 2: Living room (wall -> floor -> mid -> player -> front)
@@ -52,6 +57,7 @@ class Parallax {
       this.frontLayers = [
         { name: "front", x: 0, speed: 1.0, img: livingroomFront },
       ];
+      this.door = { x: 0, speed: 0, img: null };
       console.log('Parallax set to Stage 2: Living Room');
     }
   }
@@ -72,21 +78,53 @@ class Parallax {
         layer.x -= deltaX * layer.speed;
       }
     }
+    // Door uses cameraX directly, no parallax update needed
   }
 
-  draw() {
+  draw(cameraX = 0) {
     // Set images if not already set
     if (!this.backLayers[0].img) {
       this.setImages();
     }
 
-    // Black background behind everything
-    background(0);
+    // White background for stage 1 (bedroom), black for others
+    if (this.currentStage === 1) {
+      background(255);
+    } else {
+      background(0);
+    }
 
-    // Draw back layers (wall -> mid) before player
+    // Draw back layers before player, with door between back and mid
     for (let layer of this.backLayers) {
       this.drawLayer(layer);
+      // Draw door after "back" layer but before "mid" layer (so desk is in front of door)
+      if (layer.name === "back" && this.currentStage === 1 && this.door && this.door.img) {
+        this.drawDoor(cameraX);
+      }
     }
+  }
+
+  // Draw the door at a fixed world position (like obstacles)
+  drawDoor(cameraX) {
+    if (!this.door.img) return;
+
+    // Get scene width
+    let sceneWidth = this.getSceneWidth();
+
+    // Door dimensions
+    let doorRatio = this.door.img.width / this.door.img.height;
+    let doorDrawH = height * 0.4; // Door height (70% of screen)
+    let doorDrawW = doorDrawH * doorRatio;
+
+    // Door world position (at the right edge of scene)
+    let doorWorldX = sceneWidth - doorDrawW + 70; // Further to the right
+
+    // Convert to screen position using cameraX
+    let doorScreenX = doorWorldX - cameraX;
+    let floorHeight = height * 0.18; // Move door up a bit
+    let doorY = height - doorDrawH - floorHeight; // Position door above floor
+
+    image(this.door.img, doorScreenX, doorY, doorDrawW, doorDrawH);
   }
 
   // Draw the front layers (call this after drawing the player)
@@ -97,7 +135,7 @@ class Parallax {
     }
   }
 
-  // Helper to draw a single layer
+  // Helper to draw a single layer (no tiling - shows white background when scrolled)
   drawLayer(layer) {
     if (!layer.img) return;
 
@@ -105,11 +143,46 @@ class Parallax {
     let drawH = height;
     let drawW = drawH * imgRatio;
 
-    let xPos = layer.x % drawW;
-    if (xPos > 0) xPos -= drawW;
-
-    for (let x = xPos; x < width; x += drawW) {
-      image(layer.img, x, 0, drawW, drawH);
+    // Floor layer tiles to fill screen (speed 0, static background)
+    if (layer.name === "floor") {
+      // Overlap tiles by 1 pixel to eliminate seam lines
+      for (let x = 0; x < width + drawW; x += drawW - 1) {
+        image(layer.img, x, 0, drawW, drawH);
+      }
+    } else {
+      // Other layers draw once at parallax position (no repeating)
+      image(layer.img, layer.x, 0, drawW, drawH);
     }
+  }
+
+  // Get the scene width based on back layer
+  getSceneWidth() {
+    let backLayer = this.backLayers.find(l => l.name === "back");
+    if (!backLayer || !backLayer.img) return width;
+
+    let backRatio = backLayer.img.width / backLayer.img.height;
+    let baseWidth = height * backRatio;
+    // Extend the room to push the door farther away
+    return baseWidth * 2.5;
+  }
+
+  // Check if player has reached the door
+  isPlayerAtDoor(playerX, cameraX) {
+    if (!this.door || !this.door.img) return false;
+
+    let sceneWidth = this.getSceneWidth();
+
+    let doorRatio = this.door.img.width / this.door.img.height;
+    let doorDrawH = height * 0.6;
+    let doorDrawW = doorDrawH * doorRatio;
+
+    // Door position at most right of extended scene
+    let doorX = (sceneWidth - doorDrawW - 50) + this.door.x;
+
+    // Player screen position
+    let playerScreenX = playerX - cameraX;
+
+    // Check if player overlaps with door area
+    return playerScreenX >= doorX && playerScreenX <= doorX + doorDrawW;
   }
 }

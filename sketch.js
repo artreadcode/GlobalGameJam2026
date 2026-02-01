@@ -10,6 +10,7 @@ let handOptions = { maxHands: 1, flipHorizontal: false };
 
 let playerSprite;
 let mirrorSprite;
+let doorSprite;
 let blackScreenSprite;
 let placeholderSprite;
 
@@ -29,11 +30,11 @@ let bgMusic;
 let walkSfx;
 
 // Stage 1 bedroom parallax layers
-let bedroomWall;
 let bedroomBack;
 let bedroomMid;
 let bedroomFloor;
 let bedroomFront;
+let bedroomDoor;
 
 // movement
 
@@ -71,6 +72,7 @@ function preload() {
 
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
+  doorSprite = loadImage('assets/Stage_1 bedroom/door.png');
   blackScreenSprite = loadImage('assets/blackScreen.png');
   placeholderSprite = loadImage('assets/placeholder.png');
 
@@ -93,11 +95,11 @@ function preload() {
   returnBtn = loadImage('assets/returnButton.png');
 
   // Stage 1 bedroom parallax
-  bedroomWall = loadImage('assets/Stage_1 bedroom/wall_bedroom.png');
   bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
   bedroomMid = loadImage('assets/Stage_1 bedroom/mid_bedroom.png');
   bedroomFloor = loadImage('assets/Stage_1 bedroom/floor_bedroom.png');
   bedroomFront = loadImage('assets/Stage_1 bedroom/Front_bedroom.png');
+  bedroomDoor = loadImage('assets/Stage_1 bedroom/door.png');
 }
 
 function setup() {
