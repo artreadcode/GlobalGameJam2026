@@ -43,8 +43,8 @@ class Parallax {
       this.frontLayers = [
         { name: "front", x: 0, speed: 1.0, img: bedroomFront },
       ];
-      // Set door image (same speed as back layer to stay aligned)
-      this.door = { x: 0, speed: 0.3, img: bedroomDoor };
+      // Door handled by mirror obstacle; keep parallax door hidden.
+      this.door = { x: 0, speed: 0.3, img: null };
       // Scene width will be calculated in draw based on back image
       console.log('Parallax set to Stage 1: Bedroom');
     } else if (stageNum === 2) {

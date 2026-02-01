@@ -7,12 +7,12 @@ class Game {
         this.player = new Player(width/4);
         this.camera = new Camera();
         this.worldX = 0;
-        this.mirrorObstacle = new Obstacle(0, null, null, { actionId: "1", actionType: "transition", visible: false });
+        this.mirrorObstacle = new Obstacle(0, 400, 400, { sprite: mirrorSprite, actionId: "1", actionType: "transition", visible: true });
         this.mirrorExitObstacle = new Obstacle(0, 40, 0, { actionId: "1", actionType: "return", visible: false });
-        // this.minigame = new Game1();
-        // this.minigameActive = false;
-        // this.minigameTrigger = new Obstacle(0, 120, 120, { sprite: placeholderSprite, actionId: "1", actionType: "minigame" });
-        this.obstacles = [this.mirrorObstacle];
+        this.minigame = new Game1();
+        this.minigameActive = false;
+        this.minigameTrigger = new Obstacle(0, 120, 120, { sprite: placeholderSprite, actionId: "1", actionType: "minigame" });
+        this.obstacles = [this.mirrorObstacle, this.minigameTrigger];
         /*
         this.w = windowWidth;
         this.h = windowHeight;
@@ -150,15 +150,16 @@ class Game {
                     );
                 }
 
+                const lockMovement = this.minigameActive && this.minigame && this.minigame.locksMovement;
                 const moveRight = keyIsDown(68);
                 const moveLeft = keyIsDown(65);
-                walkingActive = moveRight || moveLeft;
+                walkingActive = !lockMovement && (moveRight || moveLeft);
 
                 const prevWorldX = this.worldX;
-                // if (!this.minigameActive) {
-                if (moveRight) this.worldX += this.player.speed;
-                if (moveLeft) this.worldX -= this.player.speed;
-                // }
+                if (!lockMovement) {
+                    if (moveRight) this.worldX += this.player.speed;
+                    if (moveLeft) this.worldX -= this.player.speed;
+                }
 
                 // Use scene width from parallax (based on back_bedroom image)
                 const sceneWidth = this.parallax.getSceneWidth();
@@ -174,10 +175,14 @@ class Game {
                 this.parallax.draw(cameraX);
 
                 // Position door obstacle to match parallax door position
-                let doorRatio = bedroomDoor.width / bedroomDoor.height;
-                let doorDrawH = height * 0.7;
-                let doorDrawW = doorDrawH * doorRatio;
-                this.mirrorObstacle.x = sceneWidth - doorDrawW + 50;
+                if (bedroomDoor && bedroomDoor.width && bedroomDoor.height) {
+                    let doorRatio = bedroomDoor.width / bedroomDoor.height;
+                    let doorDrawH = height * 0.7;
+                    let doorDrawW = doorDrawH * doorRatio;
+                    this.mirrorObstacle.x = sceneWidth - doorDrawW + 50;
+                } else {
+                    this.mirrorObstacle.x = sceneWidth - 200;
+                }
 
                 // Draw player on top of door
                 this.player.draw(cameraX);
@@ -185,11 +190,17 @@ class Game {
                 // Draw front parallax layer (in front of player)
                 this.parallax.drawFront();
 
+                if (this.minigameTrigger) {
+                    const fallbackX = width * 0.75;
+                    this.minigameTrigger.x = Math.max(sceneWidth * 0.5, fallbackX);
+                }
+
                 // Handle obstacle collisions
                 if (this.mirrorEntryCooldownFrames > 0) {
                     this.mirrorEntryCooldownFrames -= 1;
                 }
                 for (const obstacle of this.obstacles) {
+                    obstacle.draw(cameraX);
                     // if (this.minigameActive) {
                     //     continue;
                     // }

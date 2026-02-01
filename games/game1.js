@@ -11,6 +11,7 @@ class Game1 {
     this.countdownSeconds = 5;
     this.countdownStartMs = null;
     this.smile = new Smile({ durationMs, type });
+    this.locksMovement = true;
 
     this.titleText = new JiggleText("Smile Exercise", width / 2, height * 0.22, 32, {
       color: 255,
