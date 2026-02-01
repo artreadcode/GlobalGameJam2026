@@ -64,12 +64,6 @@ class Game {
 
         push();
 
-        // Draw about and help buttons at top
-        let btnScale = 0.3;
-        let btnY = panelY + 15;
-        image(aboutBtn, panelX + 20, btnY, aboutBtn.width * btnScale, aboutBtn.height * btnScale);
-        image(helpBtn, panelX + 20 + aboutBtn.width * btnScale + 10, btnY, helpBtn.width * btnScale, helpBtn.height * btnScale);
-
         // Draw face area (video will be replaced by face mesh)
         let faceX = panelX + 15;
         let faceY = panelY + 55;
@@ -362,6 +356,9 @@ class Game {
         if (this.transition.active) {
             this.transition.show();
         }
+
+        // Draw header with buttons on top of everything
+        header.display(this.stage);
     }
 
     // Test method to trigger transition
