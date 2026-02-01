@@ -22,9 +22,9 @@ class Game {
         // Stage 4: Mirror transition
         // Stage 5: Tutorial
         // DEBUG: Start directly in toilet scene
-        this.stage = 2;
+        this.stage = 0;
         this.scene = 1; // Toilet scene
-        this.started = true;
+        this.started = false;
 
         // Shall we move on? (Triggered from each scene)
         this.next = false;
@@ -324,7 +324,7 @@ class Game {
             }
         }
 
-        if (this.stage !== 4 && this.stage !== 0) {
+        if (this.stage !== 4 && this.stage !== 0 && this.stage !== 5) {
             this.drawBars();
         }
 
