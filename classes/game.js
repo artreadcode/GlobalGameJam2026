@@ -23,20 +23,20 @@ class Game {
         // Stage 5: Tutorial
         // DEBUG: Start directly in toilet scene
         this.stage = 0;
-        this.scene = 1; // Toilet scene
-        this.started = false;
+        this.scene = 0; // Toilet scene
+        this.started =false;
 
         // Shall we move on? (Triggered from each scene)
         this.next = false;
 
-        // For each play - start in toilet
-        this.play = new Stage();
-        this.parallax.setStage(2, 1); // Toilet scene
-        // DEBUG: Spawn at door (right side), press D to go to high school, A to walk into toilet
-        // Will be set properly after parallax calculates scene width
-        this.worldX = 0; // Temporary, will be set in show() on first frame
-        this.toiletFirstFrame = true; // Flag to set proper position on first frame
-        console.log('DEBUG Toilet: initial worldX =', this.worldX);
+        // // For each play - start in toilet
+        // this.play = new Stage();
+        // this.parallax.setStage(2, 1); // Toilet scene
+        // // DEBUG: Spawn at door (right side), press D to go to high school, A to walk into toilet
+        // // Will be set properly after parallax calculates scene width
+        // this.worldX = 0; // Temporary, will be set in show() on first frame
+        // this.toiletFirstFrame = true; // Flag to set proper position on first frame
+        // console.log('DEBUG Toilet: initial worldX =', this.worldX);
 
         this.loop = 1;
         this.bg = 0;
@@ -55,6 +55,15 @@ class Game {
 
         // Transition effect
         this.transition = new Transition();
+
+        // *** Energy level: They will keep changing throughout the entire game.
+        this.introvert = 0.5; // default
+        this.extrovert = 0.5; // default
+        this.isTutorialStarted = 0; // default
+        this.isTutorialFinished = 0; // default
+
+        this.smiled = 0; // 0: false, 1: neutral, 2: true
+        this.hid = 0; // 0: false, 1: neutral, 2: true
     }
 
     // Draw compact UI panel with about/help buttons, face, and progress bars
@@ -79,6 +88,7 @@ class Game {
             ellipse(faceX + faceSize/2, faceY + faceSize/2, faceSize, faceSize);
         }
 
+        rectMode(CORNER);
         // Progress bars - compact version
         let barX = faceX + faceSize + 15;
         let barY = faceY + 15;
@@ -308,8 +318,9 @@ class Game {
             case 5: { // Tutorial page
                 if (!(this.play instanceof Tutorial)) {
                     this.play = new Tutorial();
+                    this.isTutorialStarted = 1; // true
                 }
-                this.play.show();
+                this.play.show(this.introvert, this.extrovert);
                 if (this.play.willMove) {
                     this.stage = 1;
                     this.scene = 0;
@@ -318,6 +329,8 @@ class Game {
                     this.play.willMove = false;
                     this.play.tutorialMode = 0;
                     this.play.smileStartTime = null;
+                    this.isTutorialEnded = 1; // true
+
                     console.log('Tutorial -> Stage 1: Bedroom');
                 }
                 break;
@@ -345,6 +358,11 @@ class Game {
             this.transition.show();
         }
 
+        // Draw dialogue box if active
+        if (this.dialogue) {
+            this.dialogue.draw();
+        }
+
         // Draw header with buttons on top of everything
         header.display(this.stage);
     }
@@ -361,5 +379,4 @@ class Game {
 // Ref: https://p5js.org/reference/p5/windowResized/
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-
 }

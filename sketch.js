@@ -37,6 +37,10 @@ let bgMusic;
 let walkSfx;
 let heartbeatSound;
 
+let tutorialbarImg;
+let tutorialEImg;
+let tutorialIImg;
+
 //Help image
 let help01;
 let help02;
@@ -66,6 +70,10 @@ let toiletWall;
 let toiletFloor;
 let toiletMid;
 let toiletDoor;
+
+let header;
+
+let game;
 
 // movement
 
@@ -101,6 +109,23 @@ function keyPressed() {
       heartbeatGame.start();
     }
   }
+
+  // Dialogue box test with 'V' key
+  if (k === "v") {
+    if (game.dialogue) {
+
+      game.dialogue.typewriter.stop();
+      game.dialogue = null; // Close dialogue
+      
+
+    } else {
+      game.dialogue = new dialogueBox(
+        "Hello! This is a test dialogue box with typewriter effect. Press V again to close it.",
+        "Test Character",
+        { sound: typingSound }
+      );
+    }
+  }
 }
 
 function keyReleased() {
@@ -119,7 +144,7 @@ function preload() {
   // Load the FaceMesh model
   faceMesh = ml5.faceMesh(faceoptions);
   handPose = ml5.handPose(handOptions);
-  
+
 
   playerSprite = loadImage('assets/character.png');
   mirrorSprite = loadImage('assets/mirror.png');
@@ -154,6 +179,10 @@ function preload() {
   longPaper = loadImage('assets/longPaper.png');
   barImg = loadImage('assets/bar.png');
 
+  tutorialbarImg = loadImage('assets/tutorial_emptyBar.png');
+  tutorialEImg = loadImage('assets/tutorial_extrovered_text.png');
+  tutorialIImg = loadImage('assets/tutorial_introverted_text.png');
+
   returnBtn = loadImage('assets/returnButton.png');
 
   //loading help images
@@ -161,6 +190,9 @@ function preload() {
   help02 = loadImage('assets/Help02.png');
   help03 = loadImage('assets/Help03.png');
   help04 = loadImage('assets/Help04.png');
+
+  //load dialogue sound effect
+  typingSound = loadSound('assets/music/typing.mp3');
 
   // Stage 1 bedroom parallax
   bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
@@ -201,7 +233,7 @@ function setup() {
 
   // Set the Schoolbell font
   textFont(schoolbellFont);
-  
+
   // Always build the Video object and start FaceMesh detection ONCE.
   // This will trigger the inline popup to ask for permission from the camera.
   video = createCapture(VIDEO);
@@ -216,7 +248,6 @@ function setup() {
 
   // Create the game
   game = new Game();
-
   
 
 }
@@ -225,13 +256,13 @@ function draw() {
   game.show();
   console.log(game.stage)
 
-  if(detectHide()){
-        // fill(255, 0, 0); // Red background alert
-        // rect(0, 0, width, 50);
+  if (detectHide()) {
+    // fill(255, 0, 0); // Red background alert
+    // rect(0, 0, width, 50);
 
-        // fill(255);
-        // textSize(32);
-        // text("MOUTH COVERED! 🫢", 50, 40);
+    // fill(255);
+    // textSize(32);
+    // text("MOUTH COVERED! 🫢", 50, 40);
   };
 
   // Heartbeat rhythm game
@@ -254,6 +285,12 @@ function modelLoaded() {
 // Ref: https://p5js.org/reference/p5/windowResized/
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+
+  //update dialogue box if there is one 
+  if(game && game.dialogue){
+    game.dialogue.updatePosition();
+  }
+
 }
 
 function gotFaces(results) {
@@ -267,6 +304,33 @@ function gotHands(results) {
   // console.log('callback function has been called.');
 }
 
+function updateEnergy() {
+  if (game.introvert >= 1.0 || game.extrovert >= 1.0 || game.introvert <= 0.0 || game.extrovert <= 0.0) {
+    // stop increasing/decreasing
+  }
+  else {
+    if (game.smiled === 2) {
+      game.introvert -= 0.005;
+      game.extrovert = 1.000 - game.introvert;
+    }
+    else if (game.smiled === 1) {
+      if (abs(game.introvert - game.extrovert) > 0.01) {
+        game.introvert += 0.005;
+        game.extrovert = 1.000 - game.introvert;
+      }
+    }
+    else if (game.hid === 2) {
+      game.introvert += 0.005;
+      game.extrovert = 1.000 - game.introvert;
+    }
+    else if (game.hid === 1) {
+      if (abs(game.introvert - game.extrovert) > 0.01) {
+        game.introvert -= 0.005;
+        game.extrovert = 1.000 - game.introvert;
+      }
+    }
+  }
+}
 
 function detectSmile() {
 
@@ -277,39 +341,41 @@ function detectSmile() {
 
     let leftCorner = face.keypoints[61];
     let rightCorner = face.keypoints[291];
-    
+
     let topLip = face.keypoints[13];
     let bottomLip = face.keypoints[14];
 
     // 1. Calculate Mouth Width
     let mouthWidth = dist(leftCorner.x, leftCorner.y, rightCorner.x, rightCorner.y);
-    
+
     // 2. Calculate Face Width (to normalize across distances)
-  
+
     let leftCheek = face.keypoints[234];
     let rightCheek = face.keypoints[454];
     let faceWidth = dist(leftCheek.x, leftCheek.y, rightCheek.x, rightCheek.y);
     // console.log(faceWidth);
 
     if (mouthWidth / faceWidth > 0.45) { // Adjust based on testing
-      // console.log('smile detected.');
-    if (mouthWidth / faceWidth > 0.45) { // Lowered threshold for easier detection
+      // console.log('***smile detected.***');
+      game.smiled = 2;
+      game.hid = 1;
+      updateEnergy();
       return true;
     }
     else {
-      // console.log('smile X');
+      // console.log('***smile X***');
+      game.smiled = 0;
+      updateEnergy();
       return false;
-    }  
+    }
+  game.smiled = 1;
   }
-  
-  return false;
-}
 }
 
-function detectHide(){
+function detectHide() {
   if (faces.length > 0) {
     let face = faces[0];
-    
+
     // Get Mouth Center (using upper lip #13 and lower lip #14 as reference)
     let topLip = face.keypoints[13];
     let bottomLip = face.keypoints[14];
@@ -326,53 +392,65 @@ function detectHide(){
     // CHECK HANDS
     if (hands.length > 0) {
       let hand = hands[0];
-      
+
       // Use the Index Finger Tip (Index 8) and Middle Finger Tip (Index 12)
       // or the Palm Base (Index 0) to check for overlap.
       // Index 9 (Middle Finger MCP) is often a good center point for the hand.
-      let handCenter = hand.keypoints[9]; 
-      
+      let handCenter = hand.keypoints[9];
+
       // fill(255, 0, 255);
       // circle(handCenter.x, handCenter.y, 10);
 
       // Check distance between Hand Center and Mouth Center
       let d = dist(mouthX, mouthY, handCenter.x, handCenter.y);
-      
+
       // Threshold: if hand is within 60 pixels of mouth
-      if (d < 80) { 
+      if (d < 80) {
+        game.hid = 2;
+        game.smiled = 1;
+        updateEnergy();
         return true;
       }
-      else { return false;
+      else {
+        game.hid = 0;
+        updateEnergy();
+        return false;
+      }
     }
-}
-}
+
+    game.hid = 1;
+    return false;
+  }
 }
 
 function mousePressed() {
   // Unlock audio on first user interaction (required by browsers)
-if (typeof userStartAudio === "function") {
+  if (typeof userStartAudio === "function") {
     userStartAudio();
   }
 
- // 1. Check Header UI first
+  let uiClick;
+  // 1. Check Header UI first
   // Ensure 'game.stage' is actually a number
-  let uiClick = header.clicked(mouseX, mouseY, game.stage);
-  
+  if (game !== undefined) {
+    uiClick = header.clicked(mouseX, mouseY, game.stage);
+  }
+
   // 2. Only check game interactions if the UI wasn't clicked
   if (!uiClick) {
     if (game && game.play) {
       // Stage 0
-      if (game.play instanceof startScreen) { 
-        game.play.modeChanging(mouseX, mouseY); 
+      if (game.play instanceof startScreen) {
+        game.play.modeChanging(mouseX, mouseY);
       }
       // Stage 5
       else if (game.play instanceof Tutorial) {
         let det = game.play.goingBack(mouseX, mouseY);
-        if (det) { 
-          game.stage = 0; 
+        if (det) {
+          game.stage = 0;
           game.started = false;
+        }
       }
-    }
     }
   }
 }

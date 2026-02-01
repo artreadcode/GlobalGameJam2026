@@ -14,6 +14,8 @@ class TypewriterEffect {
         this.align = options.align || LEFT;
         this.currentIndex = 0;
         this.displayedText = "";
+        this.sound = options.sound || null;
+        this.soundPlaying = false;
        // this.typewriterMessage = new TypewriterEffect(" ", 200,300,24,{speed:50, color:0}); 
     }
 
@@ -35,7 +37,21 @@ class TypewriterEffect {
         const currentTime = millis();
         //check if enocugh time has passed to add next char
         if (this.currentIndex >= this.fullText.length){
+
+            //stop looping sound 
+            if(this.sound && this.soundPlaying){
+                this.sound.stop();
+                this.soundPlaying = false;
+            }
             return;
+        }
+
+        //start looping sound
+        if (this.sound && !this.sound.isPlaying() && getAudioContext().state === 'running'){
+            this.sound.setLoop(true);
+            this.sound.play();
+            this.soundPlaying = true;
+
         }
 
         if(currentTime - this.lastUpdateTime >= this.speed){
@@ -47,7 +63,13 @@ class TypewriterEffect {
 
             //reset timer
             this.lastUpdateTime = currentTime;
+
+
         }
+
+        
+        
+        
 
     }
 
@@ -73,6 +95,13 @@ class TypewriterEffect {
             this.update();
             this.draw();
 
+    }
+
+    stop(){
+        if(this.sound && this.soundPlaying){
+            this.sound.stop();
+            this.soundPlaying = false; 
+        }
     }
 
 }
