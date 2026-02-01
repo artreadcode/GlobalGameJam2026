@@ -17,7 +17,7 @@ let mumCameraSprite;
 let dadSprite;
 let takingPictureSprite;
 
-// Player animation sprites
+// Player animation sprites - Toddler (Stage 1)
 let playerStand;
 let playerStandSmile;
 let playerStandHide;
@@ -25,6 +25,10 @@ let playerStandHide;
 let playerWalkLeft = [];
 let playerWalkRight = [];
 
+// Player animation sprites - Teen (Stage 2)
+let teenStand;
+let teenWalkLeft = [];
+let teenWalkRight = [];
 
 let schoolbellFont;
 
@@ -151,7 +155,7 @@ function preload() {
   cameraBorder = loadImage('assets/Stage_1 bedroom/cameraOverlay.png');
   takingPictureSprite = loadImage('assets/characters/Mirror_Toddler.png')
   takingPictureSpriteSmile = loadImage('assets/characters/SMirror_Toddler.png')
-  // Player animation sprites
+  // Player animation sprites - Toddler (Stage 1)
   playerStand = loadImage('assets/characters/Stand_toddler.png');
   playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
   playerWalkLeft[1] = loadImage('assets/characters/WLeft2_toddler.png');
@@ -160,6 +164,14 @@ function preload() {
   playerWalkRight[1] = loadImage('assets/characters/Wright2_toddler.png');
   playerWalkRight[2] = loadImage('assets/characters/Wright_toddler.png');
 
+  // Player animation sprites - Teen (Stage 2)
+  teenStand = loadImage('assets/characters/Stand_teen.png');
+  teenWalkLeft[0] = loadImage('assets/characters/WLeft_teen.png');
+  teenWalkLeft[1] = loadImage('assets/characters/WLeft2_teen.png');
+  teenWalkLeft[2] = loadImage('assets/characters/WLeft_teen.png');
+  teenWalkRight[0] = loadImage('assets/characters/Wright_teen.png');
+  teenWalkRight[1] = loadImage('assets/characters/Wright2_teen.png');
+  teenWalkRight[2] = loadImage('assets/characters/Wright_teen.png');
 
   // Font is loaded via CSS in index.html
   // Set the font name for use with textFont()
