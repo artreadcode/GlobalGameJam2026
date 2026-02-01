@@ -515,6 +515,10 @@ class Game {
                     this.play.smileStartTime = null;
                     this.isTutorialEnded = 1; // true
 
+                    // 2. CRITICAL FIX: Destroy the Tutorial object!
+                    // If we don't do this, Case 1 thinks the Tutorial object is the Bedroom Stage.
+                    this.play = null;
+
                     console.log('Tutorial -> Bedroom');
                 }
                 break;

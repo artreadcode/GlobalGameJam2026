@@ -93,6 +93,8 @@ let header;
 
 let game;
 
+let launch;
+
 // movement
 
 const pressedKeys = { a: false, d: false };
@@ -212,6 +214,8 @@ function preload() {
   tutorialIImg = loadImage('assets/tutorial_introverted_text.png');
 
   returnBtn = loadImage('assets/returnButton.png');
+
+  launch = loadImage('assets/GO.png');
 
   //loading help images
   help01 = loadImage('assets/Help01.png');
@@ -470,7 +474,6 @@ function mousePressed() {
 
   let uiClick;
   // 1. Check Header UI first
-  // Ensure 'game.stage' is actually a number
   if (game !== undefined) {
     uiClick = header.clicked(mouseX, mouseY, game.stage);
   }
@@ -482,13 +485,22 @@ function mousePressed() {
       if (game.play instanceof startScreen) {
         game.play.modeChanging(mouseX, mouseY);
       }
-      // Stage 5
+      // Stage 9 (Tutorial)
       else if (game.play instanceof Tutorial) {
+        
+        // Check "Return" button
         let det = game.play.goingBack(mouseX, mouseY);
         if (det) {
           game.stage = 0;
           game.started = false;
+        } 
+        // --- ADD THE ELSE BLOCK ---
+        else {
+          // Check "Launch" button
+          // This sets 'willMove' to true inside the Tutorial class
+          game.play.checkLaunch(mouseX, mouseY); 
         }
+        // ---------------------------
       }
     }
   }
