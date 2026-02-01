@@ -192,7 +192,7 @@ function preload() {
   help04 = loadImage('assets/Help04.png');
 
   //load dialogue sound effect
-  typingSound = loadSound('assets/music/typing.mp3');
+  typingSound = loadSound('assets/music/talking.mp3');
 
   // Stage 1 bedroom parallax
   bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
