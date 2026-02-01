@@ -33,6 +33,7 @@ let longPaper;
 let barImg;
 let returnBtn;
 let closeBtn;
+let question;
 let bgMusic;
 let walkSfx;
 let heartbeatSound;
@@ -170,6 +171,7 @@ function preload() {
   tooltip = loadImage('assets/tooltip.png');
   cameraMode = loadImage('assets/camera.png');
   keyboardMode = loadImage('assets/keyboard.png');
+  question = loadImage('assets/question.png');
 
   aboutBtn = loadImage('assets/aboutButton.png');
   helpBtn = loadImage('assets/helpButton.png');

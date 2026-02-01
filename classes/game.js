@@ -73,19 +73,72 @@ class Game {
 
         push();
 
-        // Draw face area (video will be replaced by face mesh)
+        // Draw face area with face mesh
         let faceX = panelX + 15;
         let faceY = panelY + 55;
         let faceSize = 70;
 
-        if (video) {
-            // TODO: Replace with face mesh visualization
-            image(video, faceX, faceY, faceSize, faceSize);
+        if (video && faces.length > 0) {
+            let centerX = faceX + faceSize / 2;
+            let centerY = faceY + faceSize / 2;
+            
+            if (detectHide()) {
+                // Show only border and question mark when face is hidden                
+
+                imageMode(CENTER);
+                image(question, centerX, centerY, faceSize, faceSize);
+                imageMode(CORNER);
+                // Draw question mark image in center
+                new JiggleText("?", centerX, centerY, faceSize*0.5, {
+                color: 0
+                });
+            } else {
+                // Show face mesh dots when face is visible
+                let kp = faces[0].keypoints;
+                
+                // Calculate bounding box of keypoints
+                let minX = Infinity, maxX = -Infinity;
+                let minY = Infinity, maxY = -Infinity;
+                
+                for (let i = 0; i < kp.length; i++) {
+                    minX = min(minX, kp[i].x);
+                    maxX = max(maxX, kp[i].x);
+                    minY = min(minY, kp[i].y);
+                    maxY = max(maxY, kp[i].y);
+                }
+                
+                let bboxWidth = maxX - minX;
+                let bboxHeight = maxY - minY;
+                let scale = min((faceSize * 0.9) / bboxWidth, (faceSize * 0.9) / bboxHeight);
+                
+                let bboxCenterX = minX + bboxWidth / 2;
+                let bboxCenterY = minY + bboxHeight / 2;
+                
+                
+                // Draw keypoint dots
+                noStroke();
+                fill(0);
+                
+                for (let i = 0; i < kp.length; i++) {
+                    let x = centerX - (kp[i].x - bboxCenterX) * scale;
+                    let y = centerY + (kp[i].y - bboxCenterY) * scale;
+                    ellipse(x, y, 2, 2);
+                }
+            }
         } else {
-            stroke(100);
-            strokeWeight(1);
-            noFill();
-            ellipse(faceX + faceSize/2, faceY + faceSize/2, faceSize, faceSize);
+            // No video or no faces detected
+                stroke(0);
+                strokeWeight(2);
+                noFill();
+                ellipse(centerX, centerY, faceSize, faceSize);
+                new JiggleText("?", centerX, centerY, faceSize*0.5, {
+                color: 0
+                });
+                
+                // Draw question mark image in center
+                imageMode(CENTER);
+                image(question, centerX, centerY, faceSize, faceSize);
+                imageMode(CORNER);
         }
 
         rectMode(CORNER);
