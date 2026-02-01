@@ -216,6 +216,7 @@ function setup() {
 
   // Create the game
   game = new Game();
+  
 
   
 
