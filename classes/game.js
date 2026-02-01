@@ -1,4 +1,5 @@
 class Game {
+
     constructor() {
         this.started = false; // Did the player start playing? 
         this.ended = false; // Did the player reach to the ending?
@@ -43,7 +44,10 @@ class Game {
         this.bar2Value = 30;
 
         //Dialogue box
-        this.dialogue = null; 
+        this.dialogue = null;
+
+        // Transition effect
+        this.transition = new Transition();
     }
 
     // Draw compact UI panel with about/help buttons, face, and progress bars
@@ -175,14 +179,21 @@ class Game {
                 this.parallax.draw(cameraX);
 
                 // Position door obstacle to match parallax door position
-                if (bedroomDoor && bedroomDoor.width && bedroomDoor.height) {
-                    let doorRatio = bedroomDoor.width / bedroomDoor.height;
-                    let doorDrawH = height * 0.7;
-                    let doorDrawW = doorDrawH * doorRatio;
-                    this.mirrorObstacle.x = sceneWidth - doorDrawW + 50;
-                } else {
-                    this.mirrorObstacle.x = sceneWidth - 200;
-                }
+            if (bedroomDoor && bedroomDoor.width && bedroomDoor.height) {
+                let doorRatio = bedroomDoor.width / bedroomDoor.height;
+                let doorDrawH = height * 0.4; // use 0.7 if you want the mirror
+            taller
+                let doorDrawW = doorDrawH * doorRatio;
+                let doorWorldX = sceneWidth - doorDrawW + 70;
+                this.mirrorObstacle.x = doorWorldX;
+                this.mirrorObstacle.w = doorDrawW;
+                this.mirrorObstacle.h = doorDrawH;
+            } else {
+                this.mirrorObstacle.x = sceneWidth - 200;
+            }
+
+            // Update player animation if this method exists
+            this.player.updateAnimation?.(moveLeft, moveRight);
 
                 // Draw player on top of door
                 this.player.draw(cameraX);
@@ -229,13 +240,41 @@ class Game {
                         this.minigame.stop();
                     }
                 }
+
+
                 break;
             }
-            case 2: {           //stage 2
-                walkingActive = keyIsDown(68) || keyIsDown(65);
-                this.player.update(this.play);
-                const cameraX = this.camera.update(this.play, this.player.x);
+            case 2: {           //stage 2 - Living Room
+                if (!(this.play instanceof Stage)) this.play = new Stage();
+
+                const moveRight = keyIsDown(68);
+                const moveLeft = keyIsDown(65);
+                walkingActive = moveRight || moveLeft;
+
+                const prevWorldX = this.worldX;
+                if (moveRight) this.worldX += this.player.speed;
+                if (moveLeft) this.worldX -= this.player.speed;
+
+                // Use scene width from parallax
+                const sceneWidth = this.parallax.getSceneWidth();
+                const maxWorldX = Math.max(0, sceneWidth - width / 2);
+                this.worldX = constrain(this.worldX, 0, maxWorldX);
+
+                const cameraX = this.worldX;
+                this.player.x = cameraX + width / 2;
+
+                const deltaX = this.worldX - prevWorldX;
+                this.parallax.update(deltaX);
+                this.parallax.draw(cameraX);
+
+                // Update player animation based on movement
+                this.player.updateAnimation(moveLeft, moveRight);
+
+                // Draw player
                 this.player.draw(cameraX);
+
+                // Draw front parallax layer (in front of player)
+                this.parallax.drawFront();
                 break;
             }
             case 3: {           //stage 3
@@ -260,6 +299,7 @@ class Game {
                 this.player.x = constrain(this.player.x, this.play.xMin, this.play.xMax);
 
                 this.play.show();
+                this.player.updateAnimation(moveLeft, moveRight);
                 this.player.draw(0);
 
                 const exitOffset = Math.round(width * (400 / 1920));
@@ -301,6 +341,17 @@ class Game {
                 walkSfx.stop();
             }
         }
+
+        // Draw transition effect on top of everything
+        if (this.transition.active) {
+            this.transition.show();
+        }
+    }
+
+    // Test method to trigger transition
+    testTransition() {
+        this.transition.capture();
+        this.transition.start(1);
     }
 }
 
