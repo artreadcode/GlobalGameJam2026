@@ -1,6 +1,6 @@
 class Transition {
     constructor() {
-        this.size = 2; // Size of each pixel block
+        this.size = 5; // Size of each pixel block
         this.cols = 0;
         this.rows = 0;
 

@@ -244,7 +244,7 @@ function draw() {
 function modelLoaded() {
   console.log("FaceMesh Model is loaded and ready!");
 
-   //game.stage = 1;
+  //  game.stage = 0;
   //  game.started = true;
   //  game.play = new Stage();
 
