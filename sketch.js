@@ -28,6 +28,9 @@ let playerWalkRight = [];
 
 // Player animation sprites - Teen (Stage 2)
 let teenStand;
+let teenStandSmile;
+let teenStandHide;
+
 let teenWalkLeft = [];
 let teenWalkRight = [];
 
@@ -143,8 +146,6 @@ function preload() {
 
 
   playerSprite = loadImage('assets/character.png');
-  playerStandSmile = loadImage('assets/characters/Stand_toddlerSmile.png');
-  playerStandHide = loadImage('assets/characters/Stand_toddlerClose.png');
 
 
   mirrorSprite = loadImage('assets/mirror.png');
@@ -157,8 +158,14 @@ function preload() {
   cameraBorder = loadImage('assets/Stage_1 bedroom/cameraOverlay.png');
   takingPictureSprite = loadImage('assets/characters/Mirror_Toddler.png')
   takingPictureSpriteSmile = loadImage('assets/characters/SMirror_Toddler.png')
+  
+  
   // Player animation sprites - Toddler (Stage 1)
   playerStand = loadImage('assets/characters/Stand_toddler.png');
+  playerStandSmile = loadImage('assets/characters/Stand_toddlerSmile.png');
+  playerStandHide = loadImage('assets/characters/Stand_toddlerClose.png');
+
+
   playerWalkLeft[0] = loadImage('assets/characters/WLeft_toddler.png');
   playerWalkLeft[1] = loadImage('assets/characters/WLeft2_toddler.png');
   playerWalkLeft[2] = loadImage('assets/characters/WLeft_toddler.png');
@@ -168,6 +175,9 @@ function preload() {
 
   // Player animation sprites - Teen (Stage 2)
   teenStand = loadImage('assets/characters/Stand_teen.png');
+  teenStandSmile = loadImage('assets/characters/Stand_teenSmile.png');
+  teenStandHide = loadImage('assets/characters/Stand_teenClose.png');
+
   teenWalkLeft[0] = loadImage('assets/characters/WLeft_teen.png');
   teenWalkLeft[1] = loadImage('assets/characters/WLeft2_teen.png');
   teenWalkLeft[2] = loadImage('assets/characters/WLeft_teen.png');
