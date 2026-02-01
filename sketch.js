@@ -109,6 +109,23 @@ function keyPressed() {
       heartbeatGame.start();
     }
   }
+
+  // Dialogue box test with 'V' key
+  if (k === "v") {
+    if (game.dialogue) {
+
+      game.dialogue.typewriter.stop();
+      game.dialogue = null; // Close dialogue
+      
+
+    } else {
+      game.dialogue = new dialogueBox(
+        "Hello! This is a test dialogue box with typewriter effect. Press V again to close it.",
+        "Test Character",
+        { sound: typingSound }
+      );
+    }
+  }
 }
 
 function keyReleased() {
@@ -174,6 +191,9 @@ function preload() {
   help03 = loadImage('assets/Help03.png');
   help04 = loadImage('assets/Help04.png');
 
+  //load dialogue sound effect
+  typingSound = loadSound('assets/music/typing.mp3');
+
   // Stage 1 bedroom parallax
   bedroomBack = loadImage('assets/Stage_1 bedroom/back_bedroom.png');
   bedroomMid = loadImage('assets/Stage_1 bedroom/mid_bedroom.png');
@@ -228,6 +248,7 @@ function setup() {
 
   // Create the game
   game = new Game();
+  
 
 }
 

@@ -23,20 +23,20 @@ class Game {
         // Stage 5: Tutorial
         // DEBUG: Start directly in toilet scene
         this.stage = 0;
-        this.scene = 1; // Toilet scene
-        this.started = false;
+        this.scene = 0; // Toilet scene
+        this.started =false;
 
         // Shall we move on? (Triggered from each scene)
         this.next = false;
 
-        // For each play - start in toilet
-        this.play = new Stage();
-        this.parallax.setStage(2, 1); // Toilet scene
-        // DEBUG: Spawn at door (right side), press D to go to high school, A to walk into toilet
-        // Will be set properly after parallax calculates scene width
-        this.worldX = 0; // Temporary, will be set in show() on first frame
-        this.toiletFirstFrame = true; // Flag to set proper position on first frame
-        console.log('DEBUG Toilet: initial worldX =', this.worldX);
+        // // For each play - start in toilet
+        // this.play = new Stage();
+        // this.parallax.setStage(2, 1); // Toilet scene
+        // // DEBUG: Spawn at door (right side), press D to go to high school, A to walk into toilet
+        // // Will be set properly after parallax calculates scene width
+        // this.worldX = 0; // Temporary, will be set in show() on first frame
+        // this.toiletFirstFrame = true; // Flag to set proper position on first frame
+        // console.log('DEBUG Toilet: initial worldX =', this.worldX);
 
         this.loop = 1;
         this.bg = 0;
@@ -356,6 +356,11 @@ class Game {
         // Draw transition effect on top of everything
         if (this.transition.active) {
             this.transition.show();
+        }
+
+        // Draw dialogue box if active
+        if (this.dialogue) {
+            this.dialogue.draw();
         }
 
         // Draw header with buttons on top of everything
