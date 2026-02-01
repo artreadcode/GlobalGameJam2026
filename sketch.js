@@ -275,6 +275,12 @@ function modelLoaded() {
 // Ref: https://p5js.org/reference/p5/windowResized/
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+
+  //update dialogue box if there is one 
+  if(game && game.dialogue){
+    game.dialogue.updatePosition();
+  }
+
 }
 
 function gotFaces(results) {
