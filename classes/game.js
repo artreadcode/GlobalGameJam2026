@@ -97,9 +97,6 @@ class Game {
         // Draw face area with face mesh
         let faceX = panelX + padding;
         let faceY = panelY + padding;
-        let faceX = panelX + 15;
-        let faceY = panelY + 55;
-        let faceSize = 70;
         let centerX = faceX + faceSize / 2;
         let centerY = faceY + faceSize / 2;
 
