@@ -23,7 +23,7 @@ class Actions {
             game.stage = 2;
             game.play = new Stage();
             game.parallax.setStage(2);
-            game.worldX = 100; // Start a bit away from left edge
+            game.worldX = 0; // Start at left edge
             game.player.x = game.worldX + width / 2;
             game.camera.x = 0;
             game.backDoorCooldownFrames = 60; // Prevent immediate back door trigger
@@ -51,6 +51,21 @@ class Actions {
               game.backDoorObstacle.triggered = false;
             }
             break;
+          case '3':
+            // Transition from school (stage 2) to toilet (stage 3)
+            game.stage = 3;
+            game.play = new Stage();
+            game.parallax.setStage(3);
+            game.worldX = 0;
+            game.player.x = game.worldX + width / 2;
+            game.camera.x = 0;
+            if (game.mirrorObstacle) {
+              game.mirrorObstacle.triggered = false;
+            }
+            if (game.backDoorObstacle) {
+              game.backDoorObstacle.triggered = false;
+            }
+            break;
           default:
             break;
         }
@@ -61,6 +76,9 @@ class Actions {
         switch (actionKey) {
           case '1':
             // Custom action hook.
+            break;
+          case 'mirror':
+            console.log('Living room door -> mirror scene (placeholder)');
             break;
           default:
             break;
