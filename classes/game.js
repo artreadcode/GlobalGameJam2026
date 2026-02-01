@@ -10,6 +10,8 @@ class Game {
         this.worldX = 0;
         this.mirrorObstacle = new Obstacle(0, null, null, { actionId: "1", actionType: "transition", visible: false });
         this.mirrorExitObstacle = new Obstacle(0, 40, 0, { actionId: "1", actionType: "return", visible: false });
+        // Back door to go from living room back to bedroom
+        this.backDoorObstacle = new Obstacle(0, 100, 300, { actionId: "2", actionType: "transition", visible: false });
         // this.minigame = new Game1();
         // this.minigameActive = false;
         // this.minigameTrigger = new Obstacle(0, 120, 120, { sprite: placeholderSprite, actionId: "1", actionType: "minigame" });
@@ -38,6 +40,7 @@ class Game {
         this.returnStage = null;
         this.returnX = null;
         this.mirrorEntryCooldownFrames = 0;
+        this.backDoorCooldownFrames = 0;
 
         // Progress bars (0-100)
         this.bar1Value = 50;
@@ -263,6 +266,16 @@ class Game {
 
                 // Draw front parallax layer (in front of player)
                 this.parallax.drawFront();
+
+                // Back door on left side to go back to bedroom
+                if (this.backDoorCooldownFrames > 0) {
+                    this.backDoorCooldownFrames--;
+                }
+                // Only trigger back door when player is at far left (worldX near 0)
+                if (this.worldX <= 10 && this.backDoorCooldownFrames <= 0) {
+                    this.backDoorCooldownFrames = 60;
+                    Actions.run("transition", "2", this, null);
+                }
                 break;
             }
             case 3: {           //stage 3
