@@ -90,6 +90,10 @@ class CrowdGame {
       heartbeatSound.setLoop(true);
       heartbeatSound.play();
     }
+    if (teenPressureSound) {
+      teenPressureSound.stop();
+      teenPressureSound.play();
+    }
     
     console.log('CrowdGame started - Phase:', this.currentPhase);
   }
@@ -101,6 +105,9 @@ class CrowdGame {
     // Stop heartbeat sound
     if (heartbeatSound && heartbeatSound.isPlaying()) {
       heartbeatSound.stop();
+    }
+    if (teenPressureSound && teenPressureSound.isPlaying()) {
+      teenPressureSound.stop();
     }
   }
 

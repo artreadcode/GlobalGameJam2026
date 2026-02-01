@@ -29,7 +29,6 @@ class Game {
         this.crowdTriggerX = 400; // X position where crowd minigame triggers
 
 
-
         this.minigameCompleted = false;
         this.obstacles = [this.mirrorObstacle];
         /*
@@ -211,21 +210,32 @@ class Game {
         if (this.stage === 1 || this.stage === 2) {
             // Stage 1-2 (Bedroom, Living Room): Play toddler music
             if (teenMusic && teenMusic.isPlaying()) teenMusic.stop();
+            if (adultMusic && adultMusic.isPlaying()) adultMusic.stop();
             if (bgMusic && !bgMusic.isPlaying() && getAudioContext().state === "running") {
                 bgMusic.setLoop(true);
                 bgMusic.play();
             }
-        } else if (this.stage === 3 || this.stage === 4 || this.stage === 5 || this.stage === 6) {
-            // Stage 3-6 (High School, Toilet, Office, Street): Play teen music
+        } else if (this.stage === 3 || this.stage === 4) {
+            // Stage 3-4 (High School, Toilet): Play teen music
             if (bgMusic && bgMusic.isPlaying()) bgMusic.stop();
+            if (adultMusic && adultMusic.isPlaying()) adultMusic.stop();
             if (teenMusic && !teenMusic.isPlaying() && getAudioContext().state === "running") {
                 teenMusic.setLoop(true);
                 teenMusic.play();
+            }
+        } else if (this.stage === 5 || this.stage === 6) {
+            // Stage 5-6 (Office, Street): Play adult music
+            if (bgMusic && bgMusic.isPlaying()) bgMusic.stop();
+            if (teenMusic && teenMusic.isPlaying()) teenMusic.stop();
+            if (adultMusic && !adultMusic.isPlaying() && getAudioContext().state === "running") {
+                adultMusic.setLoop(true);
+                adultMusic.play();
             }
         } else {
             // Other stages: Stop all music
             if (bgMusic && bgMusic.isPlaying()) bgMusic.stop();
             if (teenMusic && teenMusic.isPlaying()) teenMusic.stop();
+            if (adultMusic && adultMusic.isPlaying()) adultMusic.stop();
         }
 
         let walkingActive = false;
